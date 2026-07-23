@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Application Workspace — MSP Operating Model</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{--ink:#172033;--muted:#667085;--line:#dfe3ea;--panel:#f7f8fa;--blue:#2563eb;--green:#15803d;--amber:#b45309;--red:#b42318;--white:#fff;--radius:10px;--shadow:0 1px 2px rgba(16,24,40,.05)}
 *{box-sizing:border-box}body{margin:0;font:14px/1.45 Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:#fff}
@@ -36,11 +37,8 @@ details{border:1px solid var(--line);border-radius:8px;background:var(--panel);p
  <div class="topin">
   <div class="brand">Recast <span>Application Workspace · MSP Operating Model</span></div>
   <div class="actions">
-   <button class="btn" id="saveBtn">Save scenario</button>
-   <button class="btn" id="loadBtn">Load scenario</button>
-   <button class="btn" id="resetBtn">Reset</button>
-   <button class="btn primary" onclick="window.print()">Print / PDF</button>
-   <input id="fileIn" type="file" accept=".json" class="hide">
+   <button class="btn" id="refreshBtn" title="Refresh the operating model">↻ Refresh</button>
+   <button class="btn primary" id="pdfBtn" title="Download a formatted PDF report">Download PDF</button>
   </div>
  </div>
  <div class="tabs">
@@ -347,10 +345,151 @@ buildTables();
 document.addEventListener('input',e=>{if(e.target.matches('[id$="_vol"]'))e.target.dataset.edited='1';compute()});
 document.addEventListener('change',compute);
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active')});
-$('resetBtn').onclick=()=>location.reload();
-$('saveBtn').onclick=()=>{const data={};document.querySelectorAll('input,select').forEach(x=>{if(x.id&&x.type!=='file')data[x.id]=x.value});const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='application-workspace-operating-model-scenario.json';a.click();URL.revokeObjectURL(a.href)};
-$('loadBtn').onclick=()=>$('fileIn').click();
-$('fileIn').onchange=async e=>{try{const d=JSON.parse(await e.target.files[0].text());Object.entries(d).forEach(([k,v])=>{if($(k)){$(k).value=v;if(k.endsWith('_vol'))$(k).dataset.edited='1'}});compute()}catch{alert('Could not load scenario file.')}};
+function pdfSnapshot(){
+ const rate=n('rate'), realization=pct('realization'), monetize=pct('monetization');
+ let curHours=0,newHours=0,measuredCount=0;
+ const rows=activities.map(a=>{
+  const v=n(a.id+'_vol'), mins=n(a.id+'_min'), rw=pct(a.id+'_rw');
+  const hrs=v*mins/60*(1+rw);
+  const addr=pct(a.id+'_addr'), fut=pct(a.id+'_future');
+  const next=hrs*(1-addr*realization*(1-fut));
+  curHours+=hrs; newHours+=next;
+  if($(a.id+'_ev').value==='Measured') measuredCount++;
+  return {name:a.name,volume:v,minutes:mins,current:hrs,future:next,address:addr,evidence:$(a.id+'_ev').value,capability:a.cap,remain:a.remain};
+ });
+ const returned=Math.max(0,curHours-newHours), monetized=returned*monetize;
+ const licenseAnnual=n('users')*n('license')*12, platform=licenseAnnual+n('otherRecurring');
+ const monetizedValue=monetized*rate, netSS=monetizedValue-platform;
+ const rampFactor=Math.max(0,Math.min(1,(12-n('ramp')/2)/12));
+ const laborY1=monetizedValue*rampFactor, netY1=laborY1-platform-n('implementation');
+ const attached=n('users')*pct('attach'), svcRev=attached*n('price')*12, svcCost=attached*n('incrementalSvcCost')*12;
+ const measuredBake=n('m_hours_cur')>0&&n('m_hours_aw')>0;
+ return {rows,curHours,newHours,returned,monetized,rate,licenseAnnual,platform,monetizedValue,netSS,netY1,laborY1,
+  attached,svcRev,svcCost,svcMargin:svcRev-svcCost,measuredCount,measuredBake,
+  users:n('users'),endpoints:n('endpoints'),virtual:n('virtual'),customers:n('customers'),tenants:n('tenants'),
+  titles:n('titles'),packages:n('packages'),releases:n('releases'),coverage:n('coverage'),custom:n('customShare'),
+  targets:n('targets'),exceptions:n('exceptions'),realization:n('realization'),monetization:n('monetization'),
+  implementation:n('implementation'),ramp:n('ramp'),commercial:$('commercial').options[$('commercial').selectedIndex].text,
+  rta:n('rtaCurrent'),tickets:n('ticketsCurrent'),success:n('successCurrent'),
+  mCur:n('m_hours_cur'),mAw:n('m_hours_aw'),mTicketsCur:n('m_tickets_cur'),mTicketsAw:n('m_tickets_aw'),
+  mRtaCur:n('m_rta_cur'),mRtaAw:n('m_rta_aw'),mSuccessCur:n('m_success_cur'),mSuccessAw:n('m_success_aw')
+ };
+}
+function downloadPDF(){
+ if(!window.jspdf){alert('The PDF library could not load. Check the internet connection and try again.');return;}
+ compute();
+ const s=pdfSnapshot(), {jsPDF}=window.jspdf;
+ const doc=new jsPDF({unit:'pt',format:'letter',orientation:'portrait'});
+ const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight(), L=48, R=48, maxW=W-L-R;
+ let y=48, pageNo=1;
+ const blue=[37,99,235], ink=[23,32,51], muted=[102,112,133], line=[223,227,234], green=[21,128,61], amber=[180,83,9];
+ const set=(size=10,color=ink,style='normal')=>{doc.setFont('helvetica',style);doc.setFontSize(size);doc.setTextColor(...color)};
+ const footer=()=>{doc.setDrawColor(...line);doc.line(L,H-34,W-R,H-34);set(8,muted);doc.text('Application Workspace MSP Operating Model · Planning and proof tool, not a guarantee of savings',L,H-20);doc.text(String(pageNo),W-R,H-20,{align:'right'});}
+ const newPage=()=>{footer();doc.addPage();pageNo++;y=48;}
+ const ensure=(h=40)=>{if(y+h>H-48)newPage();}
+ const title=(t,sub)=>{ensure(70);set(20,ink,'bold');doc.text(t,L,y);y+=22;if(sub){set(9,muted);const ls=doc.splitTextToSize(sub,maxW);doc.text(ls,L,y);y+=ls.length*12+9;}doc.setDrawColor(...line);doc.line(L,y,W-R,y);y+=16;}
+ const heading=t=>{ensure(36);set(13,ink,'bold');doc.text(t,L,y);y+=9;doc.setDrawColor(...line);doc.line(L,y,W-R,y);y+=14;}
+ const para=(t,color=muted)=>{set(9,color);const ls=doc.splitTextToSize(t,maxW);ensure(ls.length*12+8);doc.text(ls,L,y);y+=ls.length*12+8;}
+ const kv=(label,value,color=ink)=>{ensure(19);set(9,muted);doc.text(label,L,y);set(10,color,'bold');doc.text(value,W-R,y,{align:'right'});y+=17;doc.setDrawColor(...line);doc.line(L,y-5,W-R,y-5);}
+ const tableHeader=(cols,widths)=>{ensure(28);doc.setFillColor(247,248,250);doc.rect(L,y-12,maxW,22,'F');let x=L;set(8,muted,'bold');cols.forEach((c,i)=>{doc.text(c,x+4,y+2,{maxWidth:widths[i]-8});x+=widths[i]});y+=16;}
+ const tableRow=(vals,widths,opts={})=>{const lines=vals.map((v,i)=>doc.splitTextToSize(String(v),widths[i]-8));const h=Math.max(...lines.map(a=>a.length))*10+8;ensure(h);let x=L;set(opts.size||8,opts.color||ink,opts.bold?'bold':'normal');vals.forEach((v,i)=>{doc.text(lines[i],x+4,y+2);x+=widths[i]});y+=h;doc.setDrawColor(...line);doc.line(L,y-3,W-R,y-3);}
+ const fmtMoney=v=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(v||0);
+ const fmt=v=>new Intl.NumberFormat('en-US',{maximumFractionDigits:1}).format(v||0);
+
+ // Cover / executive summary
+ set(9,blue,'bold');doc.text('RECAST SOFTWARE',L,y);y+=23;
+ set(24,ink,'bold');doc.text('Application Workspace',L,y);y+=27;
+ doc.text('MSP Operating Model',L,y);y+=20;
+ set(10,muted);doc.text('Current state, addressable work, future-state economics and measured proof',L,y);y+=34;
+ doc.setFillColor(247,248,250);doc.roundedRect(L,y,maxW,112,8,8,'F');
+ set(11,ink,'bold');doc.text('Executive result',L+16,y+22);
+ set(20,s.netSS>=0?green:amber,'bold');doc.text(fmtMoney(s.netSS),L+16,y+51);
+ set(9,muted);doc.text('Steady-state net operating value after monetization and recurring platform cost',L+16,y+68);
+ set(10,ink,'bold');doc.text(fmt(s.returned/1880)+' FTE',L+16,y+92);set(9,muted);doc.text('technical capacity returned',L+82,y+92);
+ y+=138;
+ heading('Decision framing');
+ para('This report keeps three economic outcomes separate: existing-contract operating value, incremental managed-service contribution margin, and customer or project value. Returned capacity is not treated as cash savings until the partner enters a monetization rate.');
+ kv('Year-one net operating value',fmtMoney(s.netY1),s.netY1>=0?green:amber);
+ kv('Technical capacity returned',fmt(s.returned)+' hours · '+fmt(s.returned/1880)+' FTE');
+ kv('Capacity assumed monetized',fmt(s.monetized)+' hours · '+s.monetization+'%');
+ kv('Separate managed-service contribution margin',fmtMoney(s.svcMargin),s.svcMargin>=0?green:amber);
+ kv('Evidence coverage',s.measuredCount+' of '+activities.length+' activity baselines marked measured');
+ kv('Bake-off result',s.measuredBake?'Measured touch-hour results entered':'Not yet completed',s.measuredBake?green:amber);
+ para('Accuracy boundary: catalog coverage, supported targets, tenant design, licensing, partner pricing and actual workflow reductions require validation against the partner environment and current approved Recast documentation.',amber);
+
+ // Scope
+ newPage();title('1. Operating scope','Licensing units, endpoint scale, customers, tenants and application complexity are deliberately separated.');
+ heading('Partner operating profile');
+ kv('Licensed users',fmt(s.users));kv('Physical endpoints',fmt(s.endpoints));kv('Virtual endpoints',fmt(s.virtual));
+ kv('Customers / technical tenants',fmt(s.customers)+' / '+fmt(s.tenants));kv('Commercial model',s.commercial);
+ heading('Application estate');
+ kv('Distinct application titles',fmt(s.titles));kv('Active package definitions',fmt(s.packages));kv('Release events per year',fmt(s.releases));
+ kv('Catalog-covered share',fmt(s.coverage)+'% · partner estimate until validated');
+ kv('Custom / complex share',fmt(s.custom)+'%');kv('Delivery targets per package',fmt(s.targets));kv('Customer exception share',fmt(s.exceptions)+'%');
+ heading('Economic assumptions');
+ kv('Loaded labor cost',fmtMoney(s.rate)+' / hour');kv('Annual license cost entered',fmtMoney(s.licenseAnnual));
+ kv('Other recurring platform cost',fmtMoney(n('otherRecurring')));kv('Implementation cost',fmtMoney(s.implementation));
+ kv('Technical realization',fmt(s.realization)+'%');kv('Capacity monetization',fmt(s.monetization)+'%');kv('Ramp to steady state',fmt(s.ramp)+' months');
+
+ // Current state table
+ newPage();title('2. Current-state operating model','Annual activity volume, engineer touch time, rework and evidence status.');
+ tableHeader(['Activity','Volume','Min/unit','Current hrs','Evidence'],[210,72,65,75,86]);
+ s.rows.forEach(r=>tableRow([r.name,fmt(r.volume),fmt(r.minutes),fmt(r.current),r.evidence],[210,72,65,75,86]));
+ heading('Current-state totals');
+ kv('Annual engineer touch hours',fmt(s.curHours));kv('Annual labor cost',fmtMoney(s.curHours*s.rate));kv('FTE consumed at 1,880 hours',fmt(s.curHours/1880));
+ kv('Labor cost per licensed user per month',fmtMoney((s.curHours*s.rate)/Math.max(1,s.users)/12));
+ heading('Experience indicators');
+ kv('Request-to-access elapsed time',fmt(s.rta)+' days');kv('Addressable application tickets',fmt(s.tickets)+' / month');
+ kv('Install / launch success',s.success>0?fmt(s.success)+'%':'Not entered');
+
+ // Addressability
+ newPage();title('3. Addressable work and capability trace','The model reduces only the share of work marked addressable, applies the realization factor, and retains partner-controlled work.');
+ tableHeader(['Activity','Capability','Addr.','Future hrs','What remains'],[142,112,48,65,148]);
+ s.rows.forEach(r=>tableRow([r.name,r.capability,Math.round(r.address*100)+'%',fmt(r.future),r.remain],[142,112,48,65,148],{size:7.5}));
+ heading('Interpretation');
+ para('Addressable work is not the same as eliminated work. Managed packages can reduce recurring package maintenance for covered products, while partner validation, customer policy, release approval, security review, exception handling and unsupported or private applications remain in the operating model.');
+ para('Reusable definitions reduce duplicate effort only where architecture, delivery target support, customer configuration and policy permit reuse. Self-service value applies only to eligible request categories, not every software-related ticket.');
+
+ // Economics
+ newPage();title('4. Future-state economics','Capacity, monetized value and service-line economics are shown separately to prevent double counting.');
+ heading('Existing-contract operating case');
+ kv('Current annual touch hours',fmt(s.curHours));kv('Future retained touch hours',fmt(s.newHours));
+ kv('Technical capacity returned',fmt(s.returned)+' hours · '+fmt(s.returned/1880)+' FTE');
+ kv('Monetized labor value',fmtMoney(s.monetizedValue));kv('License and recurring platform cost',fmtMoney(s.platform));
+ kv('Steady-state net operating value',fmtMoney(s.netSS),s.netSS>=0?green:amber);
+ kv('Year-one net operating value',fmtMoney(s.netY1),s.netY1>=0?green:amber);
+ heading('New managed-service case — separate value pool');
+ kv('Attached users',fmt(s.attached));kv('Incremental recurring revenue',fmtMoney(s.svcRev));
+ kv('Incremental service-delivery cost',fmtMoney(s.svcCost));kv('Incremental contribution margin',fmtMoney(s.svcMargin),s.svcMargin>=0?green:amber);
+ para('The managed-service calculation uses only the incremental cost entered for support, reporting, customer success and operations. Existing-contract savings are not counted again as service-line cost reduction.');
+ heading('Excluded from MSP ROI');
+ para('Customer project acceleration, customer cost of delay and transformation benefits are excluded. They belong in a separate customer business case and require evidence that application readiness was on the critical path.');
+
+ // Proof
+ newPage();title('5. Bake-off and decision readiness','The bake-off replaces model assumptions with observed current-state and Application Workspace results.');
+ heading('Measured results entered');
+ tableHeader(['Metric','Modeled / baseline','Measured current','Measured with AW'],[190,120,112,112]);
+ tableRow(['Annualized touch hours',fmt(s.curHours)+' → '+fmt(s.newHours),s.mCur?fmt(s.mCur):'Not entered',s.mAw?fmt(s.mAw):'Not entered'],[190,120,112,112]);
+ tableRow(['Addressable tickets / month',fmt(s.tickets),s.mTicketsCur?fmt(s.mTicketsCur):'Not entered',s.mTicketsAw||s.mTicketsCur?fmt(s.mTicketsAw):'Not entered'],[190,120,112,112]);
+ tableRow(['Request-to-access days',fmt(s.rta),s.mRtaCur?fmt(s.mRtaCur):'Not entered',s.mRtaAw?fmt(s.mRtaAw):'Not entered'],[190,120,112,112]);
+ tableRow(['Install / launch success',s.success?fmt(s.success)+'%':'Not assumed',s.mSuccessCur?fmt(s.mSuccessCur)+'%':'Not entered',s.mSuccessAw?fmt(s.mSuccessAw)+'%':'Not entered'],[190,120,112,112]);
+ heading('Required approval gates');
+ para('1. Delivery owner approves the baseline.  2. Sponsor confirms a representative application sample.  3. Both teams accept the measurement method.  4. Measured results replace assumptions.  5. Security, architecture, licensing and contract reviews are complete.');
+ heading('Recommended decision');
+ let recommendation='';
+ if(n('license')===0) recommendation='Do not approve a financial case yet. Validate approved licensing and partner commercial structure, then run the bake-off.';
+ else if(!s.measuredBake) recommendation='Proceed to a controlled bake-off. The operating hypothesis is complete enough to test, but it is not approval-grade until measured values replace assumptions.';
+ else if(s.netY1>0) recommendation='The measured case and entered economics support an implementation decision, subject to security, architecture, licensing and contract review.';
+ else recommendation='The year-one case does not currently clear the financial threshold. Revisit scope, coverage, implementation cost, monetization path or service pricing.';
+ para(recommendation,ink);
+ heading('Method boundaries');
+ para('This report is a planning and proof artifact. It does not promise a savings percentage, assume every software ticket is addressable, treat all returned capacity as cash savings, or count customer schedule value as MSP profit.');
+ footer();
+ const safeName='Application_Workspace_MSP_Operating_Model_'+new Date().toISOString().slice(0,10)+'.pdf';
+ doc.save(safeName);
+}
+$('refreshBtn').onclick=()=>location.reload();
+$('pdfBtn').onclick=downloadPDF;
 compute();
 </script>
 </body></html>
