@@ -1,1043 +1,356 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Application Workspace — Partner Business Case</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Application Workspace — MSP Operating Model</title>
 <style>
-  :root{
-    --ink:#1D1D1F; --gray:#5C5C63; --gray-light:#86868B;
-    --hairline:#D8D8DE; --card:#F6F6F8; --bg:#FFFFFF;
-    --blue:#007AFF; --green:#1E8E3E; --red:#D93025;
-    --cyan:#007AFF; --track:#E8E8ED;
-    --r:8px; --rb:6px;
-    --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
-    --max:1120px;
-  }
-  *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--gray);font-family:var(--font);font-size:13.5px;line-height:1.45;-webkit-font-smoothing:antialiased;}
-  .topbar{display:flex;align-items:center;justify-content:space-between;max-width:var(--max);margin:0 auto;padding:12px 24px;border-bottom:1px solid var(--hairline);}
-  .wordmark{font-size:15px;font-weight:700;color:var(--blue);}
-  .wordmark span{color:var(--gray-light);font-weight:400;font-size:12px;margin-left:5px;}
-  .topbar .meta{font-size:11px;color:var(--gray-light);text-align:right;line-height:1.5;}
-  .topbar .meta input{font:inherit;font-size:11px;color:var(--ink);border:none;border-bottom:1px solid var(--hairline);padding:1px 3px;width:130px;background:transparent;}
-  .topbar .meta input:focus{outline:none;border-bottom-color:var(--blue);}
-  .subbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--hairline);}
-  .subbar-in{max-width:var(--max);margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-  .tabbar{display:inline-flex;gap:22px;background:none;border-radius:0;padding:0;}
-  .tabbtn{font:inherit;font-size:13px;font-weight:600;color:var(--gray-light);background:transparent;border:none;border-bottom:2px solid transparent;padding:12px 1px;border-radius:0;cursor:pointer;}
-  .tabbtn:hover{color:var(--ink);}
-  .tabbtn.active{color:var(--ink);border-bottom-color:var(--blue);background:none;}
-  .btns{display:flex;gap:6px;padding:6px 0;}
-  .btn{font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;border-radius:var(--rb);padding:7px 12px;border:none;display:inline-flex;align-items:center;gap:6px;}
-  .btn svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;display:block;}
-  .btn-primary{background:var(--blue);color:#fff;}
-  .btn-primary:hover{filter:brightness(.94);}
-  .btn-secondary{background:#fff;color:var(--gray);border:1px solid var(--hairline);}
-  .btn-secondary:hover{color:var(--blue);border-color:var(--blue);}
-  .btn.icon{padding:7px 8px;}
-  main{max-width:var(--max);margin:0 auto;padding:20px 24px 56px;}
-  .doctitle{font-size:25px;font-weight:700;color:var(--ink);letter-spacing:-.015em;line-height:1.15;margin:0 0 6px;}
-  .docsub{font-size:13px;color:var(--gray-light);margin:0 0 20px;max-width:780px;}
-  .layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:22px;align-items:start;}
-  .assump-col{position:sticky;top:52px;align-self:start;max-height:calc(100vh - 66px);overflow:auto;}
-  .apanel{background:var(--card);border-radius:var(--r);padding:14px 16px 12px;}
-  .apanel .intro{font-size:11.5px;color:var(--gray-light);line-height:1.45;margin:0 0 6px;}
-  .apanel h3{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-light);margin:12px 0 2px;}
-  .fld{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px solid var(--hairline);}
-  .fld label{font-size:12.5px;color:var(--ink);flex:1;}
-  .fld label i{display:block;font-style:normal;font-size:11px;color:var(--gray-light);margin-top:1px;}
-  .im{position:relative;flex:0 0 92px;}
-  .im input{width:100%;padding:6px 8px;font-size:13px;font-family:var(--font);color:var(--ink);border:1px solid var(--hairline);border-radius:var(--rb);background:#fff;text-align:right;}
-  .im input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(0,122,255,.16);}
-  .im .pre,.im .suf{position:absolute;top:50%;transform:translateY(-50%);font-size:12px;color:var(--gray-light);pointer-events:none;}
-  .im .pre{left:8px;}.im .suf{right:8px;}
-  .im input.haspre{padding-left:18px;}.im input.hassuf{padding-right:20px;}
-  .geo{padding:9px 0 5px;border-top:1px solid var(--hairline);}
-  .geo .glab{font-size:12.5px;color:var(--ink);margin-bottom:6px;}
-  .geo .glab i{font-style:normal;font-size:11px;color:var(--gray-light);display:block;}
-  .geochips{display:flex;gap:0;margin-bottom:8px;border:1px solid var(--hairline);border-radius:var(--rb);overflow:hidden;background:#fff;}
-  .geochip{flex:1;font:inherit;font-size:11.5px;font-weight:600;padding:6px 3px;border:none;border-left:1px solid var(--hairline);background:#fff;color:var(--gray);cursor:pointer;text-align:center;line-height:1.25;border-radius:0;}
-  .geochip:first-child{border-left:none;}
-  .geochip small{display:block;font-size:10px;font-weight:500;color:var(--gray-light);}
-  .geochip.active{background:var(--blue);color:#fff;}
-  .geochip.active small{color:rgba(255,255,255,.8);}
-  .geo .raterow{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-  .geo .raterow span{font-size:12.5px;color:var(--ink);}
-  .derived{margin-top:10px;padding:10px 12px;background:#fff;border:1px solid var(--hairline);border-radius:var(--rb);}
-  .derived .dh{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-light);margin-bottom:5px;}
-  .derived .dr{display:flex;justify-content:space-between;font-size:11.5px;padding:2px 0;color:var(--gray);}
-  .derived .dr b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600;}
-  details.adv{margin-top:10px;border-top:1px solid var(--hairline);padding-top:2px;}
-  details.adv > summary,details.more > summary{cursor:pointer;font-size:12px;font-weight:600;color:var(--blue);padding:9px 0 4px;list-style:none;}
-  details.adv > summary::-webkit-details-marker,details.more > summary::-webkit-details-marker{display:none;}
-  details.adv > summary::before,details.more > summary::before{content:"\25B8\00a0 ";color:var(--blue);}
-  details.adv[open] > summary::before,details.more[open] > summary::before{content:"\25BE\00a0 ";}
-  section{margin-bottom:30px;}
-  h2{font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.01em;margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--hairline);}
-  h2 .n{color:var(--blue);margin-right:7px;}
-  h2 .tag{font-weight:500;color:var(--gray-light);font-size:12px;margin-left:8px;}
-  .kicker{font-size:11px;font-weight:700;color:var(--blue);letter-spacing:.05em;text-transform:uppercase;margin:0 0 4px;}
-  .lead{font-size:12.5px;color:var(--gray);margin:0 0 12px;max-width:780px;}
-  .lead b{color:var(--ink);font-weight:600;}
-  .callout{background:var(--card);border-left:3px solid var(--blue);padding:10px 12px;border-radius:0 var(--rb) var(--rb) 0;font-size:12px;color:var(--gray);margin:0 0 14px;line-height:1.5;}
-  .callout b{color:var(--ink);}
-  .tablewrap{overflow-x:auto;}
-  table{width:100%;border-collapse:collapse;font-size:12.5px;}
-  thead th{background:transparent;color:var(--gray-light);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:7px 10px;border-bottom:1px solid var(--hairline);white-space:nowrap;}
-  th.lab{text-align:left;}th.num{text-align:right;}
-  tbody td{padding:9px 10px;border-bottom:1px solid var(--hairline);}
-  td.lab{text-align:left;color:var(--ink);}
-  td.lab .sub{display:block;font-size:11px;color:var(--gray-light);margin-top:1px;font-weight:400;}
-  td.num{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap;}
-  td.num small{font-size:10px;font-weight:500;color:var(--gray-light);margin-left:4px;}
-  .pos{color:var(--green);}.neg{color:var(--red);}
-  tr.group td{background:transparent;font-weight:600;color:var(--gray-light);font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:14px 10px 5px;}
-  tr.sub td{font-weight:600;}
-  tr.total td{border-top:1px solid var(--ink);border-bottom:none;font-weight:700;font-size:13.5px;color:var(--ink);padding-top:10px;}
-  .foot-row td{border-bottom:none;font-size:11px;color:var(--gray-light);padding-top:8px;font-weight:400;}
-  .sumgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:22px;align-items:center;}
-  .bridge{width:100%;font-size:13px;border-collapse:collapse;}
-  .bridge td{padding:8px 2px;border-bottom:1px solid var(--hairline);}
-  .bridge td:last-child{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;}
-  .bridge tr.net td{border-top:1px solid var(--ink);border-bottom:none;font-weight:700;font-size:15px;color:var(--ink);padding-top:10px;}
-  .bridge tr.net td:last-child{color:var(--green);}
-  .ratios{display:grid;gap:12px;}
-  .ratio{padding:0;}
-  .ratio .v{font-size:21px;font-weight:700;color:var(--ink);letter-spacing:-.01em;line-height:1.15;}
-  .ratio .l{font-size:11.5px;color:var(--gray-light);margin-top:2px;}
-  .ratio.rate-ind .v{color:var(--ink);}
-  .drv{padding:11px 0;border-top:1px solid var(--hairline);}
-  .drv:first-of-type{border-top:none;padding-top:2px;}
-  .drv .top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
-  .drv .nm{font-size:13.5px;font-weight:600;color:var(--ink);}
-  .drv .amt{font-size:13.5px;font-weight:600;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums;}
-  .drv .amt small{color:var(--gray-light);font-weight:500;font-size:11px;margin-left:5px;}
-  .drv .mech{font-size:12px;color:var(--gray);margin:3px 0 7px;max-width:660px;line-height:1.45;}
-  .drv .mech b{color:var(--ink);font-weight:600;}
-  .drvtrack{height:6px;background:var(--track);border-radius:3px;overflow:hidden;}
-  .drvfill{height:6px;border-radius:3px;background:var(--blue);transition:width .3s;}
-  .drvsum{margin-top:12px;border-top:1px solid var(--ink);padding-top:10px;display:flex;flex-direction:column;gap:6px;}
-  .drvsum .r{display:flex;justify-content:space-between;font-size:13px;}
-  .drvsum .r.big{font-size:14.5px;font-weight:700;color:var(--ink);}
-  .drvsum .r.big .g{color:var(--green);}
-  .drvsum .r .k{color:var(--gray);}.drvsum .r .v{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;}
-  .drvsum .r .neg{color:var(--red);}
-  .bizcard{background:var(--card);border-radius:var(--r);padding:16px;margin-top:14px;display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;}
-  .bizcard .lev{font-size:32px;font-weight:700;color:var(--ink);letter-spacing:-.015em;line-height:1;}
-  .bizcard .levl{font-size:11.5px;color:var(--gray-light);margin-top:4px;max-width:150px;}
-  .bizcard .txt{font-size:12.5px;color:var(--gray);line-height:1.5;}
-  .bizcard .txt b{color:var(--ink);font-weight:600;}
-  details.more{background:var(--card);border-radius:var(--r);padding:2px 16px 10px;margin-top:6px;}
-  details.more > summary{font-size:12.5px;padding:11px 0;}
-  .basis{font-size:12px;color:var(--gray);line-height:1.5;}
-  .basis b{color:var(--ink);font-weight:600;}
-  ol.src{margin:8px 0 0;padding-left:16px;font-size:11.5px;color:var(--gray-light);line-height:1.55;}
-  ol.src b{color:var(--gray);font-weight:600;}
-  ul.risks{margin:8px 0 0;padding-left:16px;font-size:12px;color:var(--gray);line-height:1.5;}
-  .note{font-size:11px;color:var(--gray-light);margin-top:10px;line-height:1.5;}
-  /* Side-by-side */
-  .sxs{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-  .sxcard{background:var(--card);border-radius:var(--r);overflow:hidden;}
-  .sxcard.aw{outline:1px solid var(--blue);}
-  .sxhead{padding:10px 16px;font-size:13px;font-weight:700;color:var(--ink);border-bottom:1px solid var(--hairline);background:#fff;}
-  .sxhead.aw{color:var(--blue);}
-  .sxhead .sub{display:block;font-size:11px;font-weight:500;color:var(--gray-light);margin-top:1px;}
-  .sxrow{display:flex;justify-content:space-between;gap:12px;padding:9px 16px;border-bottom:1px solid var(--hairline);align-items:baseline;}
-  .sxrow .l{font-size:12.5px;color:var(--ink);font-weight:600;}
-  .sxrow .l .s{display:block;font-size:11px;color:var(--gray-light);font-weight:400;}
-  .sxrow .r{text-align:right;}
-  .sxrow .v{font-size:13.5px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;}
-  .sxrow .r .s{font-size:11px;color:var(--gray-light);}
-  .sxfoot{display:flex;justify-content:space-between;padding:11px 16px;font-size:14px;font-weight:700;color:var(--ink);background:#fff;font-variant-numeric:tabular-nums;}
-  .band{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;background:var(--card);border-radius:var(--r);padding:14px 16px;margin-top:14px;}
-  .band .bv{font-size:20px;font-weight:700;color:var(--green);letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
-  .band .bl{font-size:11px;color:var(--gray-light);margin-top:1px;}
-  @media (max-width:860px){ .sxs,.band{grid-template-columns:1fr;} }
-  /* Executive view */
-  .exhero{background:var(--card);border-radius:var(--r);padding:16px 18px;}
-  .exrow{display:grid;grid-template-columns:130px minmax(0,1fr) 110px;gap:14px;align-items:center;padding:8px 0;}
-  .exrow .lbl{font-size:13px;color:var(--ink);font-weight:600;}
-  .exrow .amt{font-size:14.5px;font-weight:700;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;}
-  .extrack{height:11px;background:var(--track);border-radius:3px;overflow:hidden;}
-  .exfill{height:11px;border-radius:3px;background:var(--gray-light);}
-  .exfill.aw{background:var(--blue);transition:width .35s ease;}
-  .expct{display:inline-block;margin-top:10px;font-size:13.5px;font-weight:700;color:var(--green);background:none;border-radius:0;padding:0;}
-  .exgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
-  .excard{background:var(--card);border-radius:var(--r);padding:16px;}
-  .exnum{font-size:10.5px;font-weight:700;color:var(--gray-light);letter-spacing:.06em;text-transform:uppercase;}
-  .excard .big{font-size:24px;font-weight:700;color:var(--ink);letter-spacing:-.015em;margin:6px 0 2px;font-variant-numeric:tabular-nums;}
-  .excard .what{font-size:12.5px;font-weight:600;color:var(--ink);}
-  .excard .how{font-size:11.5px;color:var(--gray-light);margin-top:2px;}
-  .extotal{background:var(--card);border-radius:var(--r);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
-  .extotal .tl{font-size:13px;font-weight:600;color:var(--ink);}
-  .extotal .tv{font-size:28px;font-weight:700;color:var(--green);letter-spacing:-.015em;font-variant-numeric:tabular-nums;}
-  .exwhy{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
-  .whycard{display:flex;gap:12px;align-items:flex-start;background:var(--card);border-radius:var(--r);padding:14px;}
-  .tile{flex:0 0 38px;width:38px;height:38px;border-radius:8px;background:var(--blue);display:grid;place-items:center;}
-  .tile svg{stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;fill:none;width:21px;height:21px;}
-  .whycard .t{font-size:13px;font-weight:600;color:var(--ink);}
-  .whycard .s{font-size:11.5px;color:var(--gray-light);margin-top:2px;line-height:1.45;}
-  #tab-why{display:none;}
-  #tab-bake{display:none;}
-  .stage{background:var(--card);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;}
-  .stage .sh{display:flex;align-items:baseline;gap:10px;margin-bottom:4px;}
-  .stgn{flex:0 0 auto;font-size:11px;font-weight:700;color:#fff;background:var(--blue);border-radius:5px;padding:2px 7px;}
-  .stage .st{font-size:14px;font-weight:700;color:var(--ink);}
-  .stage .sw{font-size:11px;color:var(--gray-light);margin-left:auto;}
-  .stage .sd{font-size:12px;color:var(--gray);margin:0 0 10px;}
-  .bkgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 16px;}
-  .bkm .v{font-size:16px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;}
-  .bkm .l{font-size:10.5px;color:var(--gray-light);margin-top:1px;}
-  .gate{font-size:11px;color:var(--gray-light);border-top:1px solid var(--hairline);margin-top:10px;padding-top:8px;}
-  .gate b{color:var(--ink);}
-  .bkinline{display:inline-flex;align-items:center;gap:6px;}
-  .bkinline input{width:64px;padding:4px 7px;font-size:13px;font-weight:700;color:var(--ink);border:1px solid var(--hairline);border-radius:var(--rb);text-align:right;background:#fff;}
-  .bkinline input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(0,122,255,.16);}
-  @media (max-width:860px){ .bkgrid{grid-template-columns:repeat(2,minmax(0,1fr));} }
-  footer{max-width:var(--max);margin:0 auto;padding:14px 24px 32px;border-top:1px solid var(--hairline);font-size:11px;color:var(--gray-light);text-align:center;}
-  @media (max-width:860px){ .layout{grid-template-columns:1fr;} .assump-col{position:static;max-height:none;} .sumgrid{grid-template-columns:1fr;} .bizcard{grid-template-columns:1fr;} .doctitle{font-size:21px;} .exgrid,.exwhy{grid-template-columns:1fr;} .exrow{grid-template-columns:80px minmax(0,1fr) 92px;} }
-  @media print{ .subbar,.btns{display:none;} }
+:root{--ink:#172033;--muted:#667085;--line:#dfe3ea;--panel:#f7f8fa;--blue:#2563eb;--green:#15803d;--amber:#b45309;--red:#b42318;--white:#fff;--radius:10px;--shadow:0 1px 2px rgba(16,24,40,.05)}
+*{box-sizing:border-box}body{margin:0;font:14px/1.45 Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:#fff}
+button,input,select{font:inherit}.top{border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:30}
+.topin{max-width:1280px;margin:auto;padding:11px 24px;display:flex;align-items:center;gap:16px;justify-content:space-between}
+.brand{font-weight:800;color:var(--blue)}.brand span{font-weight:500;color:var(--muted)}
+.actions{display:flex;gap:7px}.btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:7px 10px;cursor:pointer;color:var(--ink)}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.tabs{max-width:1280px;margin:auto;padding:0 24px;display:flex;gap:20px;overflow:auto;border-top:1px solid #f1f2f4}.tab{border:0;border-bottom:3px solid transparent;background:none;padding:11px 0;font-weight:700;color:var(--muted);white-space:nowrap;cursor:pointer}.tab.active{color:var(--ink);border-bottom-color:var(--blue)}
+main{max-width:1280px;margin:auto;padding:24px}.hero{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:18px}.hero h1{font-size:28px;line-height:1.12;margin:0 0 6px}.hero p{margin:0;color:var(--muted);max-width:850px}
+.grid{display:grid;grid-template-columns:340px minmax(0,1fr);gap:22px}.side{position:sticky;top:102px;align-self:start;max-height:calc(100vh - 120px);overflow:auto}.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.panel{padding:15px}.panel h3{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:16px 0 5px}.panel h3:first-child{margin-top:0}
+.field{display:grid;grid-template-columns:1fr 102px;gap:9px;align-items:center;border-top:1px solid var(--line);padding:8px 0}.field label{font-size:12.5px}.field small{display:block;color:var(--muted)}.field input,.field select{width:100%;border:1px solid var(--line);background:#fff;border-radius:6px;padding:7px;text-align:right}.field select{text-align:left}
+.notice{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:7px;padding:9px;margin-top:10px}
+.view{display:none}.view.active{display:block}section{margin-bottom:24px}h2{font-size:18px;margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}h2 span{color:var(--blue);margin-right:6px}.lead{color:var(--muted);margin:0 0 12px}.lead b{color:var(--ink)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px}.kpi .n{font-size:23px;font-weight:800;letter-spacing:-.02em}.kpi .l{font-size:11.5px;color:var(--muted);margin-top:2px}.kpi.green .n{color:var(--green)}.kpi.amber .n{color:var(--amber)}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{padding:15px}.card h3{margin:0 0 10px;font-size:14px}.rows{display:grid;gap:0}.row{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:9px 0}.row:first-child{border-top:0}.row .l{color:var(--muted)}.row .v{font-weight:700;text-align:right}
+table{width:100%;border-collapse:collapse;font-size:12.5px;background:#fff;border:1px solid var(--line)}th{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;background:var(--panel)}th,td{padding:9px 10px;border-bottom:1px solid var(--line)}th.num,td.num{text-align:right;font-variant-numeric:tabular-nums}tr.total td{font-weight:800;border-top:2px solid var(--ink)}td input,td select{width:100%;min-width:72px;border:1px solid var(--line);border-radius:5px;padding:5px;background:#fff}
+.tag{display:inline-block;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:800}.measured{background:#dcfce7;color:#166534}.provided{background:#dbeafe;color:#1e40af}.assumption{background:#fef3c7;color:#92400e}.unvalidated{background:#fee2e2;color:#991b1b}
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.step{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fff}.step b{display:block;font-size:12px}.step small{color:var(--muted)}
+.matrix td:first-child{font-weight:700}.bar{height:7px;border-radius:5px;background:#e7eaf0;overflow:hidden;margin-top:5px}.fill{height:100%;background:var(--blue)}
+.callout{border-left:3px solid var(--blue);background:#eff6ff;padding:11px 13px;border-radius:0 8px 8px 0;color:#344054}.callout.warn{border-left-color:var(--amber);background:#fffbeb}
+.stage{border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}.stagehead{display:flex;justify-content:space-between;gap:12px;align-items:center}.badge{background:var(--blue);color:#fff;border-radius:5px;padding:2px 7px;font-weight:800;font-size:11px}.gate{font-size:12px;color:var(--muted);margin-top:10px;padding-top:9px;border-top:1px solid var(--line)}
+details{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:0 13px;margin-top:12px}summary{cursor:pointer;font-weight:700;padding:11px 0}.sources{font-size:12px;color:var(--muted)}.sources a{color:var(--blue)}
+.hide{display:none!important}.right{text-align:right}.good{color:var(--green)}.bad{color:var(--red)}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.side{position:static;max-height:none}.kpis,.twocol,.flow{grid-template-columns:1fr}.hero{display:block}.actions{margin-top:12px}.topin{align-items:flex-start}}
+@media print{.top,.side,.no-print{display:none!important}main{max-width:none;padding:0}.grid{display:block}.view{display:none!important}.view.active{display:block!important}.card,.kpi,.panel{break-inside:avoid}}
 </style>
 </head>
 <body>
-
-<div class="topbar">
-  <div class="wordmark">Recast<span>Software</span></div>
-  <div class="meta">Board Exhibit · Confidential<br>Prepared for <input id="client" type="text" placeholder="Organization"> · <span id="today"></span></div>
+<div class="top">
+ <div class="topin">
+  <div class="brand">Recast <span>Application Workspace · MSP Operating Model</span></div>
+  <div class="actions">
+   <button class="btn" id="saveBtn">Save scenario</button>
+   <button class="btn" id="loadBtn">Load scenario</button>
+   <button class="btn" id="resetBtn">Reset</button>
+   <button class="btn primary" onclick="window.print()">Print / PDF</button>
+   <input id="fileIn" type="file" accept=".json" class="hide">
+  </div>
+ </div>
+ <div class="tabs">
+  <button class="tab active" data-tab="scope">1. Scope</button>
+  <button class="tab" data-tab="current">2. Current state</button>
+  <button class="tab" data-tab="addressable">3. Addressable work</button>
+  <button class="tab" data-tab="future">4. Future-state value</button>
+  <button class="tab" data-tab="proof">5. Measured proof</button>
+  <button class="tab" data-tab="decision">6. Executive decision</button>
+ </div>
 </div>
 
-<div class="subbar"><div class="subbar-in">
-  <div class="tabbar">
-    <button class="tabbtn active" data-tab="exec">Executive view</button>
-    <button class="tabbtn" data-tab="analysis">Business case</button>
-    <button class="tabbtn" data-tab="why">Value Drivers</button>
-    <button class="tabbtn" data-tab="bake">Bake-off</button>
-  </div>
-  <div class="btns">
-    <button class="btn btn-primary icon" id="makePdf" title="Download PDF exhibit" aria-label="Download PDF exhibit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="11" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></svg></button>
-    <button class="btn btn-secondary icon" id="copySummary" title="Copy executive summary" aria-label="Copy executive summary"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"/></svg></button>
-    <button class="btn btn-secondary icon" id="saveScen" title="Save scenario" aria-label="Save scenario"><svg viewBox="0 0 24 24"><path d="M12 3v11"/><polyline points="8 10 12 14 16 10"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></button>
-    <button class="btn btn-secondary icon" id="loadScen" title="Load scenario" aria-label="Load scenario"><svg viewBox="0 0 24 24"><path d="M12 14V3"/><polyline points="8 7 12 3 16 7"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></button>
-    <button class="btn btn-secondary icon" id="reset" title="Reset to defaults" aria-label="Reset to defaults"><svg viewBox="0 0 24 24"><polyline points="3 4 3 10 9 10"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L3 8"/></svg></button>
-  </div>
-</div></div>
-
 <main>
-  <h1 class="doctitle">Application Workspace — partner business case.</h1>
-  <p class="docsub">Current state vs. future state across the three commercial motions in the Recast MSP &amp; SI Partner Guide: margin recovery, a Managed Application Delivery service line, and SI project acceleration. All workload is derived from the book you describe — nothing is asserted.</p>
+ <div class="hero">
+  <div><h1>Model the operating system, not just the software.</h1><p>Partner-entered metrics describe the current application-delivery model. The tool then separates addressable workload, returned capacity, monetized value, new-service economics, and customer/project value. Assumptions remain visible and replaceable by measured bake-off results.</p></div>
+ </div>
+ <div class="grid">
+  <aside class="side">
+   <div class="panel">
+    <h3>Commercial scope</h3>
+    <div class="field"><label>Licensed users<small>Use for user-based licensing</small></label><input id="users" type="number" value="10000"></div>
+    <div class="field"><label>Physical endpoints</label><input id="endpoints" type="number" value="14000"></div>
+    <div class="field"><label>Virtual endpoints</label><input id="virtual" type="number" value="2000"></div>
+    <div class="field"><label>Customers</label><input id="customers" type="number" value="10"></div>
+    <div class="field"><label>Technical tenants / zones<small>Confirm actual architecture and licensing</small></label><input id="tenants" type="number" value="10"></div>
+    <div class="field"><label>Commercial model</label><select id="commercial"><option value="embedded">Embedded in existing service</option><option value="addon">New add-on service</option><option value="hybrid">Hybrid</option></select></div>
 
-  <div class="layout">
-    <!-- ============ ASSUMPTIONS ============ -->
-    <div class="assump-col">
-      <div class="apanel">
-        <p class="intro">Describe the book; the model derives the workload. Every figure updates live on both tabs.</p>
+    <h3>Application estate</h3>
+    <div class="field"><label>Distinct application titles</label><input id="titles" type="number" value="750"></div>
+    <div class="field"><label>Active package definitions</label><input id="packages" type="number" value="1200"></div>
+    <div class="field"><label>Release events / year</label><input id="releases" type="number" value="1800"></div>
+    <div class="field"><label>Catalog-covered share<small>Partner-entered estimate until validated</small></label><input id="coverage" type="number" value="60"></div>
+    <div class="field"><label>Custom / complex share</label><input id="customShare" type="number" value="25"></div>
+    <div class="field"><label>Delivery targets / package</label><input id="targets" type="number" step=".1" value="2.2"></div>
+    <div class="field"><label>Customer exception share</label><input id="exceptions" type="number" value="20"></div>
 
-        <h3>The book</h3>
-        <div class="fld"><label>Managed seats<i>total across all customers</i></label><div class="im"><input id="seats" type="number" step="500" value="10000"></div></div>
-        <div class="fld"><label>Customers / tenants<i>each AW zone requires licensing — confirm structure</i></label><div class="im"><input id="customers" type="number" step="1" value="10"></div></div>
-        <div class="fld"><label>Apps managed per customer<i>SMB 30–60 · mid-mkt 60–150 · ent 150+ (Okta avg 101)</i></label><div class="im"><input id="appsPerCust" type="number" step="5" value="75"></div></div>
-        <div class="fld"><label>Portfolio overlap<i>share of a customer's apps common across your book</i></label><div class="im"><input class="hassuf" id="overlap" type="number" step="5" value="60"><span class="suf">%</span></div></div>
-        <div class="fld"><label>Monthly repackage rate<i>% of distinct apps rebuilt / mo · typical 10–20%</i></label><div class="im"><input class="hassuf" id="updateRate" type="number" step="1" value="15"><span class="suf">%</span></div></div>
-        <div class="fld"><label>Custom / complex share</label><div class="im"><input class="hassuf" id="pctCustom" type="number" step="5" value="25"><span class="suf">%</span></div></div>
-        <div class="fld"><label>Environments / app<i>separately-packaged targets · 1–4</i></label><div class="im"><input id="envMult" type="number" step="0.5" value="2.5"></div></div>
+    <h3>Economics</h3>
+    <div class="field"><label>Loaded labor cost / hour</label><input id="rate" type="number" value="70"></div>
+    <div class="field"><label>Product license / user / month<small>Enter approved partner pricing</small></label><input id="license" type="number" step=".01" value="0"></div>
+    <div class="field"><label>Implementation cost</label><input id="implementation" type="number" value="75000"></div>
+    <div class="field"><label>Other recurring cost / year</label><input id="otherRecurring" type="number" value="0"></div>
+    <div class="field"><label>Technical realization %<small>Adoption, coverage and exceptions</small></label><input id="realization" type="number" value="75"></div>
+    <div class="field"><label>Capacity monetization %<small>Avoided hiring, billable work or cost removal</small></label><input id="monetization" type="number" value="50"></div>
+    <div class="field"><label>Ramp months to steady state</label><input id="ramp" type="number" value="4"></div>
 
-        <div class="geo">
-          <div class="glab">Delivery model<i>sets the fully-loaded labor cost</i></div>
-          <div class="geochips">
-            <button class="geochip" data-rate="95">Onshore<small>$95/hr</small></button>
-            <button class="geochip" data-rate="65">Blended<small>$65/hr</small></button>
-            <button class="geochip" data-rate="40">Offshore<small>$40/hr</small></button>
-          </div>
-          <div class="raterow"><span>Loaded cost / hr</span><div class="im"><span class="pre">$</span><input class="haspre" id="rate" type="number" step="5" value="65"></div></div>
-        </div>
+    <h3>New service, when applicable</h3>
+    <div class="field"><label>Attach rate %</label><input id="attach" type="number" value="30"></div>
+    <div class="field"><label>Price / user / month</label><input id="price" type="number" step=".1" value="6"></div>
+    <div class="field"><label>Incremental service cost / user / month<small>Support, reporting, success, operations</small></label><input id="incrementalSvcCost" type="number" step=".1" value="1.5"></div>
 
-        <div class="fld"><label>Recast license / user / mo<i>confirm SKU &amp; partner tier</i></label><div class="im"><span class="pre">$</span><input class="haspre" id="lic" type="number" step="0.25" value="1"></div></div>
+    <div class="notice">Percent fields use whole numbers. No product catalog count, savings percentage, ticket deflection, pricing, or project acceleration is treated as a verified fact unless supplied and validated by the partner.</div>
+   </div>
+  </aside>
 
-        <h3>Service line · MSP motion 2</h3>
-        <div class="fld"><label>Attach rate<i>share of seats buying Managed App Delivery</i></label><div class="im"><input class="hassuf" id="attachPct" type="number" step="5" value="50"><span class="suf">%</span></div></div>
-        <div class="fld"><label>Service price / seat / mo<i>you set scope &amp; price (guide)</i></label><div class="im"><span class="pre">$</span><input class="haspre" id="svcPrice" type="number" step="0.5" value="6"></div></div>
+  <div>
+   <div class="view active" id="scope">
+    <section><h2><span>1</span>Define the operating scope</h2>
+     <p class="lead">Keep licensing units, operational scale, and technical complexity separate. Users drive user-based economics; endpoints and delivery targets drive operational workload.</p>
+     <div class="kpis">
+      <div class="kpi"><div class="n" id="k_users">—</div><div class="l">licensed users</div></div>
+      <div class="kpi"><div class="n" id="k_ep">—</div><div class="l">total endpoints</div></div>
+      <div class="kpi"><div class="n" id="k_cust">—</div><div class="l">customers / tenants</div></div>
+      <div class="kpi"><div class="n" id="k_rel">—</div><div class="l">release events / year</div></div>
+     </div>
+    </section>
+    <section><h2><span>2</span>Current workflow map</h2>
+     <div class="flow">
+      <div class="step"><b>Intake</b><small>Request, entitlement, priority</small></div>
+      <div class="step"><b>Source</b><small>Installer, version, licensing</small></div>
+      <div class="step"><b>Build</b><small>Package, configure, script</small></div>
+      <div class="step"><b>Validate</b><small>Test, security, approval</small></div>
+      <div class="step"><b>Publish</b><small>Target, deploy, release</small></div>
+      <div class="step"><b>Operate</b><small>Update, monitor, repair</small></div>
+      <div class="step"><b>Support</b><small>Request, failure, access</small></div>
+      <div class="step"><b>Govern</b><small>Audit, report, exception</small></div>
+      <div class="step"><b>Repeat</b><small>Across customers and targets</small></div>
+      <div class="step"><b>Improve</b><small>Measure and standardize</small></div>
+     </div>
+    </section>
+    <section><h2><span>3</span>Evidence status</h2>
+     <table><thead><tr><th>Evidence type</th><th>Meaning</th><th>Use</th></tr></thead><tbody>
+      <tr><td><span class="tag measured">Measured</span></td><td>Observed in tickets, timesheets, tooling or bake-off</td><td>Primary decision evidence</td></tr>
+      <tr><td><span class="tag provided">Partner-provided</span></td><td>Supplied by an accountable operating owner</td><td>Accepted baseline pending validation</td></tr>
+      <tr><td><span class="tag assumption">Assumption</span></td><td>Planning input used to form a hypothesis</td><td>Must be tested</td></tr>
+      <tr><td><span class="tag unvalidated">Unvalidated</span></td><td>Unknown or unsupported</td><td>Do not use for approval</td></tr>
+     </tbody></table>
+    </section>
+   </div>
 
-        <h3>SI projects · motion 3</h3>
-        <div class="fld"><label>Migration projects / yr<i>Intune · Citrix→AVD/W365 · Win11 · M&amp;A</i></label><div class="im"><input id="projYr" type="number" step="1" value="6"></div></div>
-        <div class="fld"><label>Apps in scope / project</label><div class="im"><input id="projApps" type="number" step="10" value="120"></div></div>
-        <div class="fld"><label>Share needing (re)packaging</label><div class="im"><input class="hassuf" id="projRepack" type="number" step="5" value="60"><span class="suf">%</span></div></div>
-        <div class="fld"><label>App-workstream team<i>FTE on readiness per project</i></label><div class="im"><input id="projTeam" type="number" step="0.5" value="4"></div></div>
-        <div class="fld"><label>Critical-path capture<i>share of saved weeks that move the date</i></label><div class="im"><input class="hassuf" id="projCapture" type="number" step="5" value="50"><span class="suf">%</span></div></div>
-        <div class="fld"><label>Value of a week pulled in<i>customer value / cost of delay</i></label><div class="im"><span class="pre">$</span><input class="haspre" id="projDelay" type="number" step="5000" value="50000"></div></div>
-        <div class="fld"><label>Incremental AW project cost / yr</label><div class="im"><span class="pre">$</span><input class="haspre" id="projCost" type="number" step="5000" value="50000"></div></div>
+   <div class="view" id="current">
+    <section><h2><span>1</span>Enter current-state activity</h2>
+     <p class="lead">Use annual volumes and average engineer touch time. Elapsed time belongs in the experience section; touch time belongs in the labor model.</p>
+     <table id="activityTable"><thead><tr><th>Activity</th><th class="num">Annual volume</th><th class="num">Minutes / unit</th><th class="num">Rework %</th><th class="num">Annual hours</th><th>Evidence</th></tr></thead><tbody></tbody></table>
+    </section>
+    <section><h2><span>2</span>Current-state operating profile</h2>
+     <div class="kpis">
+      <div class="kpi"><div class="n" id="cur_hours">—</div><div class="l">annual touch hours</div></div>
+      <div class="kpi"><div class="n" id="cur_cost">—</div><div class="l">annual labor cost</div></div>
+      <div class="kpi"><div class="n" id="cur_fte">—</div><div class="l">FTE consumed at 1,880 hours</div></div>
+      <div class="kpi"><div class="n" id="cur_cpu">—</div><div class="l">cost / user / month</div></div>
+     </div>
+    </section>
+    <section><h2><span>3</span>Customer experience and quality</h2>
+     <table><thead><tr><th>Metric</th><th class="num">Current value</th><th>Evidence</th><th>Notes</th></tr></thead><tbody>
+      <tr><td>Request-to-access elapsed days</td><td><input id="rtaCurrent" type="number" step=".1" value="5"></td><td><select id="rtaEvidence"><option>Assumption</option><option>Partner-provided</option><option>Measured</option></select></td><td><input id="rtaNote" value="Validate from request queue"></td></tr>
+      <tr><td>Install / launch success %</td><td><input id="successCurrent" type="number" value="0"></td><td><select id="successEvidence"><option>Unvalidated</option><option>Partner-provided</option><option>Measured</option></select></td><td><input value="Leave zero until measured"></td></tr>
+      <tr><td>Addressable app tickets / month</td><td><input id="ticketsCurrent" type="number" value="500"></td><td><select id="ticketEvidence"><option>Assumption</option><option>Partner-provided</option><option>Measured</option></select></td><td><input value="Exclude functional defects and unrelated endpoint issues"></td></tr>
+     </tbody></table>
+    </section>
+   </div>
 
-        <h3>Risk adjustment</h3>
-        <div class="fld"><label>Realization factor<i>adoption, exceptions, coverage — savings are scaled by this</i></label><div class="im"><input class="hassuf" id="realization" type="number" step="5" value="75"><span class="suf">%</span></div></div>
+   <div class="view" id="addressable">
+    <section><h2><span>1</span>Map each activity to Application Workspace</h2>
+     <p class="lead">Every capability is modeled as <b>addressable, partially addressable, or retained</b>. This prevents feature claims from becoming blanket savings claims.</p>
+     <table class="matrix" id="addressTable"><thead><tr><th>Activity</th><th>Primary capability</th><th class="num">Addressable %</th><th class="num">Future effort % of addressed work</th><th>What remains</th></tr></thead><tbody></tbody></table>
+    </section>
+    <section><h2><span>2</span>Capability-to-value trace</h2>
+     <table><thead><tr><th>Capability</th><th>Operating change</th><th>Primary measure</th><th>Business outcome</th></tr></thead><tbody>
+      <tr><td>Setup Store managed packages</td><td>For covered products, managed package definitions can receive updated versions; validation and release remain partner-controlled.</td><td>Touch hours per covered release</td><td>Lower recurring package-maintenance effort</td></tr>
+      <tr><td>Reusable package and deployment definitions</td><td>Reduce repeated configuration where supported architecture and customer policy allow reuse.</td><td>Duplicate builds and target-specific effort</td><td>Improved scale economics</td></tr>
+      <tr><td>Catalog, request and approval workflows</td><td>Govern application availability and route eligible requests through self-service and approval.</td><td>Addressable request tickets and elapsed access time</td><td>Faster fulfillment and lower support demand</td></tr>
+      <tr><td>Deployment automation</td><td>Package deployment can be orchestrated to configured device assignments, including documented Intune workflows.</td><td>Publishing and deployment touch time</td><td>More consistent release execution</td></tr>
+      <tr><td>Reporting and audit data</td><td>Provide operational data such as licensing, deployment, launch and install health where configured.</td><td>Reporting effort and evidence availability</td><td>Stronger governance and service review</td></tr>
+     </tbody></table>
+    </section>
+    <div class="callout warn"><b>Accuracy rule:</b> catalog coverage, supported deployment targets, licensing, tenant architecture and package behavior must be validated against the partner’s approved Recast SKU and current product documentation before commercial commitment.</div>
+   </div>
 
-        <div class="derived">
-          <div class="dh">Derived workload — live</div>
-          <div class="dr"><span>Seats per customer</span><b id="dw_spc">—</b></div>
-          <div class="dr"><span>Distinct apps in book</span><b id="dw_apps">—</b></div>
-          <div class="dr"><span>Packaging requests / mo</span><b id="dw_pkg">—</b></div>
-          <div class="dr"><span>Patch &amp; update ops / mo</span><b id="dw_patch">—</b></div>
-          <div class="dr"><span>App tickets / mo</span><b id="dw_tik">—</b></div>
-        </div>
+   <div class="view" id="future">
+    <section><h2><span>1</span>Future-state workload</h2>
+     <div class="twocol">
+      <div class="card"><h3>Current operating model</h3><div class="rows">
+       <div class="row"><span class="l">Annual touch hours</span><span class="v" id="f_cur_hours">—</span></div>
+       <div class="row"><span class="l">Annual labor cost</span><span class="v" id="f_cur_cost">—</span></div>
+       <div class="row"><span class="l">FTE consumed</span><span class="v" id="f_cur_fte">—</span></div>
+      </div></div>
+      <div class="card"><h3>With Application Workspace</h3><div class="rows">
+       <div class="row"><span class="l">Retained touch hours</span><span class="v" id="f_new_hours">—</span></div>
+       <div class="row"><span class="l">Retained labor cost</span><span class="v" id="f_new_labor">—</span></div>
+       <div class="row"><span class="l">License and recurring platform cost</span><span class="v" id="f_platform">—</span></div>
+      </div></div>
+     </div>
+    </section>
+    <section><h2><span>2</span>Separate capacity from cash value</h2>
+     <div class="kpis">
+      <div class="kpi"><div class="n" id="cap_technical">—</div><div class="l">technical hours returned</div></div>
+      <div class="kpi"><div class="n" id="cap_fte">—</div><div class="l">technical FTE capacity returned</div></div>
+      <div class="kpi amber"><div class="n" id="cap_monetized">—</div><div class="l">hours assumed monetized</div></div>
+      <div class="kpi green"><div class="n" id="cap_value">—</div><div class="l">steady-state realized operating value</div></div>
+     </div>
+     <p class="lead" style="margin-top:10px">Returned capacity becomes financial value only when converted into avoided hiring, reduced contractor/overtime expense, additional billable work, added customer capacity, or another documented economic outcome.</p>
+    </section>
+    <section><h2><span>3</span>Existing-contract economics</h2>
+     <table><thead><tr><th>Line</th><th class="num">Steady state</th><th class="num">Year 1</th></tr></thead><tbody>
+      <tr><td>Monetized labor value</td><td class="num" id="op_labor_ss">—</td><td class="num" id="op_labor_y1">—</td></tr>
+      <tr><td>License and recurring platform cost</td><td class="num" id="op_platform_ss">—</td><td class="num" id="op_platform_y1">—</td></tr>
+      <tr><td>Implementation cost</td><td class="num">—</td><td class="num" id="op_impl">—</td></tr>
+      <tr class="total"><td>Net operating value</td><td class="num" id="op_net_ss">—</td><td class="num" id="op_net_y1">—</td></tr>
+     </tbody></table>
+    </section>
+    <section><h2><span>4</span>New managed-service economics</h2>
+     <p class="lead">Shown separately to avoid double-counting. The cost line contains only incremental service-delivery cost entered by the partner.</p>
+     <table><thead><tr><th>Line</th><th class="num">Annual</th></tr></thead><tbody>
+      <tr><td>Attached users</td><td class="num" id="svc_users">—</td></tr>
+      <tr><td>Incremental recurring revenue</td><td class="num" id="svc_rev">—</td></tr>
+      <tr><td>Incremental service-delivery cost</td><td class="num" id="svc_cost">—</td></tr>
+      <tr class="total"><td>Incremental contribution margin</td><td class="num" id="svc_margin">—</td></tr>
+     </tbody></table>
+    </section>
+    <section><h2><span>5</span>Customer / project value</h2>
+     <div class="callout">Project acceleration, cost-of-delay and customer outcome value are intentionally excluded from MSP ROI. Add them only in a separate customer business case after proving the application workstream was on the critical path and identifying who receives the economic benefit.</div>
+    </section>
+   </div>
 
-        <details class="adv">
-          <summary>Advanced assumptions</summary>
-          <h3>Hours per package</h3>
-          <div class="fld"><label>Today · standard</label><div class="im"><input id="stdT" type="number" step="0.1" value="4.33"></div></div>
-          <div class="fld"><label>Today · custom</label><div class="im"><input id="custT" type="number" step="0.5" value="14"></div></div>
-          <div class="fld"><label>AW · standard<i>test-approve-release retained</i></label><div class="im"><input id="stdA" type="number" step="0.05" value="0.4"></div></div>
-          <div class="fld"><label>AW · custom</label><div class="im"><input id="custA" type="number" step="0.5" value="3.5"></div></div>
-          <h3>Support &amp; patch rates</h3>
-          <div class="fld"><label>App tickets / 100 seats / mo<i>MetricNet ~1.1 total/user × Fixify 38% software ≈ 42; 20 is conservative</i></label><div class="im"><input id="tik100" type="number" step="1" value="20"></div></div>
-          <div class="fld"><label>Min / ticket</label><div class="im"><input class="hassuf" id="ticketMin" type="number" step="1" value="20"><span class="suf">m</span></div></div>
-          <div class="fld"><label>Patch ops min / app / mo</label><div class="im"><input class="hassuf" id="patchMinApp" type="number" step="1" value="15"><span class="suf">m</span></div></div>
-          <h3>Reductions with AW</h3>
-          <div class="fld"><label>Ticket reduction<i>Catalog self-service deflects 50–70%</i></label><div class="im"><input class="hassuf" id="tRed" type="number" step="5" value="45"><span class="suf">%</span></div></div>
-          <div class="fld"><label>Patching reduction</label><div class="im"><input class="hassuf" id="pRed" type="number" step="5" value="45"><span class="suf">%</span></div></div>
-          <h3>Experience metrics (evidence)</h3>
-          <div class="fld"><label>Request-to-access · current</label><div class="im"><input class="hassuf" id="rtaCur" type="number" step="0.5" value="5"><span class="suf">d</span></div></div>
-          <div class="fld"><label>Request-to-access · with AW</label><div class="im"><input class="hassuf" id="rtaAW" type="number" step="0.5" value="0.5"><span class="suf">d</span></div></div>
-          <div class="fld"><label>Install/launch success · current</label><div class="im"><input class="hassuf" id="succCur" type="number" step="1" value="65"><span class="suf">%</span></div></div>
-          <div class="fld"><label>Install/launch success · with AW</label><div class="im"><input class="hassuf" id="succAW" type="number" step="1" value="95"><span class="suf">%</span></div></div>
-          <h3>Year one</h3>
-          <div class="fld"><label>One-time implementation<i>internal + partner enablement</i></label><div class="im"><span class="pre">$</span><input class="haspre" id="implCost" type="number" step="5000" value="75000"></div></div>
-          <div class="fld"><label>Months to steady state</label><div class="im"><input class="hassuf" id="rampMonths" type="number" step="1" value="4"><span class="suf">mo</span></div></div>
-          <div class="fld"><label>Other AW recurring cost / yr<i>hosting, partner ops</i></label><div class="im"><span class="pre">$</span><input class="haspre" id="otherAW" type="number" step="1000" value="0"></div></div>
-          <h3>Optional</h3>
-          <div class="fld"><label>Client fee / user / mo<i>0 = skip margin view</i></label><div class="im"><span class="pre">$</span><input class="haspre" id="bill" type="number" step="1" value="0"></div></div>
-        </details>
-      </div>
-    </div>
+   <div class="view" id="proof">
+    <section><h2><span>1</span>Run a stratified bake-off</h2>
+     <div class="stage"><div class="stagehead"><div><span class="badge">Gate 1</span> <b>Approve the baseline</b></div><span>Week 1</span></div><p>Pull volumes, touch time, rework, tickets and elapsed time from the queue, tooling and timesheets.</p><div class="gate"><b>Exit:</b> delivery owner signs off on the numbers to beat.</div></div>
+     <div class="stage"><div class="stagehead"><div><span class="badge">Gate 2</span> <b>Select representative applications</b></div><span>Week 1</span></div><p>Use covered standard apps, frequently updated apps, custom/complex apps, multi-target apps and known problem apps.</p><div class="gate"><b>Exit:</b> sponsor confirms the sample represents the operating book.</div></div>
+     <div class="stage"><div class="stagehead"><div><span class="badge">Gate 3</span> <b>Run both workflows</b></div><span>Weeks 2–3</span></div><p>Measure engineer touch time, elapsed time, rework, success, exception effort and addressable support demand.</p><div class="gate"><b>Exit:</b> both teams accept the measurement method.</div></div>
+     <div class="stage"><div class="stagehead"><div><span class="badge">Gate 4</span> <b>Replace assumptions</b></div><span>Week 4</span></div><p>Enter measured current and future values below. The decision view uses measured results when supplied.</p><div class="gate"><b>Exit:</b> approve, revise or stop based on evidence.</div></div>
+    </section>
+    <section><h2><span>2</span>Measured result entry</h2>
+     <table><thead><tr><th>Metric</th><th class="num">Modeled</th><th class="num">Measured current</th><th class="num">Measured with AW</th><th>Evidence source</th></tr></thead><tbody>
+      <tr><td>Annualized touch hours</td><td class="num" id="m_hours_model">—</td><td><input id="m_hours_cur" type="number" value="0"></td><td><input id="m_hours_aw" type="number" value="0"></td><td><input id="m_hours_src" placeholder="Timesheet / test log"></td></tr>
+      <tr><td>Addressable tickets / month</td><td class="num" id="m_tickets_model">—</td><td><input id="m_tickets_cur" type="number" value="0"></td><td><input id="m_tickets_aw" type="number" value="0"></td><td><input placeholder="Service desk export"></td></tr>
+      <tr><td>Request-to-access days</td><td class="num" id="m_rta_model">—</td><td><input id="m_rta_cur" type="number" step=".1" value="0"></td><td><input id="m_rta_aw" type="number" step=".1" value="0"></td><td><input placeholder="Request timestamps"></td></tr>
+      <tr><td>Install / launch success %</td><td class="num">Not assumed</td><td><input id="m_success_cur" type="number" value="0"></td><td><input id="m_success_aw" type="number" value="0"></td><td><input placeholder="Deployment / launch health"></td></tr>
+     </tbody></table>
+    </section>
+   </div>
 
-    <!-- ============ TABS ============ -->
-    <div>
-      <!-- EXECUTIVE VIEW -->
-      <div id="tab-exec">
-        <section>
-          <p class="kicker">The bottom line</p>
-          <h2>Application delivery, today vs. with Application Workspace.</h2>
-          <div class="exhero">
-            <div class="exrow"><div class="lbl">Today</div><div class="extrack"><div class="exfill" style="width:100%"></div></div><div class="amt" id="ex_cur">—</div></div>
-            <div class="exrow"><div class="lbl">With AW</div><div class="extrack"><div class="exfill aw" id="ex_fill" style="width:60%"></div></div><div class="amt" id="ex_aw">—</div></div>
-            <span class="expct" id="ex_pct">—</span>
-          </div>
-        </section>
-
-        <section>
-          <h2>Three ways it pays.</h2>
-          <div class="exgrid">
-            <div class="excard"><div class="exnum">① Deliver for less</div><div class="big" id="ex_m1">—</div><div class="what">per year on contracts already signed</div><div class="how" id="ex_m1s">—</div></div>
-            <div class="excard"><div class="exnum">② Sell a new service</div><div class="big" id="ex_m2">—</div><div class="what">gross margin from Managed App Delivery</div><div class="how" id="ex_m2s">—</div></div>
-            <div class="excard"><div class="exnum">③ Ship projects sooner</div><div class="big" id="ex_m3">—</div><div class="what">across the migration portfolio</div><div class="how" id="ex_m3s">—</div></div>
-          </div>
-          <div class="extotal" style="margin-top:16px;">
-            <div><div class="tl">Total annual impact</div><div class="tv" id="ex_tot">—</div></div>
-            <button class="btn btn-secondary" id="toModel">See the full model</button>
-          </div>
-          <p class="note" id="ex_note">—</p>
-        </section>
-
-        <section>
-          <h2>Why it works.</h2>
-          <div class="exwhy">
-            <div class="whycard"><div class="tile"><svg width="24" height="24" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div><div><div class="t">Recast runs the standard apps</div><div class="s">8,000+ packaged, tested and updated for you — your team keeps a light approve-and-release loop.</div></div></div>
-            <div class="whycard"><div class="tile"><svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.6"/><path d="M12 9.4V4M12 14.6V20M9.4 12H4M14.6 12H20"/></svg></div><div><div class="t">Build once, deliver everywhere</div><div class="s">One definition serves every platform and every customer — no per-console or per-tenant rebuilds.</div></div></div>
-            <div class="whycard"><div class="tile"><svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c0-4 3.2-6 7-6s7 2 7 6"/></svg></div><div><div class="t">People help themselves</div><div class="s">A governed Catalog turns app requests into self-service instead of tickets.</div></div></div>
-          </div>
-        </section>
-      </div>
-
-      <!-- BUSINESS CASE -->
-      <div id="tab-analysis" style="display:none">
-        
-
-        
-
-        
-
-        <section>
-          <h2><span class="n">1</span>Current state vs. with Application Workspace<span class="tag">per year, live from your book</span></h2>
-          <p class="lead" id="sumProse">—</p>
-          <div class="sxs">
-            <div class="sxcard">
-              <div class="sxhead cur">Current state<span class="sub" id="sx_sub_n">—</span></div>
-              <div class="sxrow"><div class="l">Packaging &amp; rebuilds<span class="s">packaged by hand, repeated for every customer</span></div><div class="r"><div class="v" id="sx_pkg_n">—</div><div class="s" id="sx_pkg_ns">—</div></div></div>
-              <div class="sxrow"><div class="l">Updates &amp; patching<span class="s">each app updated one by one</span></div><div class="r"><div class="v" id="sx_upd_n">—</div><div class="s" id="sx_upd_ns">—</div></div></div>
-              <div class="sxrow"><div class="l">App tickets<span class="s">apps failing or falling behind on updates</span></div><div class="r"><div class="v" id="sx_tik_n">—</div><div class="s" id="sx_tik_ns">—</div></div></div>
-              <div class="sxrow"><div class="l">App delivery speed<span class="s">request to access</span></div><div class="r"><div class="v" id="sx_rta_n">—</div><div class="s">waiting on IT</div></div></div>
-              <div class="sxrow"><div class="l">Engineers consumed</div><div class="r"><div class="v" id="sx_fte_n">—</div><div class="s">tied up in repetitive delivery work</div></div></div>
-              <div class="sxrow"><div class="l">Platform license</div><div class="r"><div class="v">—</div><div class="s">none</div></div></div>
-              <div class="sxrow"><div class="l">Cost to serve / user / mo</div><div class="r"><div class="v" id="sx_cps_n">—</div></div></div>
-              <div class="sxfoot"><span>Total cost</span><span id="sx_tot_n">—</span></div>
-            </div>
-            <div class="sxcard aw">
-              <div class="sxhead aw">With Application Workspace<span class="sub" id="sx_sub_a">—</span></div>
-              <div class="sxrow"><div class="l">Packaging &amp; rebuilds<span class="s">standard apps from the pre-managed catalog — packaging handled</span></div><div class="r"><div class="v" id="sx_pkg_a">—</div><div class="s" id="sx_pkg_as">—</div></div></div>
-              <div class="sxrow"><div class="l">Updates &amp; patching<span class="s">managed updates arrive — you approve &amp; release</span></div><div class="r"><div class="v" id="sx_upd_a">—</div><div class="s" id="sx_upd_as">—</div></div></div>
-              <div class="sxrow"><div class="l">App tickets<span class="s">self-service + current apps — tickets drop</span></div><div class="r"><div class="v" id="sx_tik_a">—</div><div class="s" id="sx_tik_as">—</div></div></div>
-              <div class="sxrow"><div class="l">App delivery speed<span class="s">request to access</span></div><div class="r"><div class="v" id="sx_rta_a">—</div><div class="s">from the Catalog</div></div></div>
-              <div class="sxrow"><div class="l">Engineers consumed</div><div class="r"><div class="v" id="sx_fte_a">—</div><div class="s">freed for custom apps &amp; high-value services</div></div></div>
-              <div class="sxrow"><div class="l">Platform license</div><div class="r"><div class="v" id="sx_lic_a">—</div><div class="s">confirm partner tier</div></div></div>
-              <div class="sxrow"><div class="l">Cost to serve / user / mo</div><div class="r"><div class="v" id="sx_cps_a">—</div></div></div>
-              <div class="sxfoot"><span>Total cost</span><span id="sx_tot_a">—</span></div>
-            </div>
-          </div>
-          <div class="band">
-            <div class="bi"><div class="bv" id="bd_keep">—</div><div class="bl">you keep, per year</div></div>
-            <div class="bi"><div class="bv" id="bd_hrs">—</div><div class="bl">hours back (<span id="bd_fte">—</span> FTE)</div></div>
-            <div class="bi"><div class="bv" id="bd_pkgeff">—</div><div class="bl">packaging effort removed</div></div>
-            <div class="bi"><div class="bv" id="bd_perpkg">—</div><div class="bl">hours per package</div></div>
-          </div>
-          <p class="note">Hours are identical at any labor rate — the workload story survives any rate debate. Savings shown at your realization factor.</p>
-        </section>
-
-        <section id="svcSec">
-          <h2><span class="n">2</span>Turn it into a service<span class="tag">Managed Application Delivery · priced on your terms</span></h2>
-          <p class="lead">The efficiency above can stay as margin — or become a billable SKU. <b>You set the scope and the price</b>; cost to serve comes straight from the left panel, so nothing is double-counted.</p>
-          <div class="tablewrap">
-            <table>
-              <thead><tr><th class="lab" id="svc_hdr">Service P&amp;L — illustrative</th><th class="num">Annual</th></tr></thead>
-              <tbody>
-                <tr><td class="lab">Recurring service revenue<span class="sub" id="svc_rev_sub">—</span></td><td class="num" id="svc_rev">—</td></tr>
-                <tr><td class="lab">Cost to serve attached seats<span class="sub">with-AW packaging + updates + platform · app-desk support stays in the base contract</span></td><td class="num" id="svc_cos">—</td></tr>
-                <tr class="total"><td class="lab">Service gross margin</td><td class="num" id="svc_gm">—</td></tr>
-                <tr class="foot-row"><td colspan="2" id="svc_note">—</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="tablewrap" style="margin-top:14px;">
-            <table>
-              <thead><tr><th class="lab">What customers feel<span class="tag" style="margin-left:6px;">renewal evidence</span></th><th class="num">Current</th><th class="num">With AW</th></tr></thead>
-              <tbody>
-                <tr><td class="lab">Request-to-access time</td><td class="num" id="xp_rta_n">—</td><td class="num" id="xp_rta_a">—</td></tr>
-                <tr><td class="lab">Install / launch success</td><td class="num" id="xp_suc_n">—</td><td class="num" id="xp_suc_a">—</td></tr>
-                <tr class="foot-row"><td colspan="3">Renewal evidence, not revenue — ticket savings are already counted in motion ①.</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section id="projSec">
-          <h2><span class="n">3</span>Ship projects sooner<span class="tag">SI · application readiness</span></h2>
-          <p class="lead">On migrations, apps are usually the critical path. AW makes them ready early — less effort, earlier dates.</p>
-          <div class="tablewrap">
-            <table>
-              <thead><tr><th class="lab" id="pj_hdr">SI portfolio — annual</th><th class="num">Current</th><th class="num">With AW</th><th class="num">Impact</th></tr></thead>
-              <tbody>
-                <tr><td class="lab">App-readiness effort<span class="sub" id="pj_sub">—</span></td><td class="num" id="pj_hrs_n">—</td><td class="num" id="pj_hrs_a">—</td><td class="num" id="pj_lab_d">—</td></tr>
-                <tr><td class="lab">Schedule pulled in<span class="sub" id="pj_wk_sub">workstream weeks saved × critical-path capture</span></td><td class="num">—</td><td class="num" id="pj_wk">—</td><td class="num" id="pj_sched">—</td></tr>
-                <tr><td class="lab">Less: incremental AW project cost</td><td class="num">—</td><td class="num">—</td><td class="num" id="pj_inc">—</td></tr>
-                <tr class="total"><td class="lab">Motion ③ annual value</td><td class="num">—</td><td class="num">—</td><td class="num" id="pj_tot">—</td></tr>
-                <tr class="foot-row"><td colspan="4">Only weeks that app readiness alone controls are counted (the critical-path capture at left).</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section>
-          <h2><span class="n">4</span>Total annual impact<span class="tag">the three motions, added up</span></h2>
-          <div class="sumgrid">
-            <table class="bridge">
-              <tr><td>① Deliver for less <span style="color:var(--gray-light)">· contracts already signed</span></td><td id="s_m1" class="pos">—</td></tr>
-              <tr><td>② New service margin <span style="color:var(--gray-light)">· Managed App Delivery</span></td><td id="s_m2" class="pos">—</td></tr>
-              <tr><td>③ Projects ship sooner <span style="color:var(--gray-light)">· migration portfolio</span></td><td id="s_m3" class="pos">—</td></tr>
-              <tr class="net"><td>Total annual business impact</td><td id="s_tot">—</td></tr>
-            </table>
-            <div class="ratios">
-              <div class="ratio rate-ind"><div class="v" id="r_fte">—</div><div class="l" id="r_fte_l">—</div></div>
-              <div class="ratio"><div class="v" id="r_pct">—</div><div class="l" id="r_pct_l">—</div></div>
-              <div class="ratio"><div class="v" id="r_roi">—</div><div class="l">Labor saved for every $1 of license spend (motion ①)</div></div>
-            </div>
-          </div>
-          <div class="callout" id="beCallout" style="margin:16px 0 0; border-left-color:var(--green);">—</div>
-          <p class="note" id="y1Line" style="margin-top:12px;">—</p>
-        </section>
-
-        <section>
-          <h2><span class="n">5</span>Sensitivity<span class="tag">how firm the motion-① number is</span></h2>
-          <div class="tablewrap">
-            <table>
-              <thead><tr><th class="lab">Scenario</th><th class="num">Motion ① net benefit</th><th class="num">Cost reduction</th><th class="num">Return on license</th></tr></thead>
-              <tbody>
-                <tr><td class="lab">Conservative</td><td class="num" id="z_con_net">—</td><td class="num" id="z_con_pct">—</td><td class="num" id="z_con_roi">—</td></tr>
-                <tr class="sub"><td class="lab">Base — as entered</td><td class="num" id="z_bas_net">—</td><td class="num" id="z_bas_pct">—</td><td class="num" id="z_bas_roi">—</td></tr>
-                <tr><td class="lab">Upside</td><td class="num" id="z_ups_net">—</td><td class="num" id="z_ups_pct">—</td><td class="num" id="z_ups_roi">—</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="note">Same book, same rate — only the efficiency assumptions flex to the ends of their cited ranges.</p>
-        </section>
-
-        <section id="marginSec" style="display:none;">
-          <h2><span class="n">6</span>Delivery cost as a share of client fee</h2>
-          <div class="tablewrap">
-            <table>
-              <thead><tr><th class="lab">Per seat / month</th><th class="num">Current</th><th class="num">With AW</th><th class="num">Change</th></tr></thead>
-              <tbody>
-                <tr><td class="lab">Revenue billed to client</td><td class="num" id="mg_rev_n">—</td><td class="num" id="mg_rev_a">—</td><td class="num">—</td></tr>
-                <tr><td class="lab">Application-delivery cost</td><td class="num" id="mg_cost_n">—</td><td class="num" id="mg_cost_a">—</td><td class="num" id="mg_cost_d">—</td></tr>
-                <tr><td class="lab">Delivery cost as % of fee</td><td class="num" id="mg_pct_n">—</td><td class="num" id="mg_pct_a">—</td><td class="num" id="mg_pct_d">—</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="note" id="mg_note">—</p>
-        </section>
-
-        <details class="more">
-          <summary>Methodology, basis, sources &amp; risks</summary>
-          <p class="basis"><b>Derivation (workload from the book).</b> Distinct apps = apps/customer × (overlap + customers × (1 − overlap)) — the shared core counted once; each customer adds only unique line-of-business apps. Packaging requests/mo = distinct apps × repackage rate. Patch ops = distinct apps × per-app minutes. App tickets = seats × per-100-seat rate. Staffing follows workload, not user population (MetricNet).</p>
-          <p class="basis" style="margin-top:8px;"><b>Motions.</b> ① Cost lines = hours × loaded rate; platform column adds license; net = gross labor reduction − license. ② Service revenue = attached seats × price; cost to serve = attached seats × with-AW cost/seat — the partner sets scope and price (guide). ③ Readiness labor uses the same per-app hours × environments engine on project scope; schedule value = weeks × weekly project cost, applicable only when readiness is critical-path. Value-driver attribution is Shapley — parts sum exactly to motion-① gross.</p>
-          <ol class="src">
-            <li><b>Recast MSP &amp; SI Partner Guide (Jul 2026).</b> Three commercial motions; proof metrics (cost to serve, labor hours, request-to-access, install/launch success, SLA, renewal); managed packages still require partner testing, approval and rollout policy; Setup Store full breadth requires Release &amp; Patch Management (base license limited); confirm SKU and licensing before commitments.</li>
-            <li><b>App portfolios.</b> Okta Businesses at Work 2025: average 101 apps/org; large (≥2,000 employees) ~211; smallest ~22.</li>
-            <li><b>Packaging effort.</b> Camwood: packaging = 30–40% of IT-admin time at 60–70% first-pass success. Recast: 4+ hrs/app; small orgs repackage 5–10/mo; complex apps 8–40 hrs (community benchmarks). Estates carry 2–4 package formats.</li>
-            <li><b>Tickets.</b> Software &amp; applications = over a third of desk volume (2026 benchmark); ~0.5–1+ tickets/user/mo (MetricNet); default 6 app tickets/100 seats is conservative. Catalog self-service deflects 50–70% of software requests.</li>
-            <li><b>Labor cost.</b> BLS median pay for systems administrators / support specialists plus the private-industry benefit share underpins a US loaded rate of roughly $70–95/hr; offshore rate guides: India $20–45, blended $30–60 — selector mid-points $95/$65/$40.</li>
-            <li><b>Per-package cost cross-check.</b> A 2025 Windows packaging cost study (Juriba) reports ≈$646 average per package — ≈9 hrs at a $70 loaded rate — consistent with the 4.33-hr standard × 2.5 environments basis here.</li>
-            <li><b>Ticket volume cross-check.</b> MetricNet ≈1.1 agent-assisted tickets/user/mo × Fixify 2026 (software &amp; applications = 38.2% of volume) ⇒ ≈0.42 app tickets/user/mo; the 0.20 default (20 per 100 seats) is deliberately conservative. MetricNet cites ≈15-min handling for business-app tickets and calls a 25% annual ticket reduction excellent progress.</li>
-            <li><b>MSP economics.</b> Recurring-services gross margin 50–60%; labor 90%+ of service COGS (Service Leadership / ConnectWise).</li>
-          </ol>
-          <ul class="risks">
-            <li>Margin recovery must be measured against a baseline (guide) — the derived labor lines are that baseline; validate in a proof-of-value.</li>
-            <li>Each Application Workspace zone (per customer) requires licensing — confirm the multi-tenant commercial structure with Recast before pricing the SKU.</li>
-            <li>Motions are additive only where scope is contractually distinct; treat motion ② as incremental revenue, not a re-count of motion ① savings.</li>
-            <li>Managed-service inclusions depend on licensed capabilities; Setup Store breadth varies by edition — confirm SKU, edition and partner-tier license before commitments.</li>
-            <li>Project acceleration applies only where application readiness is on the critical path; it cannot remove unrelated security, infrastructure, licensing or business delays (guide).</li>
-            <li>Managed packages still require partner testing, approval and rollout — reflected in non-zero AW per-app hours.</li>
-            <li>Excludes one-time onboarding/migration/enablement; dollar figures scale with the labor rate, hours and FTE do not; planning model, not a measured baseline.</li>
-          </ul>
-        </details>
-      </div>
-
-      <!-- WHY -->
-      <div id="tab-why">
-        <section>
-          <h2><span class="n">A</span>Where the money comes from</h2>
-          <p class="lead">Five capabilities remove the labor. Their values <b>add up exactly</b> to the savings on the Business case tab — change any assumption and watch the mix shift.</p>
-          <div id="drivers">
-            <div class="drv">
-              <div class="top"><div class="nm">① Recast runs the standard apps</div><div class="amt" id="dv_catalog">—<small id="dp_catalog"></small></div></div>
-              <div class="mech">8,000+ apps packaged, tested and updated for you — your team just approves and releases.</div>
-              <div class="drvtrack"><div class="drvfill" id="db_catalog"></div></div>
-            </div>
-            <div class="drv">
-              <div class="top"><div class="nm">② Build once, deliver everywhere</div><div class="amt" id="dv_define">—<small id="dp_define"></small></div></div>
-              <div class="mech">One definition serves every platform — Intune, ConfigMgr, Citrix, AVD, W365, Omnissa — no duplicate builds.</div>
-              <div class="drvtrack"><div class="drvfill" id="db_define"></div></div>
-            </div>
-            <div class="drv">
-              <div class="top"><div class="nm">③ Custom apps, automated</div><div class="amt" id="dv_custom">—<small id="dp_custom"></small></div></div>
-              <div class="mech">Your internal and legacy apps get standard automated actions instead of one-off scripts.</div>
-              <div class="drvtrack"><div class="drvfill" id="db_custom"></div></div>
-            </div>
-            <div class="drv">
-              <div class="top"><div class="nm">④ Self-service catalog</div><div class="amt" id="dv_self">—<small id="dp_self"></small></div></div>
-              <div class="mech">People install approved apps themselves — requests stop becoming tickets.</div>
-              <div class="drvtrack"><div class="drvfill" id="db_self"></div></div>
-            </div>
-            <div class="drv">
-              <div class="top"><div class="nm">⑤ Staged updates</div><div class="amt" id="dv_patch">—<small id="dp_patch"></small></div></div>
-              <div class="mech">New versions roll out through rings automatically — no spreadsheets, no manual chasing.</div>
-              <div class="drvtrack"><div class="drvfill" id="db_patch"></div></div>
-            </div>
-          </div>
-          <div class="drvsum">
-            <div class="r big"><span class="k">Total labor removed</span><span class="g" id="g_gross">—</span></div>
-            <div class="r"><span class="k">Application Workspace license</span><span class="v neg" id="g_lic">—</span></div>
-            <div class="r big"><span class="k">You keep, every year</span><span class="g" id="g_net">—</span></div>
-          </div>
-        </section>
-
-        <section>
-          <h2><span class="n">B</span>One build serves every customer</h2>
-          <div class="bizcard">
-            <div>
-              <div class="lev" id="bm_lev">—</div>
-              <div class="levl">application-delivery volume per engineer, vs today</div>
-            </div>
-            <div class="txt" id="bm_txt">—</div>
-          </div>
-          <div class="tablewrap" style="margin-top:14px;">
-            <table>
-              <thead><tr><th class="lab" id="mt_hdr">Per customer / tenant</th><th class="num">Current</th><th class="num">With AW</th><th class="num">Change</th></tr></thead>
-              <tbody>
-                <tr><td class="lab">Delivery cost per customer / year</td><td class="num" id="mt_cust_n">—</td><td class="num" id="mt_cust_a">—</td><td class="num" id="mt_cust_d">—</td></tr>
-                <tr><td class="lab">Off-the-shelf packaging borne per customer<span class="sub">the Setup Store absorbs this for every tenant</span></td><td class="num" id="mt_off_n">—</td><td class="num" id="mt_off_a">—</td><td class="num" id="mt_off_d">—</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="note" id="mt_note">—</p>
-        </section>
-      </div>
-
-      <!-- BAKE-OFF -->
-      <div id="tab-bake">
-        <section>
-          <h2><span class="n">1</span>Bake-off<span class="tag">a measured proof, staged and gated</span></h2>
-          <p class="lead">Four weeks, four gates. Every figure below is <b>preset from your inputs at left</b> — the trial replaces model predictions with measured values, so the decision rests on their data, not ours.</p>
-
-          <div class="stage">
-            <div class="sh"><span class="stgn">1</span><span class="st">Baseline the current state</span><span class="sw">Week 1</span></div>
-            <p class="sd">Capture the numbers to beat — straight from queue, timesheet and ticket data.</p>
-            <div class="bkgrid">
-              <div class="bkm"><div class="v" id="bk_seats">—</div><div class="l">endpoints managed</div></div>
-              <div class="bkm"><div class="v" id="bk_cust">—</div><div class="l">customers / tenants</div></div>
-              <div class="bkm"><div class="v" id="bk_apps">—</div><div class="l">managed apps</div></div>
-              <div class="bkm"><div class="v" id="bk_freq">—</div><div class="l">packaging frequency</div></div>
-              <div class="bkm"><div class="v" id="bk_pkgh">—</div><div class="l">packaging hours / mo</div></div>
-              <div class="bkm"><div class="v" id="bk_tik">—</div><div class="l">app tickets / mo</div></div>
-              <div class="bkm"><div class="v" id="bk_rate">—</div><div class="l">cost per engineer hour</div></div>
-              <div class="bkm"><div class="v" id="bk_rta">—</div><div class="l">request-to-access today</div></div>
-            </div>
-            <div class="gate"><b>Gate:</b> sponsor signs off that these are the numbers to beat.</div>
-          </div>
-
-          <div class="stage">
-            <div class="sh"><span class="stgn">2</span><span class="st">Define the test set &amp; deploy via Application Workspace</span><span class="sw">Weeks 2–3</span></div>
-            <p class="sd">Apps they regularly manage, mixed like the real estate, deployed to a pilot cohort.</p>
-            <div class="bkgrid">
-              <div class="bkm"><div class="v bkinline"><input id="bakeApps" type="number" step="5" value="20"> apps</div><div class="l">test set — editable</div></div>
-              <div class="bkm"><div class="v" id="bk_mix">—</div><div class="l">mix mirrors your estate</div></div>
-              <div class="bkm"><div class="v" id="bk_pred_cur">—</div><div class="l">effort at current method</div></div>
-              <div class="bkm"><div class="v" id="bk_pred_aw">—</div><div class="l">model prediction with AW</div></div>
-            </div>
-            <div class="gate"><b>Gate:</b> every test app deployed, entitled and launched by pilot users.</div>
-          </div>
-
-          <div class="stage">
-            <div class="sh"><span class="stgn">3</span><span class="st">Measure the difference</span><span class="sw">Week 4</span></div>
-            <p class="sd">Three measurements, one page. Model presets shown — overwrite with what you actually measure.</p>
-            <div class="bkgrid" style="grid-template-columns:repeat(3,minmax(0,1fr));">
-              <div class="bkm"><div class="v" id="bk_msr_pkg">—</div><div class="l">packaging hours saved on the test set</div></div>
-              <div class="bkm"><div class="v" id="bk_msr_tik">—</div><div class="l">ticket reduction, pilot cohort</div></div>
-              <div class="bkm"><div class="v" id="bk_msr_rta">—</div><div class="l">deployment speed</div></div>
-            </div>
-            <div class="gate"><b>Gate:</b> measured results recorded against the Week-1 baseline.</div>
-          </div>
-
-          <div class="stage">
-            <div class="sh"><span class="stgn">4</span><span class="st">Compare side-by-side &amp; decide</span><span class="sw">Decision</span></div>
-            <p class="sd">Scale the measured per-app result across the whole estate — this is where efficiency multiplies.</p>
-            <div class="bkgrid">
-              <div class="bkm"><div class="v" id="bk_cps">—</div><div class="l">cost to serve / user / mo</div></div>
-              <div class="bkm"><div class="v" id="bk_tt">—</div><div class="l">time to deliver an app</div></div>
-              <div class="bkm"><div class="v" id="bk_cap">—</div><div class="l">capacity freed</div></div>
-              <div class="bkm"><div class="v" id="bk_keep">—</div><div class="l">kept per year, full estate</div></div>
-            </div>
-            <div class="gate" id="bk_mult">—</div>
-          </div>
-          <p class="note">Trial discipline per the Recast partner guide: measure against a baseline, confirm SKU and licensing before commitments, and scale only after each gate is met.</p>
-        </section>
-
-        <section>
-          <h2><span class="n">2</span>Assumptions under test<span class="tag">before vs. after · industry standards</span></h2>
-          <p class="lead">These are the dials the bake-off validates. Each sits inside a published range — replace any with your measured value and the whole model follows.</p>
-          <div class="tablewrap">
-            <table>
-              <thead><tr><th class="lab">Assumption</th><th class="num">Before · current</th><th class="num">After · with AW</th><th class="lab" style="text-align:left;">Industry standard</th></tr></thead>
-              <tbody>
-                <tr><td class="lab">Hours per standard package</td><td class="num" id="as_std_b">—</td><td class="num" id="as_std_a">—</td><td class="lab"><span class="sub" style="margin:0;">Juriba 2025: ≈$646/package ≈ 9 h; Recast field: 4+ h — AW retains test → approve → release</span></td></tr>
-                <tr><td class="lab">Hours per custom package</td><td class="num" id="as_cust_b">—</td><td class="num" id="as_cust_a">—</td><td class="lab"><span class="sub" style="margin:0;">Community benchmarks: complex apps 8–40 h; skilled packaging retained where needed</span></td></tr>
-                <tr><td class="lab">Environments built per app</td><td class="num" id="as_env_b">—</td><td class="num" id="as_env_a">—</td><td class="lab"><span class="sub" style="margin:0;">Estates typically carry 2–4 package formats across consoles; AW defines once</span></td></tr>
-                <tr><td class="lab">App tickets</td><td class="num" id="as_tik_b">—</td><td class="num" id="as_tik_a">—</td><td class="lab"><span class="sub" style="margin:0;">MetricNet ≈1.1 tickets/user/mo × Fixify 38.2% software ⇒ ≈42/100 seats; self-service deflects 50–70%; 25%/yr reduction = "excellent" (MetricNet)</span></td></tr>
-                <tr><td class="lab">Patch &amp; update effort</td><td class="num" id="as_pat_b">—</td><td class="num" id="as_pat_a">—</td><td class="lab"><span class="sub" style="margin:0;">Packaging &amp; updates consume 30–40% of admin time (Camwood); staged rings automate the repeat work</span></td></tr>
-                <tr><td class="lab">Install / launch success</td><td class="num" id="as_succ_b">—</td><td class="num" id="as_succ_a">—</td><td class="lab"><span class="sub" style="margin:0;">Camwood: 60–70% first-pass success is the manual norm</span></td></tr>
-                <tr><td class="lab">Request-to-access</td><td class="num" id="as_rta_b">—</td><td class="num" id="as_rta_a">—</td><td class="lab"><span class="sub" style="margin:0;">Guide proof metric; governed self-service makes standard apps same-day</span></td></tr>
-                <tr><td class="lab">Realization discipline</td><td class="num" id="as_real_b">—</td><td class="num" id="as_real_a">—</td><td class="lab"><span class="sub" style="margin:0;">Savings scaled for adoption, exceptions &amp; coverage — the model never claims 100%</span></td></tr>
-                <tr class="foot-row"><td colspan="4">Sources detailed under Methodology on the Business case tab (BLS, Juriba, MetricNet, Fixify, Camwood, Okta, Recast Partner Guide).</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </div>
-    </div>
+   <div class="view" id="decision">
+    <section><h2><span>1</span>Executive decision view</h2>
+     <div class="kpis">
+      <div class="kpi green"><div class="n" id="d_net">—</div><div class="l">steady-state net operating value</div></div>
+      <div class="kpi"><div class="n" id="d_y1">—</div><div class="l">year-one net operating value</div></div>
+      <div class="kpi"><div class="n" id="d_capacity">—</div><div class="l">technical FTE capacity returned</div></div>
+      <div class="kpi green"><div class="n" id="d_service">—</div><div class="l">separate service contribution margin</div></div>
+     </div>
+    </section>
+    <section><h2><span>2</span>Decision quality</h2>
+     <table><thead><tr><th>Question</th><th>Status</th><th>Decision implication</th></tr></thead><tbody>
+      <tr><td>Is the baseline measured?</td><td id="q_baseline">—</td><td>Do not approve ROI from assumptions alone.</td></tr>
+      <tr><td>Is catalog coverage validated?</td><td id="q_coverage">—</td><td>Coverage determines how much recurring package work is addressable.</td></tr>
+      <tr><td>Is returned capacity monetizable?</td><td id="q_monetize">—</td><td>Capacity without a conversion path is operational value, not cash value.</td></tr>
+      <tr><td>Is approved partner pricing entered?</td><td id="q_price">—</td><td>License economics are incomplete until approved pricing is supplied.</td></tr>
+      <tr><td>Has the bake-off replaced assumptions?</td><td id="q_bake">—</td><td>Measured results create the approval-grade case.</td></tr>
+     </tbody></table>
+    </section>
+    <section><h2><span>3</span>Recommended decision</h2>
+     <div class="callout" id="recommendation">—</div>
+    </section>
+    <details><summary>Method, boundaries and official product references</summary>
+     <div class="sources">
+      <p><b>Model boundaries.</b> This is a planning and proof tool, not a promise of savings. It does not treat all software tickets as addressable, all returned capacity as cash savings, or customer schedule value as MSP profit. New-service contribution margin is kept separate from existing-contract operating value.</p>
+      <p><b>Official product references used to constrain capability language:</b></p>
+      <ul>
+       <li><a href="https://docs.recastsoftware.com/help/application-workspace-user-guide" target="_blank">Application Workspace End User Guide</a> — Workspace, Catalog and user interaction.</li>
+       <li><a href="https://docs.recastsoftware.com/help/application-workspace-connectors-setup-store" target="_blank">Setup Store Connector</a> — managed and unmanaged packages; licensing caveat.</li>
+       <li><a href="https://docs.recastsoftware.com/help/lws-howto-create-managed-package-using-liquit-setup-store-connector" target="_blank">Create a managed package</a> — managed packages receive later product versions through the connector.</li>
+       <li><a href="https://docs.recastsoftware.com/help/lws-howto-aw-microsoft-intune-windows" target="_blank">Deploy using Microsoft Intune</a> — documented deployment workflow.</li>
+       <li><a href="https://docs.recastsoftware.com/help/application-workspace-version-4-4-4091a" target="_blank">Application Workspace 4.4 release</a> — reporting data categories and current release context.</li>
+       <li><a href="https://docs.recastsoftware.com/help/application-workspace-components" target="_blank">Application Workspace components</a> — zones, server, satellite, agent and architecture boundaries.</li>
+      </ul>
+     </div>
+    </details>
+   </div>
   </div>
+ </div>
 </main>
 
-<footer>Recast Software · Application Workspace Partner Business Case · Confidential — Internal Use Only · Confirm SKU and licensing before customer commitments</footer>
-
-<div id="toast" role="status" style="position:fixed;right:20px;bottom:20px;z-index:100;background:var(--ink);color:#fff;border-radius:12px;padding:10px 14px;font-size:13px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;">—</div>
-<input type="file" id="scenFile" accept=".json,application/json" style="display:none">
-
 <script>
-const DEFAULTS={seats:10000,customers:10,appsPerCust:75,overlap:60,updateRate:15,pctCustom:25,envMult:2.5,rate:65,lic:1,attachPct:50,svcPrice:6,projYr:6,projApps:120,projRepack:60,projTeam:4,projCapture:50,projDelay:50000,projCost:50000,realization:75,implCost:75000,rampMonths:4,otherAW:0,bakeApps:20,stdT:4.33,custT:14,stdA:0.4,custA:3.5,tik100:20,ticketMin:20,patchMinApp:15,tRed:45,pRed:45,rtaCur:5,rtaAW:0.5,succCur:65,succAW:95,bill:0};
-const FTE_HOURS=1920;
-const ids=Object.keys(DEFAULTS);
-const $=id=>document.getElementById(id);
-const num=id=>{const v=parseFloat($(id).value);return isNaN(v)?0:v;};
-const usd=n=>(n<0?'-':'')+'$'+Math.round(Math.abs(n)).toLocaleString('en-US');
-const usdC=n=>{const a=Math.abs(n),s=n<0?'-':'';if(a>=1e6)return s+'$'+(a/1e6).toFixed(2).replace(/\.?0+$/,'')+'M';if(a>=1e3)return s+'$'+Math.round(a/1e3)+'K';return s+'$'+Math.round(a).toLocaleString('en-US');};
-const money2=n=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-const hrsY=n=>Math.round(n).toLocaleString('en-US');
-const n1=n=>n.toLocaleString('en-US',{maximumFractionDigits:1});
-let LAST=null;
-
-function calcModel(ov){
-  ov=ov||{};
-  const seats=Math.max(0,num('seats'));
-  const customers=Math.max(1,num('customers'));
-  const appsPC=Math.max(0,num('appsPerCust'));
-  const olap=Math.min(1,Math.max(0,num('overlap')/100));
-  const uRate=Math.max(0,num('updateRate')/100);
-  const cust=Math.min(1,Math.max(0,num('pctCustom')/100));
-  const env=Math.max(1,ov.env!==undefined?ov.env:num('envMult'));
-  const rate=num('rate'),lic=num('lic'),bill=num('bill');
-  const stdT=num('stdT'),custT=num('custT');
-  const stdA=ov.stdA!==undefined?ov.stdA:num('stdA');
-  const custA=ov.custA!==undefined?ov.custA:num('custA');
-  const tRed=(ov.tRed!==undefined?ov.tRed:num('tRed')/100);
-  const pRed=(ov.pRed!==undefined?ov.pRed:num('pRed')/100);
-
-  // derived workload
-  const distinctApps=appsPC*(olap+customers*(1-olap));
-  const pkgMo=distinctApps*uRate;
-  const patchMoH=distinctApps*num('patchMinApp')/60;
-  const ticketsMo=seats*num('tik100')/100;
-  const tmin=num('ticketMin');
-
-  const real=Math.min(1,Math.max(0,(ov.real!==undefined?ov.real:num('realization')/100)));
-  const implC=Math.max(0,num('implCost')),ramp=Math.min(12,Math.max(0,num('rampMonths'))),otherAW=Math.max(0,num('otherAW'));
-  const stdReqY=pkgMo*(1-cust)*12,custReqY=pkgMo*cust*12,R=rate;
-  const offHn=stdReqY*stdT*env,offHaT=stdReqY*stdA;
-  const cpkHn=custReqY*custT*env,cpkHaT=custReqY*custA;
-  const patHn=patchMoH*12,patHaT=patHn*(1-pRed);
-  const tikHn=ticketsMo*12*(tmin/60),tikHaT=tikHn*(1-tRed);
-  const eff=(cur,tech)=>cur-(cur-tech)*real;
-  const offHa=eff(offHn,offHaT),cpkHa=eff(cpkHn,cpkHaT),patHa=eff(patHn,patHaT),tikHa=eff(tikHn,tikHaT);
-  const labHn=offHn+cpkHn+patHn+tikHn,labHa=offHa+cpkHa+patHa+tikHa;
-  const offCn=offHn*R,offCa=offHa*R,cpkCn=cpkHn*R,cpkCa=cpkHa*R,patCn=patHn*R,patCa=patHa*R,tikCn=tikHn*R,tikCa=tikHa*R;
-  const labCn=labHn*R,labCa=labHa*R,licC=seats*lic*12,totCn=labCn,totCa=labCa+licC+otherAW;
-  const gross=labCn-labCa,net=totCn-totCa,pct=totCn>0?net/totCn:0,roi=licC>0?gross/licC:0;
-  const beLic=seats>0?Math.max(0,(gross-otherAW)/(seats*12)):0;
-  const rampFactor=1-ramp/24;
-  const y1Net=gross*rampFactor-licC-otherAW-implC;
-  let payback=null,cum=-implC;const moNet=g=>g;
-  for(let mo=1;mo<=60;mo++){const ad=ramp<=0?1:(mo<=ramp?(mo-0.5)/ramp:1);cum+=gross/12*ad-licC/12-otherAW/12;if(cum>=0){payback=mo;break;}}
-  const fteFreed=(labHn-labHa)/FTE_HOURS,fteN=labHn/FTE_HOURS,fteA=labHa/FTE_HOURS;
-  const syrN=seats>0?totCn/seats:0,syrA=seats>0?totCa/seats:0,smoN=syrN/12,smoA=syrA/12;
-  const buildN=((1-cust)*stdT+cust*custT),buildA=((1-cust)*stdA+cust*custA);
-  const lev=labCa>0?labCn/labCa:0;
-  const custCostN=totCn/customers,custCostA=totCa/customers;
-  const offPerCustN=offCn/customers,offPerCustA=offCa/customers;
-  const nextCustPkgMo=appsPC*(1-olap)*uRate;
-
-  // Motion 2 — service line
-  const attach=Math.min(1,Math.max(0,num('attachPct')/100)), svcPrice=Math.max(0,num('svcPrice'));
-  const attSeats=seats*attach;
-  const svcRev=attSeats*svcPrice*12;
-  const svcCoS=seats>0?attSeats*((totCa-tikCa)/seats):0; // SKU scope: packaging+patch+platform; app-desk support remains in base contract
-  const svcGM=svcRev-svcCoS;
-  const svcGMp=svcRev>0?svcGM/svcRev:0;
-
-  // Motion 3 — SI acceleration (same per-app engine)
-  const pj=Math.max(0,num('projYr')), pjApps=Math.max(0,num('projApps')), pjRep=Math.min(1,Math.max(0,num('projRepack')/100));
-  const pjTeam=Math.max(0.25,num('projTeam')), pjCap=Math.min(1,Math.max(0,num('projCapture')/100));
-  const pjDelay=Math.max(0,num('projDelay')), pjCost=Math.max(0,num('projCost'));
-  const perAppN=buildN*env, perAppA=buildA;
-  const pjAppsY=pj*pjApps*pjRep;
-  const pjHrsN=pjAppsY*perAppN;
-  const pjHrsA=pjHrsN-(pjHrsN-pjAppsY*perAppA)*real;
-  const pjLab=(pjHrsN-pjHrsA)*R;
-  const pjWkSavedProj=pj>0?((pjHrsN-pjHrsA)/pj)/(pjTeam*40):0;
-  const pjWk=pjWkSavedProj*pjCap;
-  const pjSched=pj*pjWk*pjDelay;
-  const m3=pjLab+pjSched-pjCost;
-
-  const totalImpact=net+svcGM+m3;
-
-  // Shapley split (motion 1)
-  const envStd=0.5*(env-1)*(stdT+stdA)*stdReqY*R*real;
-  const catStd=0.5*(stdT-stdA)*(env+1)*stdReqY*R*real;
-  const envCust=0.5*(env-1)*(custT+custA)*custReqY*R*real;
-  const autoCust=0.5*(custT-custA)*(env+1)*custReqY*R*real;
-  const dDefine=envStd+envCust,dCatalog=catStd,dCustom=autoCust,dPatch=patCn-patCa,dSelf=tikCn-tikCa;
-
-  return {seats,customers,appsPC,olap,uRate,cust,env,rate,lic,bill,
-    distinctApps,pkgMo,patchMoH,ticketsMo,nextCustPkgMo,
-    offHn,offHa,cpkHn,cpkHa,patHn,patHa,tikHn,tikHa,labHn,labHa,
-    offCn,offCa,cpkCn,cpkCa,patCn,patCa,tikCn,tikCa,labCn,labCa,licC,totCn,totCa,
-    gross,net,pct,roi,beLic,fteFreed,fteN,fteA,syrN,syrA,smoN,smoA,buildN,buildA,lev,custCostN,custCostA,offPerCustN,offPerCustA,
-    attach,svcPrice,attSeats,svcRev,svcCoS,svcGM,svcGMp,
-    real,implC,ramp,otherAW,rampFactor,y1Net,payback,
-    pj,pjApps:pjApps,pjRep,pjTeam,pjCap,pjDelay,pjCost,pjWk,pjWkSavedProj,pjAppsY,pjHrsN,pjHrsA,pjLab,pjSched,m3,totalImpact,
-    dDefine,dCatalog,dCustom,dPatch,dSelf};
+const $=id=>document.getElementById(id), n=id=>Math.max(0,Number($(id)?.value)||0), pct=id=>Math.min(1,n(id)/100);
+const money=v=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(v||0);
+const num=v=>new Intl.NumberFormat('en-US',{maximumFractionDigits:1}).format(v||0);
+const activities=[
+ {id:'intake',name:'Request intake and entitlement',vol:'releases',mins:20,rework:5,cap:'Catalog, request and approval',addr:40,future:35,remain:'Policy, approvals and exceptions'},
+ {id:'source',name:'Installer sourcing and version research',vol:'releases',mins:35,rework:8,cap:'Setup Store',addr:60,future:20,remain:'Uncovered and private installers'},
+ {id:'standard',name:'Standard package build / rebuild',vol:'releases',mins:240,rework:12,cap:'Managed packages',addr:60,future:15,remain:'Validation, customer settings, release'},
+ {id:'custom',name:'Custom / complex package engineering',vol:'custom',mins:720,rework:20,cap:'Reusable actions and automation',addr:35,future:50,remain:'Custom logic, vendor and app-owner testing'},
+ {id:'validate',name:'Testing, security and approval',vol:'releases',mins:90,rework:10,cap:'Staged workflow and evidence',addr:25,future:55,remain:'Accountability remains with partner/customer'},
+ {id:'publish',name:'Publishing and deployment setup',vol:'releasesTargets',mins:30,rework:6,cap:'Deployment automation',addr:55,future:30,remain:'Targeting, change windows and exceptions'},
+ {id:'update',name:'Update monitoring and release coordination',vol:'releases',mins:45,rework:8,cap:'Managed package updates and stages',addr:55,future:30,remain:'Approval, sequencing and exception policy'},
+ {id:'support',name:'Addressable app requests and deployment incidents',vol:'ticketsAnnual',mins:20,rework:5,cap:'Catalog, repair and self-service',addr:35,future:30,remain:'Functional defects and unrelated endpoint issues'},
+ {id:'report',name:'Reporting, audit and service review',vol:'monthlyCustomers',mins:90,rework:0,cap:'Reporting and audit data',addr:40,future:35,remain:'Narrative, governance and customer review'},
+ {id:'exceptions',name:'Customer-specific exception handling',vol:'exceptionReleases',mins:120,rework:15,cap:'Reusable definitions where policy allows',addr:20,future:60,remain:'Customer-specific configuration and approvals'}
+];
+function annualVol(a){
+ const rel=n('releases'), tickets=n('ticketsCurrent')*12;
+ return ({releases:rel,custom:rel*pct('customShare'),releasesTargets:rel*n('targets'),ticketsAnnual:tickets,monthlyCustomers:n('customers')*12,exceptionReleases:rel*pct('exceptions')})[a.vol]||0;
 }
-
-function setDelta(id,v){const el=$(id);if(v>=0){el.textContent=usd(v);el.className='num pos';}else{el.textContent='('+usd(Math.abs(v))+')';el.className='num neg';}}
-function setPct(id,cur,aw){const el=$(id);if(cur<=0){el.textContent='n/m';el.className='num';return;}const d=(cur-aw)/cur;el.textContent=(d*100).toFixed(0)+'%';el.className='num '+(d>=0?'pos':'neg');}
-function fillRow(k,hn,ha,cn,ca){if(hn!==null){$('sh_'+k).textContent=hrsY(hn)+' \u2192 '+hrsY(ha)+' hrs';}$('c_'+k+'_n').textContent=usd(cn);$('c_'+k+'_a').textContent=usd(ca);const d=cn-ca,el=$('d_'+k),pc=cn>0?Math.round(d/cn*100):null;el.innerHTML=(d>=0?usd(d):'('+usd(Math.abs(d))+')')+(pc!==null?' <small>\u2212'+Math.abs(pc)+'%</small>':'');el.className='num '+(d>=0?'pos':'neg');}
-
-function render(m){
-  $('dw_spc').textContent=m.customers>0?Math.round(m.seats/m.customers).toLocaleString('en-US'):'—';
-  $('dw_apps').textContent=Math.round(m.distinctApps).toLocaleString('en-US');
-  $('dw_pkg').textContent=n1(m.pkgMo)+' req';
-  $('dw_patch').textContent=n1(m.patchMoH)+' h';
-  $('dw_tik').textContent=Math.round(m.ticketsMo).toLocaleString('en-US');
-
-  // total impact bridge
-  $('s_m1').textContent=usd(m.net);
-  $('s_m2').textContent=usd(m.svcGM);$('s_m2').className=m.svcGM>=0?'pos':'neg';
-  $('s_m3').textContent=usd(m.m3);
-  $('s_tot').textContent=usd(m.totalImpact);
-
-  // side-by-side
-  const pkY=Math.round(m.pkgMo*12), pkgHn=m.offHn+m.cpkHn, pkgHa=m.offHa+m.cpkHa;
-  $('sx_sub_n').textContent=pkY.toLocaleString('en-US')+' packages · '+Math.round(m.distinctApps)+' apps · '+m.env+' environments each';
-  $('sx_sub_a').textContent=pkY.toLocaleString('en-US')+' packages · '+Math.round(m.distinctApps)+' apps · built once';
-  $('sx_pkg_n').textContent=usd(pkgHn*m.rate);$('sx_pkg_ns').textContent=hrsY(pkgHn)+' hrs';
-  $('sx_pkg_a').textContent=usd(pkgHa*m.rate);$('sx_pkg_as').textContent=hrsY(pkgHa)+' hrs';
-  $('sx_upd_n').textContent=usd(m.patCn);$('sx_upd_ns').textContent=hrsY(m.patHn)+' hrs';
-  $('sx_upd_a').textContent=usd(m.patCa);$('sx_upd_as').textContent=hrsY(m.patHa)+' hrs';
-  $('sx_tik_n').textContent=usd(m.tikCn);$('sx_tik_ns').textContent=hrsY(m.tikHn)+' hrs';
-  $('sx_tik_a').textContent=usd(m.tikCa);$('sx_tik_as').textContent=hrsY(m.tikHa)+' hrs';
-  $('sx_rta_n').textContent=num('rtaCur')+' days';$('sx_rta_a').textContent=(num('rtaAW')<1?'same day':num('rtaAW')+' days');
-  $('sx_fte_n').textContent=m.fteN.toFixed(1)+' FTE';$('sx_fte_a').textContent=m.fteA.toFixed(1)+' FTE';
-  $('sx_lic_a').textContent=usd(m.licC);
-  $('sx_cps_n').textContent=money2(m.smoN);$('sx_cps_a').textContent=money2(m.smoA);
-  $('sx_tot_n').textContent=usd(m.totCn);$('sx_tot_a').textContent=usd(m.totCa);
-  const pkgEff=pkgHn>0?1-pkgHa/pkgHn:0, perPkgN=pkY>0?pkgHn/pkY:0, perPkgA=pkY>0?pkgHa/pkY:0;
-  $('bd_keep').textContent=usd(m.net)+' ('+ (m.pct*100).toFixed(0)+'%)';
-  $('bd_hrs').textContent=Math.round(m.labHn-m.labHa).toLocaleString('en-US');
-  $('bd_fte').textContent=m.fteFreed.toFixed(1);
-  $('bd_pkgeff').textContent='\u2212'+(pkgEff*100).toFixed(0)+'%';
-  $('bd_perpkg').textContent=n1(perPkgN)+' \u2192 '+n1(perPkgA);
-  const freedHrs=Math.round(m.labHn-m.labHa);
-  $('r_fte').textContent=freedHrs.toLocaleString('en-US')+' hrs';
-  $('r_fte_l').textContent='About '+m.fteFreed.toFixed(1)+' FTE of manual work removed — scales with your book, not the labor rate.';
-  $('r_pct').textContent=(m.pct*100).toFixed(0)+'%';
-  $('r_pct_l').textContent='Lower cost to deliver at $'+Math.round(m.rate)+'/hr';
-  $('r_roi').textContent=(m.roi>=100?'100+':m.roi.toFixed(1))+'×';
-  const be=m.beLic, rt=Math.round(m.rate), bec=$('beCallout');
-  if(be<=0){bec.style.display='none';}
-  else{
-    bec.style.display='block';
-    if(m.lic<=be){
-      bec.style.borderLeftColor='var(--green)';
-      bec.innerHTML='<b>License headroom:</b> labor savings alone cover up to <b>$'+be.toFixed(2)+'/user/mo</b> — your $'+m.lic.toFixed(2)+' fits well inside.';
-    } else {
-      bec.style.borderLeftColor='var(--red)';
-      bec.innerHTML='<b>License above labor breakeven ($'+be.toFixed(2)+'):</b> the case then rests on the service line, faster projects and '+m.fteFreed.toFixed(1)+' FTE freed — price at partner tier.';
-    }
-  }
-  $('sumProse').innerHTML='Your book: <b>'+m.customers+' customers · '+m.seats.toLocaleString('en-US')+' seats · '+Math.round(m.distinctApps)+' managed apps</b> at $'+Math.round(m.rate)+'/hr — three motions, one total.';
-
-  // Motion 2 — service line
-  $('svc_hdr').textContent='Service P&L \u2014 illustrative, '+Math.round(m.attach*100)+'% attach at '+money2(m.svcPrice)+'/seat/mo';
-  $('svc_rev_sub').textContent=Math.round(m.attSeats).toLocaleString('en-US')+' attached seats \u00d7 '+money2(m.svcPrice)+' \u00d7 12';
-  $('svc_rev').textContent=usd(m.svcRev);
-  $('svc_cos').textContent=usd(m.svcCoS);
-  {const el=$('svc_gm');el.textContent=usd(m.svcGM)+'  ('+(m.svcGMp*100).toFixed(0)+'%)';el.className='num '+(m.svcGM>=0?'pos':'neg');}
-  $('svc_note').textContent=m.svcGMp>=0.5?'At this price the SKU clears the 50\u201360% recurring-services gross-margin benchmark.':'Below the 50\u201360% recurring-services GM benchmark \u2014 raise price, scope, or attach to clear it.';
-  $('xp_rta_n').textContent=num('rtaCur')+' days';$('xp_rta_a').textContent=num('rtaAW')+' days';
-  $('xp_suc_n').textContent=num('succCur')+'%';$('xp_suc_a').textContent=num('succAW')+'%';
-
-  // Motion 3 — SI
-  const pjs=$('projSec'); pjs.style.display=m.pj>0?'block':'none';
-  if(m.pj>0){
-    $('pj_hdr').textContent='SI portfolio \u2014 '+m.pj+' projects / yr';
-    $('pj_sub').textContent=Math.round(m.pjAppsY).toLocaleString('en-US')+' apps across '+m.pj+' projects';
-    $('pj_hrs_n').textContent=hrsY(m.pjHrsN)+' h';$('pj_hrs_a').textContent=hrsY(m.pjHrsA)+' h';
-    setDelta('pj_lab_d',m.pjLab);
-    $('pj_wk_sub').textContent='after '+Math.round(m.pjCap*100)+'% critical-path capture';
-    $('pj_wk').textContent=n1(m.pjWk)+' wks/project';
-    setDelta('pj_sched',m.pjSched);
-    {const el=$('pj_inc');el.textContent='('+usd(m.pjCost)+')';el.className='num neg';}
-    {const el=$('pj_tot');el.textContent=usd(m.m3);el.className='num '+(m.m3>=0?'pos':'neg');}
-  }
-  $('y1Line').innerHTML='<b>Year one:</b> '+usdC(m.y1Net)+' net after '+usdC(m.implC)+' implementation'+(m.payback?(' \u00b7 payback in month '+m.payback):'')+' \u00b7 shown at '+Math.round(m.real*100)+'% realization.';
-  const con=calcModel({env:2,stdA:0.6,custA:5,tRed:0.20,pRed:0.30,real:0.6});
-  const ups=calcModel({env:3.5,stdA:0.25,custA:3,tRed:0.70,pRed:0.60,real:0.9});
-  const put=(p,x)=>{$('z_'+p+'_net').textContent=usdC(x.net);$('z_'+p+'_pct').textContent=(x.pct*100).toFixed(0)+'%';$('z_'+p+'_roi').textContent=(x.roi>=100?'100+':x.roi.toFixed(1))+'×';};
-  put('con',con);put('bas',m);put('ups',ups);
-
-  const drivers=[['define',m.dDefine],['catalog',m.dCatalog],['custom',m.dCustom],['self',m.dSelf],['patch',m.dPatch]];
-  const maxD=Math.max(...drivers.map(d=>d[1]),0.0001);
-  drivers.forEach(([k,v])=>{$('dv_'+k).firstChild.textContent=usd(v);$('dp_'+k).textContent=m.gross>0?'  '+(v/m.gross*100).toFixed(0)+'%':'';$('db_'+k).style.width=(Math.max(0,v)/maxD*100)+'%';});
-  $('g_gross').textContent=usd(m.gross);$('g_lic').textContent='('+usd(m.licC)+')';$('g_net').textContent=usd(m.net);
-
-  $('bm_lev').textContent=(m.lev>=100?'100+':m.lev.toFixed(1))+'×';
-  $('bm_txt').innerHTML='Nothing is rebuilt for a new tenant — every customer taps the same builds, so one team carries <b>'+(m.lev>=100?'100+':m.lev.toFixed(1))+'\u00d7</b> the delivery volume.';
-  $('mt_hdr').textContent='Per customer / tenant ('+Math.round(m.customers)+' in book)';
-  $('mt_cust_n').textContent=usd(m.custCostN);$('mt_cust_a').textContent=usd(m.custCostA);setDelta('mt_cust_d',m.custCostN-m.custCostA);
-  $('mt_off_n').textContent=usd(m.offPerCustN);$('mt_off_a').textContent=usd(m.offPerCustA);setDelta('mt_off_d',m.offPerCustN-m.offPerCustA);
-  $('mt_note').innerHTML='Your next customer adds only their unique apps (\u2248'+n1(m.nextCustPkgMo)+' packaging requests/mo) — the shared core is already built.';
-
-  const ms=$('marginSec');
-  if(m.bill>0&&m.seats>0){
-    ms.style.display='block';
-    const dcN=m.smoN/m.bill,dcA=m.smoA/m.bill;
-    $('mg_rev_n').textContent=money2(m.bill);$('mg_rev_a').textContent=money2(m.bill);
-    $('mg_cost_n').textContent=money2(m.smoN);$('mg_cost_a').textContent=money2(m.smoA);
-    {const d=m.smoN-m.smoA,el=$('mg_cost_d');el.textContent=(d<0?'('+money2(Math.abs(d))+')':money2(d));el.className='num '+(d>=0?'pos':'neg');}
-    $('mg_pct_n').textContent=(dcN*100).toFixed(0)+'%';$('mg_pct_a').textContent=(dcA*100).toFixed(0)+'%';
-    {const d=(dcN-dcA)*100,el=$('mg_pct_d');el.textContent=d.toFixed(0)+' pts';el.className='num '+(d>=0?'pos':'neg');}
-    $('mg_note').textContent='At '+money2(m.bill)+'/seat/mo billed, application delivery consumes '+(dcN*100).toFixed(0)+'% of the fee today versus '+(dcA*100).toFixed(0)+'% with Application Workspace — '+((dcN-dcA)*100).toFixed(0)+' points of gross-margin headroom.';
-  } else { ms.style.display='none'; }
-
-  // executive view
-  $('ex_cur').textContent=usd(m.totCn);
-  $('ex_aw').textContent=usd(m.totCa);
-  $('ex_fill').style.width=(m.totCn>0?Math.max(4,m.totCa/m.totCn*100):100)+'%';
-  $('ex_pct').textContent=(m.pct*100).toFixed(0)+'% lower cost to deliver';
-  $('ex_m1').textContent=usdC(m.net);
-  $('ex_m1s').textContent=m.fteFreed.toFixed(1)+' FTE of capacity returned';
-  $('ex_m2').textContent=usdC(m.svcGM);
-  $('ex_m2s').textContent=money2(m.svcPrice)+'/seat/mo at '+Math.round(m.attach*100)+'% attach · '+(m.svcGMp*100).toFixed(0)+'% margin';
-  $('ex_m3').textContent=usdC(m.m3);
-  $('ex_m3s').textContent=n1(m.pjWk)+' weeks pulled in per project · '+m.pj+' projects';
-  $('ex_tot').textContent=usdC(m.totalImpact);
-  $('ex_note').textContent='Savings realization-adjusted at '+Math.round(m.real*100)+'% · year-one net '+usdC(m.y1Net)+(m.payback?(', payback month '+m.payback):'')+' · breakeven license $'+m.beLic.toFixed(2)+'/user/mo · confirm SKU and partner-tier licensing.';
-  // bake-off presets (live from the model)
-  const bkA=Math.max(1,num('bakeApps'));
-  $('bk_seats').textContent=m.seats.toLocaleString('en-US');
-  $('bk_cust').textContent=m.customers;
-  $('bk_apps').textContent=Math.round(m.distinctApps).toLocaleString('en-US');
-  $('bk_freq').textContent=Math.round(m.uRate*100)+'% / mo';
-  $('bk_pkgh').textContent=n1(pkgHn/12)+' hrs';
-  $('bk_tik').textContent=Math.round(m.ticketsMo).toLocaleString('en-US');
-  $('bk_rate').textContent='$'+Math.round(m.rate)+'/hr';
-  $('bk_rta').textContent=num('rtaCur')+' days';
-  $('bk_mix').textContent=Math.round(bkA*(1-m.cust))+' std / '+Math.round(bkA*m.cust)+' custom';
-  $('bk_pred_cur').textContent=n1(bkA*perPkgN)+' hrs';
-  $('bk_pred_aw').textContent=n1(bkA*perPkgA)+' hrs';
-  $('bk_msr_pkg').textContent=n1(bkA*(perPkgN-perPkgA))+' hrs';
-  $('bk_msr_tik').textContent='\u2212'+Math.round(num('tRed')*m.real)+'% predicted';
-  $('bk_msr_rta').textContent=num('rtaCur')+' d \u2192 '+(num('rtaAW')<1?'same day':num('rtaAW')+' d');
-  $('bk_cps').textContent=money2(m.smoN)+' \u2192 '+money2(m.smoA);
-  $('bk_tt').textContent=num('rtaCur')+' d \u2192 '+(num('rtaAW')<1?'same day':num('rtaAW')+' d');
-  $('bk_cap').textContent=m.fteFreed.toFixed(1)+' FTE';
-  $('bk_keep').textContent=usd(m.net);
-  $('bk_mult').innerHTML='<b>The endpoint multiplier:</b> '+money2(m.smoN-m.smoA)+'/user/mo \u00d7 '+m.seats.toLocaleString('en-US')+' endpoints \u00d7 12 = <b>'+usd(m.net)+'</b> per year \u2014 pricing scales by user, and so does the efficiency.';
-  $('as_std_b').textContent=num('stdT')+' h';$('as_std_a').textContent=num('stdA')+' h';
-  $('as_cust_b').textContent=num('custT')+' h';$('as_cust_a').textContent=num('custA')+' h';
-  $('as_env_b').textContent=m.env+'\u00d7';$('as_env_a').textContent='1\u00d7 build once';
-  $('as_tik_b').textContent=num('tik100')+' /100 seats/mo';$('as_tik_a').textContent='\u2212'+Math.round(num('tRed')*m.real)+'% effective';
-  $('as_pat_b').textContent=num('patchMinApp')+' min/app/mo';$('as_pat_a').textContent='\u2212'+Math.round(num('pRed')*m.real)+'% effective';
-  $('as_succ_b').textContent=num('succCur')+'%';$('as_succ_a').textContent=num('succAW')+'%';
-  $('as_rta_b').textContent=num('rtaCur')+' days';$('as_rta_a').textContent=(num('rtaAW')<1?'same day':num('rtaAW')+' days');
-  $('as_real_b').textContent='claims at 100%';$('as_real_a').textContent=Math.round(m.real*100)+'% applied';
-  syncGeo();
+function buildTables(){
+ const tb=$('activityTable').querySelector('tbody'), ab=$('addressTable').querySelector('tbody');
+ tb.innerHTML='';ab.innerHTML='';
+ activities.forEach(a=>{
+  tb.insertAdjacentHTML('beforeend',`<tr><td>${a.name}</td><td><input id="${a.id}_vol" type="number"></td><td><input id="${a.id}_min" type="number" value="${a.mins}"></td><td><input id="${a.id}_rw" type="number" value="${a.rework}"></td><td class="num" id="${a.id}_hrs">—</td><td><select id="${a.id}_ev"><option>Assumption</option><option>Partner-provided</option><option>Measured</option><option>Unvalidated</option></select></td></tr>`);
+  ab.insertAdjacentHTML('beforeend',`<tr><td>${a.name}</td><td>${a.cap}</td><td><input id="${a.id}_addr" type="number" value="${a.addr}"></td><td><input id="${a.id}_future" type="number" value="${a.future}"></td><td>${a.remain}</td></tr>`);
+ });
 }
-
-function syncGeo(){
-  const r=num('rate');
-  document.querySelectorAll('.geochip').forEach(c=>c.classList.toggle('active', parseFloat(c.dataset.rate)===r));
+function syncDerivedVolumes(){
+ activities.forEach(a=>{ const el=$(a.id+'_vol'); if(el && !el.dataset.edited) el.value=Math.round(annualVol(a)); });
 }
-function compute(){LAST=calcModel();render(LAST);}
-$('today').textContent=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-ids.forEach(id=>{const el=$(id);if(el)el.addEventListener('input',compute);});
-document.querySelectorAll('.geochip').forEach(c=>c.addEventListener('click',()=>{$('rate').value=c.dataset.rate;compute();}));
-$('reset').addEventListener('click',()=>{ids.forEach(id=>$(id).value=DEFAULTS[id]);$('client').value='';compute();});
-document.querySelectorAll('.tabbtn').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('.tabbtn').forEach(x=>x.classList.toggle('active',x===b));
-  ['exec','analysis','why','bake'].forEach(k=>{$('tab-'+k).style.display=(k===b.dataset.tab)?'block':'none';});
-}));
-$('toModel').addEventListener('click',()=>document.querySelector('.tabbtn[data-tab="analysis"]').click());
-
-/* ---------------- one-page PDF exhibit ---------------- */
-function generatePDF(){
-  const m=LAST||calcModel();
-  if(!window.jspdf||!window.jspdf.jsPDF){window.print();return;}
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF({unit:'pt',format:'letter'});
-  const ML=44,MR=612-44,dateStr=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-  const client=($('client').value||'').trim();
-  const geoLbl=m.rate>=90?'onshore':(m.rate>=55?'blended':'offshore');
-  const INK=[26,26,46],GRAY=[74,74,90],LIGHT=[110,110,120],HAIR=[210,210,222],GREEN=[15,122,63],RED=[176,35,24],BLUE=[0,0,204],TRK=[228,228,238];
-  const F=(w,s,c)=>{doc.setFont('helvetica',w);doc.setFontSize(s);doc.setTextColor(c[0],c[1],c[2]);};
-  const ln=(y,c)=>{c=c||HAIR;doc.setDrawColor(c[0],c[1],c[2]);doc.setLineWidth(c===INK?1:0.6);doc.line(ML,y,MR,y);};
-  const R=(t,x,y)=>doc.text(t,x,y,{align:'right'});
-  const dl=v=>v>=0?usd(v):'('+usd(Math.abs(v))+')';
-
-  F('bold',15,BLUE);doc.text('Recast',ML,40);const rw=doc.getTextWidth('Recast');
-  F('normal',9,GRAY);doc.text('Software',ML+rw+5,40);
-  F('normal',8.5,LIGHT);R('Board Exhibit \u00b7 Confidential',MR,36);R(dateStr,MR,48);
-  ln(56,INK);
-  F('bold',15,INK);doc.text('Application Workspace — partner business case',ML,76);
-  F('normal',8.5,GRAY);doc.text((client?client+'  \u00b7  ':'')+m.customers+' customers \u00b7 '+m.seats.toLocaleString('en-US')+' seats \u00b7 '+Math.round(m.distinctApps)+' apps \u00b7 '+n1(m.pkgMo)+' req/mo (derived) \u00b7 '+m.env+' env/app \u00b7 $'+Math.round(m.rate)+'/hr ('+geoLbl+') \u00b7 $'+m.lic+'/user/mo \u00b7 '+Math.round(m.real*100)+'% realization',ML,90);
-
-  let y=112;F('bold',10,INK);doc.text('Total annual impact — three commercial motions',ML,y);y+=5;ln(y);y+=15;
-  const bxR=300;const brow=(l,v,c,b)=>{F(b?'bold':'normal',b?10.5:9.5,INK);doc.text(l,ML,y);F(b?'bold':'normal',b?10.5:9.5,c||INK);R(v,bxR,y);y+=15;};
-  brow('\u2460 Margin recovery (net of license)',usd(m.net),GREEN);
-  brow('\u2461 Managed App Delivery gross margin',usd(m.svcGM),m.svcGM>=0?GREEN:RED);
-  brow('\u2462 SI acceleration (readiness + schedule)',usd(m.m3),GREEN);
-  doc.setDrawColor(INK[0],INK[1],INK[2]);doc.setLineWidth(0.9);doc.line(ML,y-10,bxR,y-10);y+=1;
-  brow('Total annual business impact',usd(m.totalImpact),GREEN,true);
-  F('normal',7.5,LIGHT);doc.text('Motion-\u2460 breakeven license at $'+Math.round(m.rate)+'/hr: $'+m.beLic.toFixed(2)+'/user/mo \u00b7 service GM '+(m.svcGMp*100).toFixed(0)+'% at '+money2(m.svcPrice)+'/seat',ML,y+2);
-  let ry=128,rx=340;const rat=(v,l,c)=>{F('bold',13.5,c||INK);doc.text(v,rx,ry);F('normal',8,LIGHT);const L=doc.splitTextToSize(l,MR-rx);doc.text(L,rx,ry+11);ry+=22+L.length*9;};
-  rat(Math.round(m.labHn-m.labHa).toLocaleString('en-US')+' hrs ('+m.fteFreed.toFixed(1)+' FTE)','Ops workload removed — derived from the book, rate-independent',GREEN);
-  rat((m.pct*100).toFixed(0)+'%','Reduction in cost to deliver (motion \u2460)');
-  rat((m.roi>=100?'100+':m.roi.toFixed(1))+'\u00d7','Labor saved per $1 of license');
-
-  y=Math.max(y+12,ry)+8;F('bold',10,INK);doc.text('Motion \u2460 — cost and labor comparison',ML,y);y+=5;ln(y);
-  const cHn=300,cHa=356,cCn=430,cCa=500,cD=558,cP=MR;
-  y+=13;F('bold',7.5,LIGHT);doc.text('ACTIVITY — ANNUAL',ML,y);R('HRS CUR',cHn,y);R('HRS AW',cHa,y);R('COST CUR',cCn,y);R('COST AW',cCa,y);R('\u0394 COST',cD,y);R('\u0394 %',cP,y);
-  y+=4;ln(y);
-  const mrow=(l,hn,ha,cn,ca,o)=>{o=o||{};y+=16;F(o.bold?'bold':'normal',8.5,INK);doc.text(l,ML,y-6);
-    F(o.bold?'bold':'normal',8.5,INK);if(hn!==null){R(hrsY(hn),cHn,y-6);R(hrsY(ha),cHa,y-6);}else{R('\u2014',cHn,y-6);R('\u2014',cHa,y-6);}
-    R(usd(cn),cCn,y-6);R(usd(ca),cCa,y-6);const d=cn-ca;F(o.bold?'bold':'normal',8.5,d>=0?GREEN:RED);R(dl(d),cD,y-6);
-    if(o.pct===false){F('normal',8.5,LIGHT);R('n/m',cP,y-6);}else{const dp=cn>0?(cn-ca)/cn:0;F(o.bold?'bold':'normal',8.5,dp>=0?GREEN:RED);R((dp*100).toFixed(0)+'%',cP,y-6);}
-    if(o.thick){doc.setDrawColor(INK[0],INK[1],INK[2]);doc.setLineWidth(0.9);}else{doc.setDrawColor(HAIR[0],HAIR[1],HAIR[2]);doc.setLineWidth(0.6);}doc.line(ML,y+1,MR,y+1);};
-  mrow('Off-the-shelf packaging',m.offHn,m.offHa,m.offCn,m.offCa,{});
-  mrow('Custom / unmanaged packaging',m.cpkHn,m.cpkHa,m.cpkCn,m.cpkCa,{});
-  mrow('Patching & updates',m.patHn,m.patHa,m.patCn,m.patCa,{});
-  mrow('Application support (tickets)',m.tikHn,m.tikHa,m.tikCn,m.tikCa,{});
-  mrow('Delivery labor subtotal',m.labHn,m.labHa,m.labCn,m.labCa,{bold:true});
-  mrow('Application Workspace license',null,null,0,m.licC,{pct:false});
-  mrow('Total application-delivery cost',null,null,m.totCn,m.totCa,{bold:true,thick:true});
-
-  y+=18;const midX=312;
-  F('bold',9.5,INK);doc.text('Where motion-\u2460 savings come from',ML,y);doc.text('Motions \u2461 + \u2462 & unit economics',midX,y);
-  y+=4;doc.setDrawColor(HAIR[0],HAIR[1],HAIR[2]);doc.setLineWidth(0.6);doc.line(ML,y,midX-16,y);doc.line(midX,y,MR,y);
-  let yd=y+14;const barX=ML,barW=midX-16-ML-96;
-  const drv=(l,v)=>{const share=m.gross>0?v/m.gross:0;F('normal',8,INK);doc.text(l,barX,yd);F('bold',8,INK);R(usd(v),midX-16,yd-8);
-    doc.setFillColor(TRK[0],TRK[1],TRK[2]);doc.roundedRect(barX,yd+2,barW,4,2,2,'F');doc.setFillColor(BLUE[0],BLUE[1],BLUE[2]);doc.roundedRect(barX,yd+2,Math.max(2,barW*Math.max(0,share)),4,2,2,'F');
-    F('normal',7,LIGHT);R((share*100).toFixed(0)+'%',midX-16,yd+6);yd+=19;};
-  drv('Setup Store runs the standard estate',m.dCatalog);
-  drv('One definition, every platform',m.dDefine);
-  drv('Custom apps standardized',m.dCustom);
-  drv('Catalog self-service',m.dSelf);
-  drv('Staged release & updates',m.dPatch);
-  let yr2=y+13;
-  const uRow=(l,v)=>{F('normal',8,INK);doc.text(l,midX,yr2);F('bold',8,INK);R(v,MR,yr2);yr2+=13;};
-  uRow('Service revenue ('+Math.round(m.attach*100)+'% @ '+money2(m.svcPrice)+')',usdC(m.svcRev));
-  uRow('Service gross margin',usdC(m.svcGM)+' ('+(m.svcGMp*100).toFixed(0)+'%)');
-  uRow('SI readiness labor saved',usdC(m.pjLab));
-  uRow('SI schedule value ('+m.pj+' proj \u00d7 '+n1(m.pjWk)+' wk)',usdC(m.pjSched));
-  uRow('Cost / seat / mo',money2(m.smoN)+' \u2192 '+money2(m.smoA));
-  uRow('Cost / customer / yr',usdC(m.custCostN)+' \u2192 '+usdC(m.custCostA));
-  uRow('Multi-tenant leverage',(m.lev>=100?'100+':m.lev.toFixed(1))+'\u00d7');
-  uRow('Year-1 net \u00b7 payback',usdC(m.y1Net)+(m.payback?' \u00b7 mo '+m.payback:''));
-  yr2+=2;
-  const con=calcModel({env:2,stdA:0.6,custA:5,tRed:0.20,pRed:0.30,real:0.6});
-  const ups=calcModel({env:3.5,stdA:0.25,custA:3,tRed:0.70,pRed:0.60,real:0.9});
-  F('bold',7,LIGHT);doc.text('SENSITIVITY — MOTION \u2460 NET',midX,yr2);yr2+=12;
-  const sRow=(l,x)=>{F('normal',8,INK);doc.text(l,midX,yr2);F('bold',8,GREEN);R(usdC(x.net),MR-52,yr2);F('normal',8,GRAY);R((x.pct*100).toFixed(0)+'%',MR,yr2);yr2+=13;};
-  sRow('Conservative',con);sRow('Base',m);sRow('Upside',ups);
-
-  y=Math.max(yd,yr2)+10;ln(y);y+=10;
-  F('normal',7,LIGHT);
-  const note='Three motions per the Recast MSP & SI Partner Guide (Jul 2026). Workload derived: distinct apps = apps/cust x (overlap + customers x (1-overlap)); packaging = apps x '+Math.round(m.uRate*100)+'%/mo; tickets = seats x '+num('tik100')+'/100. Hours/FTE rate-independent. Shapley drivers sum exactly. Guardrails: margin claims are baselined; managed packages still need partner test/approve/rollout; Setup Store breadth varies by edition (full requires Release & Patch Management); SI acceleration only where app readiness is critical-path; confirm SKU and licensing before commitments. Sources: Okta 2025 (avg 101 apps/org); Camwood (packaging 30-40% of admin time); software = 1/3+ of desk volume (2026); self-service deflection 50-70%; rate guides onshore $80-150 / blended $30-60 / offshore $20-45. Planning estimate, not a measured baseline. Confidential.';
-  doc.text(doc.splitTextToSize(note,MR-ML),ML,y);
-
-  doc.save('Recast-AW-Partner-Business-Case'+(client?'-'+client.replace(/[^a-z0-9]+/gi,'-'):'')+'.pdf');
+function compute(){
+ syncDerivedVolumes();
+ const rate=n('rate'), realization=pct('realization'), monetize=pct('monetization');
+ let curHours=0,newHours=0,allMeasured=true;
+ activities.forEach(a=>{
+  const v=n(a.id+'_vol'), mins=n(a.id+'_min'), rw=pct(a.id+'_rw');
+  const hrs=v*mins/60*(1+rw); curHours+=hrs; $(a.id+'_hrs').textContent=num(hrs);
+  const addr=pct(a.id+'_addr'), fut=pct(a.id+'_future');
+  const modeled=hrs*(1-addr*realization*(1-fut)); newHours+=modeled;
+  if($(a.id+'_ev').value!=='Measured') allMeasured=false;
+ });
+ const curCost=curHours*rate, returned=Math.max(0,curHours-newHours), monetized=returned*monetize;
+ const licenseAnnual=n('users')*n('license')*12, platform=licenseAnnual+n('otherRecurring');
+ const monetizedValue=monetized*rate, netSS=monetizedValue-platform;
+ const rampFactor=Math.max(0,Math.min(1,(12-n('ramp')/2)/12));
+ const laborY1=monetizedValue*rampFactor, platformY1=platform, netY1=laborY1-platformY1-n('implementation');
+ const attached=n('users')*pct('attach'), svcRev=attached*n('price')*12, svcCost=attached*n('incrementalSvcCost')*12, svcMargin=svcRev-svcCost;
+ const eps=n('endpoints')+n('virtual');
+ $('k_users').textContent=num(n('users'));$('k_ep').textContent=num(eps);$('k_cust').textContent=num(n('customers'))+' / '+num(n('tenants'));$('k_rel').textContent=num(n('releases'));
+ $('cur_hours').textContent=num(curHours);$('cur_cost').textContent=money(curCost);$('cur_fte').textContent=num(curHours/1880);$('cur_cpu').textContent=money(curCost/Math.max(1,n('users'))/12);
+ $('f_cur_hours').textContent=num(curHours);$('f_cur_cost').textContent=money(curCost);$('f_cur_fte').textContent=num(curHours/1880);
+ $('f_new_hours').textContent=num(newHours);$('f_new_labor').textContent=money(newHours*rate);$('f_platform').textContent=money(platform);
+ $('cap_technical').textContent=num(returned);$('cap_fte').textContent=num(returned/1880);$('cap_monetized').textContent=num(monetized);$('cap_value').textContent=money(monetizedValue);
+ $('op_labor_ss').textContent=money(monetizedValue);$('op_labor_y1').textContent=money(laborY1);$('op_platform_ss').textContent='('+money(platform)+')';$('op_platform_y1').textContent='('+money(platformY1)+')';$('op_impl').textContent='('+money(n('implementation'))+')';$('op_net_ss').textContent=money(netSS);$('op_net_y1').textContent=money(netY1);
+ $('svc_users').textContent=num(attached);$('svc_rev').textContent=money(svcRev);$('svc_cost').textContent='('+money(svcCost)+')';$('svc_margin').textContent=money(svcMargin);
+ $('m_hours_model').textContent=num(curHours)+' → '+num(newHours);$('m_tickets_model').textContent=num(n('ticketsCurrent'))+' current';$('m_rta_model').textContent=num(n('rtaCurrent'))+' current';
+ const measuredHours=n('m_hours_cur')>0&&n('m_hours_aw')>0, measuredBake=measuredHours|| (n('m_tickets_cur')>0&&n('m_tickets_aw')>=0);
+ $('d_net').textContent=money(netSS);$('d_y1').textContent=money(netY1);$('d_capacity').textContent=num(returned/1880);$('d_service').textContent=money(svcMargin);
+ $('q_baseline').innerHTML=allMeasured?'<span class="tag measured">Measured</span>':'<span class="tag assumption">Mixed / assumed</span>';
+ $('q_coverage').innerHTML=pct('coverage')>0?'<span class="tag provided">Entered, validate</span>':'<span class="tag unvalidated">Missing</span>';
+ $('q_monetize').innerHTML=monetize>0?'<span class="tag assumption">'+Math.round(monetize*100)+'% assumed</span>':'<span class="tag unvalidated">No path entered</span>';
+ $('q_price').innerHTML=n('license')>0?'<span class="tag provided">Entered</span>':'<span class="tag unvalidated">Missing</span>';
+ $('q_bake').innerHTML=measuredBake?'<span class="tag measured">Measured values entered</span>':'<span class="tag unvalidated">Not completed</span>';
+ let rec='';
+ if(n('license')===0) rec='Do not approve a financial case yet. Validate approved licensing and partner commercial structure, then run the bake-off.';
+ else if(!measuredBake) rec='Proceed to a controlled bake-off. The operating hypothesis is complete enough to test, but the result is not approval-grade until measured values replace assumptions.';
+ else if(netY1>0) rec='The measured case and entered economics support an implementation decision, subject to security, architecture, licensing and contract review.';
+ else rec='The current year-one case does not clear the financial threshold. Revisit scope, catalog coverage, implementation cost, monetization path or service pricing before proceeding.';
+ $('recommendation').textContent=rec;
 }
-$('makePdf').addEventListener('click',generatePDF);
-
-function toast(msg){const t=$('toast');t.textContent=msg;t.style.opacity=1;t.style.transform='translateY(0)';clearTimeout(t._tm);t._tm=setTimeout(()=>{t.style.opacity=0;t.style.transform='translateY(8px)';},2200);}
-function execSummary(){const m=LAST||calcModel();const c=($('client').value||'the scoped organization').trim();
-return c+' — Application Workspace partner business case\n\n'
-+'Book: '+m.customers+' customers, '+m.seats.toLocaleString('en-US')+' seats, '+Math.round(m.distinctApps)+' distinct managed apps ('+Math.round(m.real*100)+'% realization, $'+Math.round(m.rate)+'/hr).\n\n'
-+'Motion 1 — margin recovery: '+usd(m.net)+' net per year ('+(m.pct*100).toFixed(0)+'% lower cost to deliver), '+m.fteFreed.toFixed(1)+' FTE of capacity returned. Breakeven license $'+m.beLic.toFixed(2)+'/user/mo.\n'
-+'Motion 2 — Managed Application Delivery: '+usd(m.svcRev)+' ARR at '+Math.round(m.attach*100)+'% attach and $'+m.svcPrice.toFixed(2)+'/seat/mo → '+usd(m.svcGM)+' service gross margin ('+(m.svcGMp*100).toFixed(0)+'%).\n'
-+'Motion 3 — SI acceleration: '+usd(m.m3)+' across '+m.pj+' projects ('+n1(m.pjWk)+' weeks pulled in per project after critical-path capture).\n\n'
-+'Total annual impact: '+usd(m.totalImpact)+'. Year-one motion-1 net: '+usd(m.y1Net)+(m.payback?' with estimated payback in month '+m.payback:'')+'.\n\nBenchmark defaults apply wherever account data has not been entered; confirm SKU, edition and partner-tier licensing.';}
-$('copySummary').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(execSummary());toast('Executive summary copied');}catch(e){const ta=document.createElement('textarea');ta.value=execSummary();document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Executive summary copied');}});
-$('saveScen').addEventListener('click',()=>{const data={version:1,savedAt:new Date().toISOString(),client:$('client').value,inputs:{}};ids.forEach(id=>data.inputs[id]=num(id));const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='aw-scenario'+(($('client').value||'').trim()?'-'+$('client').value.trim().replace(/[^a-z0-9]+/gi,'-').toLowerCase():'')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Scenario saved');});
-$('loadScen').addEventListener('click',()=>$('scenFile').click());
-$('scenFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!d.inputs)throw 0;ids.forEach(id=>{const v=Number(d.inputs[id]);if($(id)&&Number.isFinite(v))$(id).value=v;});if(typeof d.client==='string')$('client').value=d.client;compute();toast('Scenario loaded');}catch(err){toast('Could not load scenario file');}e.target.value='';});
-
+buildTables();
+document.addEventListener('input',e=>{if(e.target.matches('[id$="_vol"]'))e.target.dataset.edited='1';compute()});
+document.addEventListener('change',compute);
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active')});
+$('resetBtn').onclick=()=>location.reload();
+$('saveBtn').onclick=()=>{const data={};document.querySelectorAll('input,select').forEach(x=>{if(x.id&&x.type!=='file')data[x.id]=x.value});const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='application-workspace-operating-model-scenario.json';a.click();URL.revokeObjectURL(a.href)};
+$('loadBtn').onclick=()=>$('fileIn').click();
+$('fileIn').onchange=async e=>{try{const d=JSON.parse(await e.target.files[0].text());Object.entries(d).forEach(([k,v])=>{if($(k)){$(k).value=v;if(k.endsWith('_vol'))$(k).dataset.edited='1'}});compute()}catch{alert('Could not load scenario file.')}};
 compute();
 </script>
-</body>
-</html>
+</body></html>
