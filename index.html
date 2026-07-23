@@ -53,7 +53,7 @@ details{border:1px solid var(--line);border-radius:8px;background:var(--panel);p
 
 <main>
  <div class="hero">
-  <div><h1>Model the operating system, not just the software.</h1><p>Partner-entered metrics describe the current application-delivery model. The tool then separates addressable workload, returned capacity, monetized value, new-service economics, and customer/project value. Assumptions remain visible and replaceable by measured bake-off results.</p></div>
+  <div><h1>Assess the Current Application Delivery Model</h1><p>Enter the partner’s operating metrics to document current workload, labor, cost, service demand, and delivery complexity. The model then identifies which activities Application Workspace may affect, estimates the resulting operational and financial impact, and keeps all assumptions visible until they are replaced with measured bake-off results.</p></div>
  </div>
  <div class="grid">
   <aside class="side">
@@ -408,7 +408,7 @@ function downloadPDF(){
  const newPage=()=>{footer();doc.addPage();pageNo++;y=48;}
  const ensure=(h=40)=>{if(y+h>H-48)newPage();}
  const title=(t,sub)=>{ensure(70);set(20,ink,'bold');doc.text(t,L,y);y+=22;if(sub){set(9,muted);const ls=doc.splitTextToSize(sub,maxW);doc.text(ls,L,y);y+=ls.length*12+9;}doc.setDrawColor(...line);doc.line(L,y,W-R,y);y+=16;}
- const heading=t=>{ensure(36);set(13,ink,'bold');doc.text(t,L,y);y+=9;doc.setDrawColor(...line);doc.line(L,y,W-R,y);y+=14;}
+ const heading=t=>{y+=14;ensure(40);set(13,ink,'bold');doc.text(t,L,y);y+=9;doc.setDrawColor(...line);doc.line(L,y,W-R,y);y+=14;}
  const para=(t,color=muted)=>{set(9,color);const ls=doc.splitTextToSize(t,maxW);ensure(ls.length*12+8);doc.text(ls,L,y);y+=ls.length*12+8;}
  const kv=(label,value,color=ink)=>{ensure(19);set(9,muted);doc.text(label,L,y);set(10,color,'bold');doc.text(value,W-R,y,{align:'right'});y+=17;doc.setDrawColor(...line);doc.line(L,y-5,W-R,y-5);}
  const tableHeader=(cols,widths)=>{ensure(28);doc.setFillColor(247,248,250);doc.rect(L,y-12,maxW,22,'F');let x=L;set(8,muted,'bold');cols.forEach((c,i)=>{doc.text(c,x+4,y+2,{maxWidth:widths[i]-8});x+=widths[i]});y+=16;}
@@ -420,12 +420,13 @@ function downloadPDF(){
  set(9,blue,'bold');doc.text('RECAST SOFTWARE',L,y);y+=23;
  set(24,ink,'bold');doc.text('Application Workspace',L,y);y+=27;
  doc.text('MSP Operating Model',L,y);y+=20;
- set(10,muted);doc.text('Current state, addressable work, future-state economics and measured proof',L,y);y+=34;
+ set(10,muted);doc.text('Current state, addressable work, future-state economics and measured proof',L,y);y+=17;
+ set(9,muted);doc.text('Prepared '+new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}),L,y);y+=28;
  doc.setFillColor(247,248,250);doc.roundedRect(L,y,maxW,112,8,8,'F');
  set(11,ink,'bold');doc.text('Executive result',L+16,y+22);
  set(20,s.netSS>=0?green:amber,'bold');doc.text(fmtMoney(s.netSS),L+16,y+51);
  set(9,muted);doc.text('Steady-state net operating value after monetization and recurring platform cost',L+16,y+68);
- set(10,ink,'bold');doc.text(fmt(s.returned/1880)+' FTE',L+16,y+92);set(9,muted);doc.text('technical capacity returned',L+82,y+92);
+ set(10,ink,'bold');const fteStr=fmt(s.returned/1880)+' FTE';doc.text(fteStr,L+16,y+92);const fteW=doc.getTextWidth(fteStr);set(9,muted);doc.text('technical capacity returned',L+16+fteW+10,y+92);
  y+=138;
  heading('Decision framing');
  para('This report keeps three economic outcomes separate: existing-contract operating value, incremental managed-service contribution margin, and customer or project value. Returned capacity is not treated as cash savings until the partner enters a monetization rate.');
@@ -488,11 +489,11 @@ function downloadPDF(){
  // Proof
  newPage();title('5. Bake-off and decision readiness','The bake-off replaces model assumptions with observed current-state and Application Workspace results.');
  heading('Measured results entered');
- tableHeader(['Metric','Modeled / baseline','Measured current','Measured with AW'],[190,120,112,112]);
- tableRow(['Annualized touch hours',fmt(s.curHours)+' → '+fmt(s.newHours),s.mCur?fmt(s.mCur):'Not entered',s.mAw?fmt(s.mAw):'Not entered'],[190,120,112,112]);
- tableRow(['Addressable tickets / month',fmt(s.tickets),s.mTicketsCur?fmt(s.mTicketsCur):'Not entered',s.mTicketsAw||s.mTicketsCur?fmt(s.mTicketsAw):'Not entered'],[190,120,112,112]);
- tableRow(['Request-to-access days',fmt(s.rta),s.mRtaCur?fmt(s.mRtaCur):'Not entered',s.mRtaAw?fmt(s.mRtaAw):'Not entered'],[190,120,112,112]);
- tableRow(['Install / launch success',s.success?fmt(s.success)+'%':'Not assumed',s.mSuccessCur?fmt(s.mSuccessCur)+'%':'Not entered',s.mSuccessAw?fmt(s.mSuccessAw)+'%':'Not entered'],[190,120,112,112]);
+ tableHeader(['Metric','Modeled / baseline','Measured current','Measured with AW'],[188,120,104,104]);
+ tableRow(['Annualized touch hours',fmt(s.curHours)+' -> '+fmt(s.newHours),s.mCur?fmt(s.mCur):'Not entered',s.mAw?fmt(s.mAw):'Not entered'],[188,120,104,104]);
+ tableRow(['Addressable tickets / month',fmt(s.tickets),s.mTicketsCur?fmt(s.mTicketsCur):'Not entered',s.mTicketsAw||s.mTicketsCur?fmt(s.mTicketsAw):'Not entered'],[188,120,104,104]);
+ tableRow(['Request-to-access days',fmt(s.rta),s.mRtaCur?fmt(s.mRtaCur):'Not entered',s.mRtaAw?fmt(s.mRtaAw):'Not entered'],[188,120,104,104]);
+ tableRow(['Install / launch success',s.success?fmt(s.success)+'%':'Not assumed',s.mSuccessCur?fmt(s.mSuccessCur)+'%':'Not entered',s.mSuccessAw?fmt(s.mSuccessAw)+'%':'Not entered'],[188,120,104,104]);
  heading('Required approval gates');
  para('1. Delivery owner approves the baseline.  2. Sponsor confirms a representative application sample.  3. Both teams accept the measurement method.  4. Measured results replace assumptions.  5. Security, architecture, licensing and contract reviews are complete.');
  heading('Recommended decision');
