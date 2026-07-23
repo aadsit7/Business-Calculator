@@ -628,6 +628,27 @@
           </div>
           <p class="note">Trial discipline per the Recast partner guide: measure against a baseline, confirm SKU and licensing before commitments, and scale only after each gate is met.</p>
         </section>
+
+        <section>
+          <h2><span class="n">2</span>Assumptions under test<span class="tag">before vs. after · industry standards</span></h2>
+          <p class="lead">These are the dials the bake-off validates. Each sits inside a published range — replace any with your measured value and the whole model follows.</p>
+          <div class="tablewrap">
+            <table>
+              <thead><tr><th class="lab">Assumption</th><th class="num">Before · current</th><th class="num">After · with AW</th><th class="lab" style="text-align:left;">Industry standard</th></tr></thead>
+              <tbody>
+                <tr><td class="lab">Hours per standard package</td><td class="num" id="as_std_b">—</td><td class="num" id="as_std_a">—</td><td class="lab"><span class="sub" style="margin:0;">Juriba 2025: ≈$646/package ≈ 9 h; Recast field: 4+ h — AW retains test → approve → release</span></td></tr>
+                <tr><td class="lab">Hours per custom package</td><td class="num" id="as_cust_b">—</td><td class="num" id="as_cust_a">—</td><td class="lab"><span class="sub" style="margin:0;">Community benchmarks: complex apps 8–40 h; skilled packaging retained where needed</span></td></tr>
+                <tr><td class="lab">Environments built per app</td><td class="num" id="as_env_b">—</td><td class="num" id="as_env_a">—</td><td class="lab"><span class="sub" style="margin:0;">Estates typically carry 2–4 package formats across consoles; AW defines once</span></td></tr>
+                <tr><td class="lab">App tickets</td><td class="num" id="as_tik_b">—</td><td class="num" id="as_tik_a">—</td><td class="lab"><span class="sub" style="margin:0;">MetricNet ≈1.1 tickets/user/mo × Fixify 38.2% software ⇒ ≈42/100 seats; self-service deflects 50–70%; 25%/yr reduction = "excellent" (MetricNet)</span></td></tr>
+                <tr><td class="lab">Patch &amp; update effort</td><td class="num" id="as_pat_b">—</td><td class="num" id="as_pat_a">—</td><td class="lab"><span class="sub" style="margin:0;">Packaging &amp; updates consume 30–40% of admin time (Camwood); staged rings automate the repeat work</span></td></tr>
+                <tr><td class="lab">Install / launch success</td><td class="num" id="as_succ_b">—</td><td class="num" id="as_succ_a">—</td><td class="lab"><span class="sub" style="margin:0;">Camwood: 60–70% first-pass success is the manual norm</span></td></tr>
+                <tr><td class="lab">Request-to-access</td><td class="num" id="as_rta_b">—</td><td class="num" id="as_rta_a">—</td><td class="lab"><span class="sub" style="margin:0;">Guide proof metric; governed self-service makes standard apps same-day</span></td></tr>
+                <tr><td class="lab">Realization discipline</td><td class="num" id="as_real_b">—</td><td class="num" id="as_real_a">—</td><td class="lab"><span class="sub" style="margin:0;">Savings scaled for adoption, exceptions &amp; coverage — the model never claims 100%</span></td></tr>
+                <tr class="foot-row"><td colspan="4">Sources detailed under Methodology on the Business case tab (BLS, Juriba, MetricNet, Fixify, Camwood, Okta, Recast Partner Guide).</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
     </div>
   </div>
@@ -887,6 +908,14 @@ function render(m){
   $('bk_cap').textContent=m.fteFreed.toFixed(1)+' FTE';
   $('bk_keep').textContent=usd(m.net);
   $('bk_mult').innerHTML='<b>The endpoint multiplier:</b> '+money2(m.smoN-m.smoA)+'/user/mo \u00d7 '+m.seats.toLocaleString('en-US')+' endpoints \u00d7 12 = <b>'+usd(m.net)+'</b> per year \u2014 pricing scales by user, and so does the efficiency.';
+  $('as_std_b').textContent=num('stdT')+' h';$('as_std_a').textContent=num('stdA')+' h';
+  $('as_cust_b').textContent=num('custT')+' h';$('as_cust_a').textContent=num('custA')+' h';
+  $('as_env_b').textContent=m.env+'\u00d7';$('as_env_a').textContent='1\u00d7 build once';
+  $('as_tik_b').textContent=num('tik100')+' /100 seats/mo';$('as_tik_a').textContent='\u2212'+Math.round(num('tRed')*m.real)+'% effective';
+  $('as_pat_b').textContent=num('patchMinApp')+' min/app/mo';$('as_pat_a').textContent='\u2212'+Math.round(num('pRed')*m.real)+'% effective';
+  $('as_succ_b').textContent=num('succCur')+'%';$('as_succ_a').textContent=num('succAW')+'%';
+  $('as_rta_b').textContent=num('rtaCur')+' days';$('as_rta_a').textContent=(num('rtaAW')<1?'same day':num('rtaAW')+' days');
+  $('as_real_b').textContent='claims at 100%';$('as_real_a').textContent=Math.round(m.real*100)+'% applied';
   syncGeo();
 }
 
