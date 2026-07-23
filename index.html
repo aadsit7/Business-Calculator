@@ -60,7 +60,7 @@ details{border:1px solid var(--line);border-radius:8px;background:var(--panel);p
    <div class="panel">
     <h3>Commercial scope</h3>
     <div class="field"><label>Licensed users<small>Use for user-based licensing</small></label><input id="users" type="number" value="10000"></div>
-    <div class="field"><label>Physical endpoints</label><input id="endpoints" type="number" value="14000"></div>
+    <div class="field"><label>Physical endpoints<small>Defaults to 1.7 × licensed users</small></label><input id="endpoints" type="number" value="17000"></div>
     <div class="field"><label>Virtual endpoints</label><input id="virtual" type="number" value="2000"></div>
     <div class="field"><label>Customers</label><input id="customers" type="number" value="10"></div>
     <div class="field"><label>Technical tenants / zones<small>Confirm actual architecture and licensing</small></label><input id="tenants" type="number" value="10"></div>
@@ -305,9 +305,13 @@ function syncCoverageDefaults(){
   if(!el.dataset.edited) el.value=Math.round(n('coverage'));
  });
 }
+function syncEndpointsDefault(){
+ const el=$('endpoints'); if(el && !el.dataset.edited) el.value=Math.round(n('users')*1.7);
+}
 function compute(){
  syncCoverageDefaults();
  syncDerivedVolumes();
+ syncEndpointsDefault();
  const rate=n('rate'), realization=pct('realization'), monetize=pct('monetization');
  let modeledCurHours=0,modeledNewHours=0,allMeasured=true;
  activities.forEach(a=>{
@@ -352,6 +356,7 @@ function compute(){
 buildTables();
 document.addEventListener('input',e=>{
  if(e.target.matches('[id$="_vol"], [id$="_addr"]'))e.target.dataset.edited='1';
+ if(e.target.id==='endpoints')e.target.dataset.edited='1';
  if(e.target.id==='coverage')document.querySelectorAll('[data-coverage-linked="1"]').forEach(el=>delete el.dataset.edited);
  compute();
 });
