@@ -79,8 +79,8 @@ details{border:1px solid var(--line);border-radius:8px;background:var(--panel);p
     <div class="field"><label>Product license / user / month<small>Enter approved partner pricing</small></label><input id="license" type="number" step=".01" value="0"></div>
     <div class="field"><label>Implementation cost</label><input id="implementation" type="number" value="75000"></div>
     <div class="field"><label>Other recurring cost / year</label><input id="otherRecurring" type="number" value="0"></div>
-    <div class="field"><label>Technical realization %<small>Adoption, coverage and exceptions</small></label><input id="realization" type="number" value="75"></div>
-    <div class="field"><label>Capacity monetization %<small>Avoided hiring, billable work or cost removal</small></label><input id="monetization" type="number" value="50"></div>
+    <div class="field"><label>Adoption %<small>Implementation success and adoption only — catalog coverage is applied once per activity</small></label><input id="adoption" type="number" value="90"></div>
+    <div class="field"><label>Capacity-to-cash %<small>Share of returned capacity converted to cash in the direct-cash view (avoided hiring, contractor/overtime removal, billable work)</small></label><input id="monetization" type="number" value="50"></div>
     <div class="field"><label>Ramp months to steady state</label><input id="ramp" type="number" value="4"></div>
 
     <h3>New service, when applicable</h3>
@@ -130,7 +130,7 @@ details{border:1px solid var(--line);border-radius:8px;background:var(--panel);p
    <div class="view" id="current">
     <section><h2><span>1</span>Enter current-state activity</h2>
      <p class="lead">Use annual volumes and average engineer touch time. Elapsed time belongs in the experience section; touch time belongs in the labor model.</p>
-     <table id="activityTable"><thead><tr><th>Activity</th><th class="num">Annual volume</th><th class="num">Minutes / unit</th><th class="num">Rework %</th><th class="num">Annual hours</th><th>Evidence</th></tr></thead><tbody></tbody></table>
+     <table id="activityTable"><thead><tr><th>Activity</th><th class="num">Annual volume</th><th class="num">Current min / unit</th><th class="num">Current rework %</th><th class="num">Current annual hours</th><th>Evidence</th></tr></thead><tbody></tbody></table>
     </section>
     <section><h2><span>2</span>Current-state operating profile</h2>
      <div class="kpis">
@@ -150,9 +150,10 @@ details{border:1px solid var(--line);border-radius:8px;background:var(--panel);p
    </div>
 
    <div class="view" id="addressable">
-    <section><h2><span>1</span>Map each activity to Application Workspace</h2>
-     <p class="lead">Every capability is modeled as <b>addressable, partially addressable, or retained</b>. This prevents feature claims from becoming blanket savings claims.</p>
-     <table class="matrix" id="addressTable"><thead><tr><th>Activity</th><th>Primary capability</th><th class="num">Addressable %</th><th class="num">Future effort % of addressed work</th><th>What remains</th></tr></thead><tbody></tbody></table>
+    <section><h2><span>1</span>Compare current labor with Recast labor, activity by activity</h2>
+     <p class="lead">Each activity compares <b>measured current engineer minutes</b> with <b>measured Recast minutes</b>. Catalog <b>eligibility</b> is applied once here; <b>adoption</b> is applied once from the sidebar. Repetition is explicit: enter how many variants the current process builds per event and how many definitions remain with Recast reuse. Recast should receive credit only for the work it materially changes — validation, security and approval stay with the partner.</p>
+     <table class="matrix" id="addressTable"><thead><tr><th>Activity / capability</th><th class="num">Eligible %</th><th class="num">Recast min / unit</th><th class="num">Recast rework %</th><th class="num">Current reps</th><th class="num">Recast reps</th><th class="num">Hours saved</th><th>What remains</th></tr></thead><tbody></tbody></table>
+     <p class="lead" style="margin-top:8px;font-size:12px">Eligible % × adoption % = the share of each activity Recast processes. The remaining share stays at current touch time, so the model never assumes Recast removes labor it does not touch.</p>
     </section>
     <section><h2><span>2</span>Capability-to-value trace</h2>
      <table><thead><tr><th>Capability</th><th>Operating change</th><th>Primary measure</th><th>Business outcome</th></tr></thead><tbody>
@@ -181,18 +182,18 @@ details{border:1px solid var(--line);border-radius:8px;background:var(--panel);p
       </div></div>
      </div>
     </section>
-    <section><h2><span>2</span>Separate capacity from cash value</h2>
+    <section><h2><span>2</span>Technical value and cash value, shown separately</h2>
      <div class="kpis">
       <div class="kpi"><div class="n" id="cap_technical">—</div><div class="l">technical hours returned</div></div>
       <div class="kpi"><div class="n" id="cap_fte">—</div><div class="l">technical FTE capacity returned</div></div>
-      <div class="kpi amber"><div class="n" id="cap_monetized">—</div><div class="l">hours assumed monetized</div></div>
-      <div class="kpi green"><div class="n" id="cap_value">—</div><div class="l">steady-state realized operating value</div></div>
+      <div class="kpi green"><div class="n" id="cap_value">—</div><div class="l">full technical productivity value</div></div>
+      <div class="kpi amber"><div class="n" id="cap_monetized">—</div><div class="l">conservative direct-cash value</div></div>
      </div>
-     <p class="lead" style="margin-top:10px">Returned capacity becomes financial value only when converted into avoided hiring, reduced contractor/overtime expense, additional billable work, added customer capacity, or another documented economic outcome.</p>
+     <p class="lead" style="margin-top:10px"><b>Technical productivity value</b> is the full operating value of every returned hour at the loaded rate. <b>Direct-cash value</b> applies the capacity-to-cash share only where the partner actually removes contractor, overtime or hiring cost — so the conservative conversion no longer hides the full value of the automation. Capacity becomes cash only when converted into avoided hiring, reduced contractor/overtime expense, additional billable work or added customer capacity.</p>
     </section>
     <section><h2><span>3</span>Existing-contract economics</h2>
      <table><thead><tr><th>Line</th><th class="num">Steady state</th><th class="num">Year 1</th></tr></thead><tbody>
-      <tr><td>Monetized labor value</td><td class="num" id="op_labor_ss">—</td><td class="num" id="op_labor_y1">—</td></tr>
+      <tr><td>Direct-cash labor value</td><td class="num" id="op_labor_ss">—</td><td class="num" id="op_labor_y1">—</td></tr>
       <tr><td>License and recurring platform cost</td><td class="num" id="op_platform_ss">—</td><td class="num" id="op_platform_y1">—</td></tr>
       <tr><td>Implementation cost</td><td class="num">—</td><td class="num" id="op_impl">—</td></tr>
       <tr class="total"><td>Net operating value</td><td class="num" id="op_net_ss">—</td><td class="num" id="op_net_y1">—</td></tr>
@@ -226,6 +227,7 @@ details{border:1px solid var(--line);border-radius:8px;background:var(--panel);p
       <tr><td>Request-to-access days</td><td class="num" id="m_rta_model">—</td><td><input id="m_rta_cur" type="number" step=".1" value="0"></td><td><input id="m_rta_aw" type="number" step=".1" value="0"></td><td><input placeholder="Request timestamps"></td></tr>
       <tr><td>Install / launch success %</td><td class="num">Not assumed</td><td><input id="m_success_cur" type="number" value="0"></td><td><input id="m_success_aw" type="number" value="0"></td><td><input placeholder="Deployment / launch health"></td></tr>
      </tbody></table>
+     <label class="notice" style="display:flex;gap:9px;align-items:flex-start;margin-top:12px"><input type="checkbox" id="m_confirm" style="width:auto;margin-top:2px"><span>Confirm that <b>both</b> measured current and measured Application Workspace touch hours above are entered and approved. Until this is checked, the economics use modeled hours. A measured current value with a zero or blank Application Workspace value will not be treated as eliminating all labor.</span></label>
     </section>
    </div>
 
@@ -238,7 +240,21 @@ details{border:1px solid var(--line);border-radius:8px;background:var(--panel);p
       <div class="kpi green"><div class="n" id="d_service">—</div><div class="l">separate service contribution margin</div></div>
      </div>
     </section>
-    <section><h2><span>2</span>Decision quality</h2>
+    <section><h2><span>2</span>Break-even and profitability check</h2>
+     <p class="lead">Faster packaging does not by itself pay for the platform. Recast must eliminate <b>enough</b> labor across <b>enough</b> events to cover the license. This panel tests the returned technical capacity against the entered license before any capacity-to-cash haircut.</p>
+     <table><thead><tr><th>Metric</th><th class="num">Value</th></tr></thead><tbody>
+      <tr><td>Annual license and recurring platform cost</td><td class="num" id="be_license">—</td></tr>
+      <tr><td>Current touch hours per release</td><td class="num" id="be_cur_rel">—</td></tr>
+      <tr><td>Recast touch hours per release</td><td class="num" id="be_rec_rel">—</td></tr>
+      <tr><td>Hours saved per release</td><td class="num" id="be_saved_rel">—</td></tr>
+      <tr><td>License cost per release</td><td class="num" id="be_lic_rel">—</td></tr>
+      <tr><td>Break-even hours per release, at the loaded rate</td><td class="num" id="be_break_rel">—</td></tr>
+      <tr class="total"><td>Required capture of full technical value to cover the license</td><td class="num" id="be_capture">—</td></tr>
+     </tbody></table>
+     <div class="callout" id="be_warn" style="margin-top:12px">—</div>
+     <p class="notice" id="be_scale">—</p>
+    </section>
+    <section><h2><span>3</span>Decision quality</h2>
      <table><thead><tr><th>Question</th><th>Status</th><th>Decision implication</th></tr></thead><tbody>
       <tr><td>Is the baseline measured?</td><td id="q_baseline">—</td><td>Do not approve ROI from assumptions alone.</td></tr>
       <tr><td>Is catalog coverage validated?</td><td id="q_coverage">—</td><td>Coverage determines how much recurring package work is addressable.</td></tr>
@@ -247,7 +263,7 @@ details{border:1px solid var(--line);border-radius:8px;background:var(--panel);p
       <tr><td>Has the bake-off replaced assumptions?</td><td id="q_bake">—</td><td>Measured results create the approval-grade case.</td></tr>
      </tbody></table>
     </section>
-    <section><h2><span>3</span>Recommended decision</h2>
+    <section><h2><span>4</span>Recommended decision</h2>
      <div class="callout" id="recommendation">—</div>
     </section>
     <details><summary>Method, boundaries and official product references</summary>
@@ -273,17 +289,22 @@ details{border:1px solid var(--line);border-radius:8px;background:var(--panel);p
 const $=id=>document.getElementById(id), n=id=>Math.max(0,Number($(id)?.value)||0), pct=id=>Math.min(1,n(id)/100);
 const money=v=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(v||0);
 const num=v=>new Intl.NumberFormat('en-US',{maximumFractionDigits:1}).format(v||0);
+// Each activity compares MEASURED current engineer minutes with MEASURED Recast minutes.
+// curMin/recMin = touch minutes per unit · curRw/recRw = failure & correction rate %
+// elig = catalog / technical eligibility (applied ONCE) · curRep/recRep = repeated variants per event
+// Recast minutes and rework default to a conservative re-expression of the prior effort
+// assumptions and MUST be replaced with measured bake-off results before commercial commitment.
 const activities=[
- {id:'intake',name:'Request intake and entitlement',vol:'releases',mins:20,rework:5,cap:'Catalog, request and approval',addr:40,future:35,remain:'Policy, approvals and exceptions'},
- {id:'source',name:'Installer sourcing and version research',vol:'releases',mins:35,rework:8,cap:'Setup Store',addr:60,future:20,remain:'Uncovered and private installers'},
- {id:'standard',name:'Standard package build / rebuild',vol:'standard',mins:240,rework:12,cap:'Managed packages',addr:60,future:15,remain:'Validation, customer settings, release'},
- {id:'custom',name:'Custom / complex package engineering',vol:'custom',mins:720,rework:20,cap:'Reusable actions and automation',addr:35,future:50,remain:'Custom logic, vendor and app-owner testing'},
- {id:'validate',name:'Testing, security and approval',vol:'releases',mins:90,rework:10,cap:'Staged workflow and evidence',addr:25,future:55,remain:'Accountability remains with partner/customer'},
- {id:'publish',name:'Publishing and deployment setup',vol:'releasesTargets',mins:30,rework:6,cap:'Deployment automation',addr:55,future:30,remain:'Targeting, change windows and exceptions'},
- {id:'update',name:'Update monitoring and release coordination',vol:'releases',mins:45,rework:8,cap:'Managed package updates and stages',addr:55,future:30,remain:'Approval, sequencing and exception policy'},
- {id:'support',name:'Addressable app requests and deployment incidents',vol:'ticketsAnnual',mins:20,rework:5,cap:'Catalog, repair and self-service',addr:35,future:30,remain:'Functional defects and unrelated endpoint issues'},
- {id:'report',name:'Reporting, audit and service review',vol:'monthlyCustomers',mins:90,rework:0,cap:'Reporting and audit data',addr:40,future:35,remain:'Narrative, governance and customer review'},
- {id:'exceptions',name:'Customer-specific exception handling',vol:'exceptionReleases',mins:120,rework:15,cap:'Reusable definitions where policy allows',addr:20,future:60,remain:'Customer-specific configuration and approvals'}
+ {id:'intake',name:'Request intake and entitlement',vol:'releases',cap:'Catalog, request and approval',remain:'Policy, approvals and exceptions',curMin:20,recMin:7,curRw:5,recRw:3,elig:40,curRep:1,recRep:1},
+ {id:'source',name:'Installer sourcing and version research',vol:'releases',cap:'Setup Store',remain:'Uncovered and private installers',curMin:35,recMin:7,curRw:8,recRw:4,elig:60,curRep:1,recRep:1},
+ {id:'standard',name:'Standard package build / rebuild',vol:'standard',cap:'Managed packages',remain:'Validation, customer settings, release',curMin:240,recMin:36,curRw:12,recRw:6,elig:60,curRep:1,recRep:1},
+ {id:'custom',name:'Custom / complex package engineering',vol:'custom',cap:'Reusable actions and automation',remain:'Custom logic, vendor and app-owner testing',curMin:720,recMin:360,curRw:20,recRw:10,elig:35,curRep:1,recRep:1},
+ {id:'validate',name:'Testing, security and approval',vol:'releases',cap:'Staged workflow and evidence',remain:'Accountability remains with partner/customer',curMin:90,recMin:50,curRw:10,recRw:5,elig:25,curRep:1,recRep:1},
+ {id:'publish',name:'Publishing and deployment setup',vol:'releasesTargets',cap:'Deployment automation',remain:'Targeting, change windows and exceptions',curMin:30,recMin:9,curRw:6,recRw:3,elig:55,curRep:1,recRep:1},
+ {id:'update',name:'Update monitoring and release coordination',vol:'releases',cap:'Managed package updates and stages',remain:'Approval, sequencing and exception policy',curMin:45,recMin:14,curRw:8,recRw:4,elig:60,curRep:1,recRep:1},
+ {id:'support',name:'Addressable app requests and deployment incidents',vol:'ticketsAnnual',cap:'Catalog, repair and self-service',remain:'Functional defects and unrelated endpoint issues',curMin:20,recMin:6,curRw:5,recRw:3,elig:35,curRep:1,recRep:1},
+ {id:'report',name:'Reporting, audit and service review',vol:'monthlyCustomers',cap:'Reporting and audit data',remain:'Narrative, governance and customer review',curMin:90,recMin:32,curRw:0,recRw:0,elig:40,curRep:1,recRep:1},
+ {id:'exceptions',name:'Customer-specific exception handling',vol:'exceptionReleases',cap:'Reusable definitions where policy allows',remain:'Customer-specific configuration and approvals',curMin:120,recMin:72,curRw:15,recRw:8,elig:20,curRep:1,recRep:1}
 ];
 function annualVol(a){
  const rel=n('releases'), tickets=n('ticketsCurrent')*12;
@@ -293,8 +314,8 @@ function buildTables(){
  const tb=$('activityTable').querySelector('tbody'), ab=$('addressTable').querySelector('tbody');
  tb.innerHTML='';ab.innerHTML='';
  activities.forEach(a=>{
-  tb.insertAdjacentHTML('beforeend',`<tr><td>${a.name}</td><td><input id="${a.id}_vol" type="number"></td><td><input id="${a.id}_min" type="number" value="${a.mins}"></td><td><input id="${a.id}_rw" type="number" value="${a.rework}"></td><td class="num" id="${a.id}_hrs">—</td><td><select id="${a.id}_ev"><option>Assumption</option><option>Partner-provided</option><option>Measured</option><option>Unvalidated</option></select></td></tr>`);
-  ab.insertAdjacentHTML('beforeend',`<tr><td>${a.name}</td><td>${a.cap}</td><td><input id="${a.id}_addr" type="number" value="${a.addr}" ${['source','standard','update'].includes(a.id)?'data-coverage-linked="1"':''}></td><td><input id="${a.id}_future" type="number" value="${a.future}"></td><td>${a.remain}</td></tr>`);
+  tb.insertAdjacentHTML('beforeend',`<tr><td>${a.name}</td><td><input id="${a.id}_vol" type="number"></td><td><input id="${a.id}_curMin" type="number" value="${a.curMin}"></td><td><input id="${a.id}_curRw" type="number" value="${a.curRw}"></td><td class="num" id="${a.id}_curHrs">—</td><td><select id="${a.id}_ev"><option>Assumption</option><option>Partner-provided</option><option>Measured</option><option>Unvalidated</option></select></td></tr>`);
+  ab.insertAdjacentHTML('beforeend',`<tr><td>${a.name}<br><small style="color:var(--muted)">${a.cap}</small></td><td><input id="${a.id}_elig" type="number" value="${a.elig}" ${['source','standard','update'].includes(a.id)?'data-coverage-linked="1"':''}></td><td><input id="${a.id}_recMin" type="number" value="${a.recMin}"></td><td><input id="${a.id}_recRw" type="number" value="${a.recRw}"></td><td><input id="${a.id}_curRep" type="number" step=".1" value="${a.curRep}"></td><td><input id="${a.id}_recRep" type="number" step=".1" value="${a.recRep}"></td><td class="num good" id="${a.id}_saved">—</td><td><small>${a.remain}</small></td></tr>`);
  });
 }
 function syncDerivedVolumes(){
@@ -308,54 +329,92 @@ function syncCoverageDefaults(){
 function syncEndpointsDefault(){
  const el=$('endpoints'); if(el && !el.dataset.edited) el.value=Math.round(n('users')*1.7);
 }
+// Direct labor comparison for one activity: measured current minutes vs measured Recast minutes.
+// Catalog eligibility and adoption are each applied ONCE; repetition is explicit, not hidden.
+function activityRow(a){
+ const v=n(a.id+'_vol');
+ const curMin=n(a.id+'_curMin'), curRw=pct(a.id+'_curRw'), curRep=Math.max(0,n(a.id+'_curRep'));
+ const recMin=n(a.id+'_recMin'), recRw=pct(a.id+'_recRw'), recRep=Math.max(0,n(a.id+'_recRep'));
+ const elig=pct(a.id+'_elig'), adoption=pct('adoption');
+ const curUnit=curRep*(curMin/60)*(1+curRw);            // engineer hours per event today
+ const recUnit=recRep*(recMin/60)*(1+recRw);            // engineer hours per event with Recast
+ const eligibleShare=Math.min(1,elig*adoption);         // coverage applied once × adoption applied once
+ const curHrs=v*curUnit;
+ const futHrs=v*((1-eligibleShare)*curUnit+eligibleShare*recUnit);
+ const saved=Math.max(0,curHrs-futHrs);
+ return {a,v,curMin,recMin,curRep,recRep,elig,adoption,eligibleShare,curUnit,recUnit,curHrs,futHrs,saved,ev:($(a.id+'_ev')||{}).value||'Assumption'};
+}
+// Measured bake-off hours only drive economics when BOTH values are confirmed and positive.
+function measuredActive(){
+ const c=$('m_confirm');
+ return !!(c&&c.checked) && n('m_hours_cur')>0 && n('m_hours_aw')>0 && n('m_hours_cur')>=n('m_hours_aw');
+}
+function computeModel(){
+ const rate=n('rate'), monetize=pct('monetization');
+ let modeledCurHours=0,modeledNewHours=0,allMeasured=true;
+ const rows=activities.map(a=>{const r=activityRow(a);modeledCurHours+=r.curHrs;modeledNewHours+=r.futHrs;if(r.ev!=='Measured')allMeasured=false;return r;});
+ const measured=measuredActive();
+ const curHours=measured?n('m_hours_cur'):modeledCurHours;
+ const newHours=measured?n('m_hours_aw'):modeledNewHours;
+ const returned=Math.max(0,curHours-newHours);
+ // Technical productivity: full operating value of the returned capacity.
+ const technicalValue=returned*rate;
+ // Direct cash view: only the share the partner converts to cash / avoided cost. The monetization
+ // haircut lives HERE, on the cash view only — it no longer suppresses the headline technical value.
+ const cashHours=returned*monetize, cashValue=cashHours*rate;
+ const licenseAnnual=n('users')*n('license')*12, platform=licenseAnnual+n('otherRecurring');
+ const netSS=cashValue-platform, netTechSS=technicalValue-platform;
+ const rampMonths=Math.min(12,n('ramp')), rampFactor=(12-rampMonths/2)/12;
+ const laborY1=cashValue*rampFactor, netY1=laborY1-platform-n('implementation');
+ const attached=n('users')*pct('attach'), svcRev=attached*n('price')*12, svcCost=attached*n('incrementalSvcCost')*12, svcMargin=svcRev-svcCost;
+ // Break-even: does Recast eliminate enough labor across enough events to cover the license?
+ const rel=Math.max(1,n('releases'));
+ const curPerRel=curHours/rel, newPerRel=newHours/rel, savedPerRel=returned/rel;
+ const licPerRel=platform/rel, breakevenPerRel=rate>0?licPerRel/rate:0;
+ const requiredCapture=technicalValue>0?platform/technicalValue:(platform>0?Infinity:0);
+ const maxUsers=n('license')>0?technicalValue/(n('license')*12):Infinity;
+ return {rate,monetize,rows,modeledCurHours,modeledNewHours,measured,curHours,newHours,returned,
+  technicalValue,cashHours,cashValue,licenseAnnual,platform,netSS,netTechSS,rampFactor,laborY1,netY1,
+  attached,svcRev,svcCost,svcMargin,allMeasured,rel,curPerRel,newPerRel,savedPerRel,licPerRel,breakevenPerRel,requiredCapture,maxUsers};
+}
 function compute(){
  syncCoverageDefaults();
  syncDerivedVolumes();
  syncEndpointsDefault();
- const rate=n('rate'), realization=pct('realization'), monetize=pct('monetization');
- let modeledCurHours=0,modeledNewHours=0,allMeasured=true;
- activities.forEach(a=>{
-  const v=n(a.id+'_vol'), mins=n(a.id+'_min'), rw=pct(a.id+'_rw');
-  const hrs=v*mins/60*(1+rw); modeledCurHours+=hrs; $(a.id+'_hrs').textContent=num(hrs);
-  const addr=pct(a.id+'_addr'), fut=pct(a.id+'_future');
-  modeledNewHours+=hrs*(1-addr*realization*(1-fut));
-  if($(a.id+'_ev').value!=='Measured') allMeasured=false;
- });
- const measuredHours=n('m_hours_cur')>0 && n('m_hours_aw')>=0 && n('m_hours_cur')>=n('m_hours_aw');
- const curHours=measuredHours?n('m_hours_cur'):modeledCurHours;
- const newHours=measuredHours?n('m_hours_aw'):modeledNewHours;
- const curCost=curHours*rate, returned=Math.max(0,curHours-newHours), monetized=returned*monetize;
- const licenseAnnual=n('users')*n('license')*12, platform=licenseAnnual+n('otherRecurring');
- const monetizedValue=monetized*rate, netSS=monetizedValue-platform;
- const rampMonths=Math.min(12,n('ramp')), rampFactor=(12-rampMonths/2)/12;
- const laborY1=monetizedValue*rampFactor, platformY1=platform, netY1=laborY1-platformY1-n('implementation');
- const attached=n('users')*pct('attach'), svcRev=attached*n('price')*12, svcCost=attached*n('incrementalSvcCost')*12, svcMargin=svcRev-svcCost;
+ const m=computeModel(), rate=m.rate;
+ m.rows.forEach(r=>{$(r.a.id+'_curHrs').textContent=num(r.curHrs);const s=$(r.a.id+'_saved');if(s)s.textContent=num(r.saved);});
  const eps=n('endpoints')+n('virtual');
  $('k_users').textContent=num(n('users'));$('k_ep').textContent=num(eps);$('k_cust').textContent=num(n('customers'))+' / '+num(n('tenants'));$('k_rel').textContent=num(n('releases'));
- $('cur_hours').textContent=num(modeledCurHours);$('cur_cost').textContent=money(modeledCurHours*rate);$('cur_fte').textContent=num(modeledCurHours/1880);$('cur_cpu').textContent=money(modeledCurHours*rate/Math.max(1,n('users'))/12);
- $('f_cur_hours').textContent=num(curHours)+(measuredHours?' measured':' modeled');$('f_cur_cost').textContent=money(curCost);$('f_cur_fte').textContent=num(curHours/1880);
- $('f_new_hours').textContent=num(newHours)+(measuredHours?' measured':' modeled');$('f_new_labor').textContent=money(newHours*rate);$('f_platform').textContent=money(platform);
- $('cap_technical').textContent=num(returned);$('cap_fte').textContent=num(returned/1880);$('cap_monetized').textContent=num(monetized);$('cap_value').textContent=money(monetizedValue);
- $('op_labor_ss').textContent=money(monetizedValue);$('op_labor_y1').textContent=money(laborY1);$('op_platform_ss').textContent='('+money(platform)+')';$('op_platform_y1').textContent='('+money(platformY1)+')';$('op_impl').textContent='('+money(n('implementation'))+')';$('op_net_ss').textContent=money(netSS);$('op_net_y1').textContent=money(netY1);
- $('svc_users').textContent=num(attached);$('svc_rev').textContent=money(svcRev);$('svc_cost').textContent='('+money(svcCost)+')';$('svc_margin').textContent=money(svcMargin);
- $('m_hours_model').textContent=num(modeledCurHours)+' → '+num(modeledNewHours);$('m_tickets_model').textContent=num(n('ticketsCurrent'))+' current';$('m_rta_model').textContent=num(n('rtaCurrent'))+' current';
- const measuredBake=measuredHours || (n('m_tickets_cur')>0&&n('m_tickets_aw')>=0);
- $('d_net').textContent=money(netSS);$('d_y1').textContent=money(netY1);$('d_capacity').textContent=num(returned/1880);$('d_service').textContent=money(svcMargin);
- $('q_baseline').innerHTML=allMeasured?'<span class="tag measured">Measured</span>':'<span class="tag assumption">Mixed / assumed</span>';
+ $('cur_hours').textContent=num(m.modeledCurHours);$('cur_cost').textContent=money(m.modeledCurHours*rate);$('cur_fte').textContent=num(m.modeledCurHours/1880);$('cur_cpu').textContent=money(m.modeledCurHours*rate/Math.max(1,n('users'))/12);
+ $('f_cur_hours').textContent=num(m.curHours)+(m.measured?' measured':' modeled');$('f_cur_cost').textContent=money(m.curHours*rate);$('f_cur_fte').textContent=num(m.curHours/1880);
+ $('f_new_hours').textContent=num(m.newHours)+(m.measured?' measured':' modeled');$('f_new_labor').textContent=money(m.newHours*rate);$('f_platform').textContent=money(m.platform);
+ $('cap_technical').textContent=num(m.returned);$('cap_fte').textContent=num(m.returned/1880);$('cap_monetized').textContent=money(m.cashValue);$('cap_value').textContent=money(m.technicalValue);
+ $('op_labor_ss').textContent=money(m.cashValue);$('op_labor_y1').textContent=money(m.laborY1);$('op_platform_ss').textContent='('+money(m.platform)+')';$('op_platform_y1').textContent='('+money(m.platform)+')';$('op_impl').textContent='('+money(n('implementation'))+')';$('op_net_ss').textContent=money(m.netSS);$('op_net_y1').textContent=money(m.netY1);
+ $('svc_users').textContent=num(m.attached);$('svc_rev').textContent=money(m.svcRev);$('svc_cost').textContent='('+money(m.svcCost)+')';$('svc_margin').textContent=money(m.svcMargin);
+ $('m_hours_model').textContent=num(m.modeledCurHours)+' → '+num(m.modeledNewHours);$('m_tickets_model').textContent=num(n('ticketsCurrent'))+' current';$('m_rta_model').textContent=num(n('rtaCurrent'))+' current';
+ $('be_license').textContent=money(m.platform);$('be_cur_rel').textContent=num(m.curPerRel)+' h';$('be_rec_rel').textContent=num(m.newPerRel)+' h';$('be_saved_rel').textContent=num(m.savedPerRel)+' h';$('be_lic_rel').textContent=money(m.licPerRel);$('be_break_rel').textContent=num(m.breakevenPerRel)+' h';$('be_capture').textContent=isFinite(m.requiredCapture)?Math.round(m.requiredCapture*100)+'%':'Not recoverable';
+ let bw='',warn=false;
+ if(m.platform<=0){bw='Enter approved partner licensing and recurring platform cost to test break-even against the modeled savings.';}
+ else if(!isFinite(m.requiredCapture)||m.requiredCapture>1){warn=true;bw='The entered license cost cannot be recovered from the modeled technical savings alone. The model saves '+num(m.savedPerRel)+' technical hours per release against a '+num(m.breakevenPerRel)+'-hour break-even. Improve measured repetition, reuse or Recast touch time, or revisit pricing — do not adjust Recast minutes only to clear the threshold.';}
+ else{bw='The license needs '+num(m.breakevenPerRel)+' saved hours per release at the loaded rate; the model produces '+num(m.savedPerRel)+'. Covering the license consumes '+Math.round(m.requiredCapture*100)+'% of the full technical value'+(isFinite(m.maxUsers)?', which can support up to '+num(m.maxUsers)+' licensed users at the entered price.':'.');}
+ $('be_warn').textContent=bw;$('be_warn').className='callout'+(warn?' warn':'');
+ $('be_scale').textContent='Note: package definitions, tenants and endpoints are recorded for scope but do not yet drive workload. Enter per-event repetition and Recast reuse above so repeated packaging and recurring updates are counted.';
+ $('d_net').textContent=money(m.netSS);$('d_y1').textContent=money(m.netY1);$('d_capacity').textContent=num(m.returned/1880);$('d_service').textContent=money(m.svcMargin);
+ $('q_baseline').innerHTML=m.allMeasured?'<span class="tag measured">Measured</span>':'<span class="tag assumption">Mixed / assumed</span>';
  $('q_coverage').innerHTML=pct('coverage')>0?'<span class="tag provided">Entered, validate</span>':'<span class="tag unvalidated">Missing</span>';
- $('q_monetize').innerHTML=monetize>0?'<span class="tag assumption">'+Math.round(monetize*100)+'% assumed</span>':'<span class="tag unvalidated">No path entered</span>';
+ $('q_monetize').innerHTML=m.monetize>0?'<span class="tag assumption">'+Math.round(m.monetize*100)+'% to cash view</span>':'<span class="tag unvalidated">No cash path entered</span>';
  $('q_price').innerHTML=n('license')>0?'<span class="tag provided">Entered</span>':'<span class="tag unvalidated">Missing</span>';
- $('q_bake').innerHTML=measuredHours?'<span class="tag measured">Measured hours drive economics</span>':measuredBake?'<span class="tag provided">Partial measurements entered</span>':'<span class="tag unvalidated">Not completed</span>';
+ $('q_bake').innerHTML=m.measured?'<span class="tag measured">Measured hours drive economics</span>':'<span class="tag unvalidated">Not confirmed</span>';
  let rec='';
  if(n('license')===0) rec='Do not approve a financial case yet. Validate approved licensing and partner commercial structure, then run the bake-off.';
- else if(!measuredHours) rec='Proceed to a controlled bake-off. The operating hypothesis is complete enough to test, but the economics remain modeled until measured current and Application Workspace hours are entered.';
- else if(netY1>0) rec='Measured workload results and entered economics support an implementation decision, subject to security, architecture, licensing and contract review.';
- else rec='The measured year-one case does not clear the financial threshold. Revisit scope, catalog coverage, implementation cost, capacity monetization or service pricing before proceeding.';
+ else if(!m.measured) rec='Proceed to a controlled bake-off. The operating hypothesis is complete enough to test, but the economics remain modeled until measured current and Application Workspace hours are entered and confirmed.';
+ else if(m.netY1>0) rec='Measured workload results and entered economics support an implementation decision, subject to security, architecture, licensing and contract review.';
+ else rec='The measured year-one cash case does not clear the financial threshold. Full technical value is '+money(m.technicalValue)+' before conversion; revisit repetition, reuse, coverage, the capacity-to-cash path or pricing before proceeding.';
  $('recommendation').textContent=rec;
 }
 buildTables();
 document.addEventListener('input',e=>{
- if(e.target.matches('[id$="_vol"], [id$="_addr"]'))e.target.dataset.edited='1';
+ if(e.target.matches('[id$="_vol"], [id$="_elig"]'))e.target.dataset.edited='1';
  if(e.target.id==='endpoints')e.target.dataset.edited='1';
  if(e.target.id==='coverage')document.querySelectorAll('[data-coverage-linked="1"]').forEach(el=>delete el.dataset.edited);
  compute();
@@ -369,36 +428,19 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
 });
 
 function pdfSnapshot(){
- const rate=n('rate'), realization=pct('realization'), monetize=pct('monetization');
- let modeledCurHours=0,modeledNewHours=0,measuredCount=0;
- const rows=activities.map(a=>{
-  const v=n(a.id+'_vol'), mins=n(a.id+'_min'), rw=pct(a.id+'_rw');
-  const hrs=v*mins/60*(1+rw);
-  const addr=pct(a.id+'_addr'), fut=pct(a.id+'_future');
-  const next=hrs*(1-addr*realization*(1-fut));
-  modeledCurHours+=hrs; modeledNewHours+=next;
-  if($(a.id+'_ev').value==='Measured') measuredCount++;
-  return {name:a.name,volume:v,minutes:mins,current:hrs,future:next,address:addr,evidence:$(a.id+'_ev').value,capability:a.cap,remain:a.remain};
- });
- const measuredBake=n('m_hours_cur')>0&&n('m_hours_aw')>=0&&n('m_hours_cur')>=n('m_hours_aw');
- const curHours=measuredBake?n('m_hours_cur'):modeledCurHours;
- const newHours=measuredBake?n('m_hours_aw'):modeledNewHours;
- const returned=Math.max(0,curHours-newHours), monetized=returned*monetize;
- const licenseAnnual=n('users')*n('license')*12, platform=licenseAnnual+n('otherRecurring');
- const monetizedValue=monetized*rate, netSS=monetizedValue-platform;
- const rampMonths=Math.min(12,n('ramp')), rampFactor=(12-rampMonths/2)/12;
- const laborY1=monetizedValue*rampFactor, netY1=laborY1-platform-n('implementation');
- const attached=n('users')*pct('attach'), svcRev=attached*n('price')*12, svcCost=attached*n('incrementalSvcCost')*12;
- return {rows,modeledCurHours,modeledNewHours,curHours,newHours,returned,monetized,rate,licenseAnnual,platform,monetizedValue,netSS,netY1,laborY1,
-  attached,svcRev,svcCost,svcMargin:svcRev-svcCost,measuredCount,measuredBake,
+ const m=computeModel();
+ let measuredCount=0;
+ const rows=m.rows.map(r=>{if(r.ev==='Measured')measuredCount++;
+  return {name:r.a.name,volume:r.v,curMin:r.curMin,recMin:r.recMin,current:r.curHrs,future:r.futHrs,saved:r.saved,
+   elig:r.elig,curRep:r.curRep,recRep:r.recRep,evidence:r.ev,capability:r.a.cap,remain:r.a.remain};});
+ return Object.assign({},m,{rows,measuredCount,measuredBake:m.measured,adoption:n('adoption'),
   users:n('users'),endpoints:n('endpoints'),virtual:n('virtual'),customers:n('customers'),tenants:n('tenants'),
   titles:n('titles'),packages:n('packages'),releases:n('releases'),coverage:n('coverage'),custom:n('customShare'),
-  targets:n('targets'),exceptions:n('exceptions'),realization:n('realization'),monetization:n('monetization'),
+  targets:n('targets'),exceptions:n('exceptions'),monetization:n('monetization'),
   implementation:n('implementation'),ramp:n('ramp'),
   rta:n('rtaCurrent'),tickets:n('ticketsCurrent'),success:n('successCurrent'),
   mCur:n('m_hours_cur'),mAw:n('m_hours_aw'),mTicketsCur:n('m_tickets_cur'),mTicketsAw:n('m_tickets_aw'),
-  mRtaCur:n('m_rta_cur'),mRtaAw:n('m_rta_aw'),mSuccessCur:n('m_success_cur'),mSuccessAw:n('m_success_aw')
- };
+  mRtaCur:n('m_rta_cur'),mRtaAw:n('m_rta_aw'),mSuccessCur:n('m_success_cur'),mSuccessAw:n('m_success_aw')});
 }
 function downloadPDF(){
  if(!window.jspdf){alert('The PDF library could not load. Check the internet connection and try again.');return;}
@@ -430,14 +472,15 @@ function downloadPDF(){
  doc.setFillColor(247,248,250);doc.roundedRect(L,y,maxW,112,8,8,'F');
  set(11,ink,'bold');doc.text('Executive result',L+16,y+22);
  set(20,s.netSS>=0?green:amber,'bold');doc.text(fmtMoney(s.netSS),L+16,y+51);
- set(9,muted);doc.text('Steady-state net operating value after monetization and recurring platform cost',L+16,y+68);
- set(10,ink,'bold');const fteStr=fmt(s.returned/1880)+' FTE';doc.text(fteStr,L+16,y+92);const fteW=doc.getTextWidth(fteStr);set(9,muted);doc.text('technical capacity returned',L+16+fteW+10,y+92);
+ set(9,muted);doc.text('Steady-state net operating value · direct-cash view, after recurring platform cost',L+16,y+68);
+ set(10,ink,'bold');const techStr=fmtMoney(s.technicalValue);doc.text(techStr,L+16,y+92);const techW=doc.getTextWidth(techStr);set(9,muted);doc.text('full technical productivity value · '+fmt(s.returned/1880)+' FTE returned',L+16+techW+10,y+92);
  y+=138;
  heading('Decision framing');
- para('This report keeps three economic outcomes separate: existing-contract operating value, incremental managed-service contribution margin, and customer or project value. Returned capacity is not treated as cash savings until the partner enters a monetization rate.');
- kv('Year-one net operating value',fmtMoney(s.netY1),s.netY1>=0?green:amber);
+ para('This report separates the full technical productivity value of returned capacity from the conservative direct-cash value the partner can bank today, and keeps three economic outcomes distinct: existing-contract operating value, incremental managed-service contribution margin, and customer or project value.');
+ kv('Full technical productivity value',fmtMoney(s.technicalValue),green);
+ kv('Direct-cash value at '+s.monetization+'% capacity-to-cash',fmtMoney(s.cashValue));
  kv('Technical capacity returned',fmt(s.returned)+' hours · '+fmt(s.returned/1880)+' FTE');
- kv('Capacity assumed monetized',fmt(s.monetized)+' hours · '+s.monetization+'%');
+ kv('Year-one net operating value (cash view)',fmtMoney(s.netY1),s.netY1>=0?green:amber);
  kv('Separate managed-service contribution margin',fmtMoney(s.svcMargin),s.svcMargin>=0?green:amber);
  kv('Evidence coverage',s.measuredCount+' of '+activities.length+' activity baselines marked measured');
  kv('Bake-off result',s.measuredBake?'Measured touch-hour results entered':'Not yet completed',s.measuredBake?green:amber);
@@ -455,12 +498,12 @@ function downloadPDF(){
  heading('Economic assumptions');
  kv('Loaded labor cost',fmtMoney(s.rate)+' / hour');kv('Annual license cost entered',fmtMoney(s.licenseAnnual));
  kv('Other recurring platform cost',fmtMoney(n('otherRecurring')));kv('Implementation cost',fmtMoney(s.implementation));
- kv('Technical realization',fmt(s.realization)+'%');kv('Capacity monetization',fmt(s.monetization)+'%');kv('Ramp to steady state',fmt(s.ramp)+' months');
+ kv('Adoption',fmt(s.adoption)+'% · coverage applied once per activity');kv('Capacity-to-cash',fmt(s.monetization)+'%');kv('Ramp to steady state',fmt(s.ramp)+' months');
 
  // Current state table
  newPage();title('2. Current-state operating model','Annual activity volume, engineer touch time, rework and evidence status.');
- tableHeader(['Activity','Volume','Min/unit','Current hrs','Evidence'],[210,72,65,75,86]);
- s.rows.forEach(r=>tableRow([r.name,fmt(r.volume),fmt(r.minutes),fmt(r.current),r.evidence],[210,72,65,75,86]));
+ tableHeader(['Activity','Volume','Cur min','Current hrs','Evidence'],[210,72,65,75,86]);
+ s.rows.forEach(r=>tableRow([r.name,fmt(r.volume),fmt(r.curMin),fmt(r.current),r.evidence],[210,72,65,75,86]));
  heading('Current-state totals');
  kv('Annual engineer touch hours',fmt(s.curHours));kv('Annual labor cost',fmtMoney(s.curHours*s.rate));kv('FTE consumed at 1,880 hours',fmt(s.curHours/1880));
  kv('Labor cost per licensed user per month',fmtMoney((s.curHours*s.rate)/Math.max(1,s.users)/12));
@@ -468,22 +511,30 @@ function downloadPDF(){
  kv('Request-to-access elapsed time',fmt(s.rta)+' days');kv('Addressable application tickets',fmt(s.tickets)+' / month');
  kv('Install / launch success',s.success>0?fmt(s.success)+'%':'Not entered');
 
- // Addressability
- newPage();title('3. Addressable work and capability trace','The model reduces only the share of work marked addressable, applies the realization factor, and retains partner-controlled work.');
- tableHeader(['Activity','Capability','Addr.','Future hrs','What remains'],[142,112,48,65,148]);
- s.rows.forEach(r=>tableRow([r.name,r.capability,Math.round(r.address*100)+'%',fmt(r.future),r.remain],[142,112,48,65,148],{size:7.5}));
+ // Labor comparison
+ newPage();title('3. Labor comparison — current vs Recast','Each activity compares measured current minutes with measured Recast minutes. Catalog eligibility and adoption are each applied once; repetition is explicit.');
+ tableHeader(['Activity','Capability','Elig.','Recast min','Saved hrs','What remains'],[132,108,42,58,58,118]);
+ s.rows.forEach(r=>tableRow([r.name,r.capability,Math.round(r.elig*100)+'%',fmt(r.recMin),fmt(r.saved),r.remain],[132,108,42,58,58,118],{size:7.5}));
  heading('Interpretation');
- para('Addressable work is not the same as eliminated work. Managed packages can reduce recurring package maintenance for covered products, while partner validation, customer policy, release approval, security review, exception handling and unsupported or private applications remain in the operating model.');
- para('Reusable definitions reduce duplicate effort only where architecture, delivery target support, customer configuration and policy permit reuse. Self-service value applies only to eligible request categories, not every software-related ticket.');
+ para('Eligible share × adoption share sets how much of each activity Recast processes; the remaining share stays at current touch time, so the model never assumes Recast removes labor it does not touch. Catalog coverage is applied once — it is no longer counted a second time inside a realization factor.');
+ para('Reusable definitions reduce duplicate effort only where architecture, delivery target support, customer configuration and policy permit reuse. Recast receives credit only for the steps it materially changes; partner validation, security review and release approval remain.');
 
  // Economics
- newPage();title('4. Future-state economics','Capacity, monetized value and service-line economics are shown separately to prevent double counting.');
+ newPage();title('4. Future-state economics','The full technical value and the conservative cash value are shown separately, then tested against the license.');
  heading('Existing-contract operating case');
  kv('Current annual touch hours',fmt(s.curHours));kv('Future retained touch hours',fmt(s.newHours));
  kv('Technical capacity returned',fmt(s.returned)+' hours · '+fmt(s.returned/1880)+' FTE');
- kv('Monetized labor value',fmtMoney(s.monetizedValue));kv('License and recurring platform cost',fmtMoney(s.platform));
- kv('Steady-state net operating value',fmtMoney(s.netSS),s.netSS>=0?green:amber);
- kv('Year-one net operating value',fmtMoney(s.netY1),s.netY1>=0?green:amber);
+ kv('Full technical productivity value',fmtMoney(s.technicalValue),green);
+ kv('Direct-cash value at '+s.monetization+'% capacity-to-cash',fmtMoney(s.cashValue));
+ kv('License and recurring platform cost',fmtMoney(s.platform));
+ kv('Steady-state net operating value (cash view)',fmtMoney(s.netSS),s.netSS>=0?green:amber);
+ kv('Year-one net operating value (cash view)',fmtMoney(s.netY1),s.netY1>=0?green:amber);
+ heading('Break-even and profitability check');
+ kv('Current vs Recast hours per release',fmt(s.curPerRel)+' -> '+fmt(s.newPerRel)+' ('+fmt(s.savedPerRel)+' saved)');
+ kv('Break-even hours per release',fmt(s.breakevenPerRel)+' at '+fmtMoney(s.rate)+'/hour');
+ kv('Required capture of technical value',isFinite(s.requiredCapture)?Math.round(s.requiredCapture*100)+'%':'Not recoverable',(isFinite(s.requiredCapture)&&s.requiredCapture<=1)?green:amber);
+ if(isFinite(s.maxUsers)&&s.maxUsers>0) kv('Maximum supportable users at entered price',fmt(s.maxUsers));
+ para((!isFinite(s.requiredCapture)||s.requiredCapture>1)?'At the entered price the license cannot be recovered from modeled technical savings alone. Improve measured repetition, reuse or Recast touch time, or revisit pricing — do not adjust the Recast minutes only to clear the threshold.':'The modeled technical savings cover the license with '+Math.round((1-s.requiredCapture)*100)+'% of technical value remaining for cash conversion or growth capacity.',(!isFinite(s.requiredCapture)||s.requiredCapture>1)?amber:muted);
  heading('New managed-service case — separate value pool');
  kv('Attached users',fmt(s.attached));kv('Incremental recurring revenue',fmtMoney(s.svcRev));
  kv('Incremental service-delivery cost',fmtMoney(s.svcCost));kv('Incremental contribution margin',fmtMoney(s.svcMargin),s.svcMargin>=0?green:amber);
