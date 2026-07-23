@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Recast Application Workspace - Partner Economics Model</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Crect%20width='100'%20height='100'%20rx='16'%20fill='%23FFFFFF'/%3E%3Ctext%20x='50'%20y='72'%20font-family='Helvetica,Arial,sans-serif'%20font-size='62'%20font-weight='800'%20fill='%230000CC'%20text-anchor='middle'%3ERe%3C/text%3E%3C/svg%3E">
 <style>
 :root{
   --recast-blue:#0000CC;
@@ -60,7 +59,10 @@ a{color:var(--blue)}
 .header-inner{max-width:1460px;margin:0 auto;padding:22px 28px 24px}
 .brand-row{display:flex;align-items:center;justify-content:space-between;gap:18px}
 .brand{display:flex;align-items:center;gap:12px}
-.recast-logo{height:40px;width:auto;display:block}
+.logo-mark{width:34px;height:34px;border-radius:9px;background:var(--recast-cyan);position:relative;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.logo-mark:after{content:"";position:absolute;left:8px;top:8px;width:18px;height:18px;border:3px solid #fff;border-left-color:transparent;border-radius:50%}
+.brand-name{font-weight:800;letter-spacing:.01em;font-size:17px}
+.brand-name span{font-weight:500;color:var(--recast-cyan);margin-left:5px}
 .header-actions{display:flex;gap:8px;flex-wrap:wrap}
 .action-btn{border:1px solid rgba(255,255,255,.28);color:#fff;background:rgba(255,255,255,.08);border-radius:9px;padding:8px 12px;font-weight:700;font-size:12px}
 .action-btn:hover{background:rgba(255,255,255,.16)}
@@ -250,6 +252,76 @@ td .sub{display:block;font-size:10px;color:var(--muted);margin-top:1px;font-weig
 .quality-btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:8px;padding:7px 5px;font-size:10.5px;font-weight:750}
 .quality-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
 
+/* ---- Executive view ---- */
+.exec-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:end;margin-bottom:14px}
+.exec-head h2{margin:0;font-size:23px;color:var(--ink);letter-spacing:-.022em;line-height:1.15}
+.exec-head p{margin:6px 0 0;color:var(--muted);font-size:12.5px;max-width:760px}
+.anim-controls{display:flex;gap:7px}
+.anim-btn{border:1px solid var(--line);background:#fff;color:var(--blue);border-radius:9px;padding:8px 14px;font-weight:750;font-size:12px}
+.anim-btn:hover{border-color:var(--blue)}
+.anim-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.claim-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.claim{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 14px 13px;box-shadow:0 5px 18px rgba(26,26,46,.05);border-top:3px solid var(--recast-cyan)}
+.claim .step{position:absolute;top:10px;right:12px;font-size:9px;font-weight:850;letter-spacing:.06em;color:var(--recast-muted-blue);text-transform:uppercase}
+.claim .n{font-size:26px;font-weight:900;color:var(--blue);letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.claim .t{font-size:11.5px;color:var(--ink);font-weight:750;margin-top:6px}
+.claim .d{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.35}
+.stage-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.anim-side{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.anim-side.today{border-top:5px solid #8A8A9E}
+.anim-side.aw{border-top:5px solid var(--recast-cyan)}
+.side-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.side-head h3{margin:0;font-size:16px;color:var(--ink)}
+.side-head .sub{margin:2px 0 0;font-size:11px;color:var(--muted)}
+.clockbox{text-align:right;white-space:nowrap}
+.clockbox .c{font-size:21px;font-weight:850;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.1}
+.clockbox .cl{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:800;margin-top:2px}
+.pipeline{position:relative;height:250px;margin-bottom:13px}
+.stage{position:absolute;left:0;right:0;height:54px;border:1px solid var(--line);border-radius:11px;background:var(--soft);display:flex;flex-direction:column;justify-content:center;padding:0 12px 0 112px;font-size:12px;color:var(--muted);font-weight:750;transition:background .18s,border-color .18s,color .18s,box-shadow .18s}
+.stage .s-sub{font-size:10px;font-weight:500;color:var(--muted);margin-top:2px;line-height:1.3}
+.stage.on{background:#fff;border-color:var(--blue);color:var(--ink);box-shadow:0 0 0 3px rgba(0,0,204,.10)}
+.stage.prefilled{background:var(--soft-blue);border-color:#CFE3FF;color:var(--blue)}
+.stage.result{background:var(--green-bg);border-color:#BFE3CE;color:var(--green);opacity:.35;transition:opacity .35s}
+.stage.result.show{opacity:1}
+.token{position:absolute;left:9px;top:7px;width:94px;height:40px;border-radius:10px;background:var(--navy);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:850;box-shadow:0 6px 16px rgba(26,26,46,.30);z-index:3;transition:opacity .25s}
+.token.aw{background:var(--recast-cyan);color:#052235;box-shadow:0 6px 16px rgba(0,120,170,.30)}
+.token small{font-size:9px;font-weight:650;opacity:.88;margin-top:1px}
+.token.hide{opacity:0}
+.zones{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:30px}
+.zone{flex:0 0 auto;min-width:50px;text-align:center;border:1px solid var(--line);border-radius:8px;padding:6px 7px;font-size:10px;font-weight:750;color:var(--muted);background:#fff;transition:background .25s,border-color .25s,color .25s,transform .25s}
+.zone.done{background:var(--green-bg);border-color:#BFE3CE;color:var(--green)}
+.zone.pulse{transform:scale(1.09)}
+.zone-more{font-size:10.5px;color:var(--muted);font-weight:750;padding-left:3px}
+.flagrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:11px;min-height:22px}
+.done-flag{background:var(--green);color:#fff;border-radius:999px;padding:5px 11px;font-size:10.5px;font-weight:850;opacity:0;transition:opacity .3s}
+.done-flag.show{opacity:1}
+.working{font-size:10.5px;color:var(--amber);font-weight:800;opacity:0;transition:opacity .3s}
+.working.show{opacity:1}
+.verdict{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:15px}
+.v-item{background:var(--recast-quote);border:1px solid #CFE3FF;border-radius:13px;padding:13px}
+.v-item .l{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.v-item .v{font-size:18px;font-weight:850;color:var(--ink);margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.v-item .d{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.35}
+.stays{margin-top:15px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--recast-cyan);border-radius:12px;padding:14px}
+.stays h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
+.stays p{margin:0 0 10px;font-size:11.5px;color:var(--muted);max-width:820px}
+.stays-tags{display:flex;flex-wrap:wrap;gap:6px}
+.stays-tag{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:5px 9px;font-size:10.5px;font-weight:700;color:var(--text)}
+@media(max-width:1150px){
+  .stage-wrap{grid-template-columns:1fr}
+  .claim-strip,.verdict{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+  .claim-strip,.verdict{grid-template-columns:1fr}
+  .exec-head{grid-template-columns:1fr}
+}
+@media print{
+  .anim-controls,.flagrow{display:none!important}
+  .claim-strip,.verdict{grid-template-columns:repeat(4,1fr)}
+  .stage-wrap{grid-template-columns:1fr 1fr}
+  .stage.result{opacity:1}
+  .zone{background:var(--green-bg);border-color:#BFE3CE;color:var(--green)}
+}
 .toast{position:fixed;right:20px;bottom:20px;z-index:100;background:var(--navy);color:#fff;border-radius:10px;padding:10px 13px;font-size:12px;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s}
 .toast.show{opacity:1;transform:translateY(0)}
 
@@ -298,16 +370,8 @@ td .sub{display:block;font-size:10px;color:var(--muted);margin-top:1px;font-weig
   <div class="header-inner">
     <div class="brand-row">
       <div class="brand">
-        <svg class="recast-logo" viewBox="0 0 176 40" role="img" aria-label="Recast Software" xmlns="http://www.w3.org/2000/svg">
-          <text x="2" y="30" font-family="Inter, Helvetica, Arial, sans-serif">
-            <tspan font-size="30" font-weight="800" letter-spacing="-0.5" fill="#FFFFFF">Recast</tspan>
-            <tspan dx="9" font-size="14" font-weight="500" letter-spacing="0.2" fill="#00BFFF">Software</tspan>
-          </text>
-          <g fill="#00BFFF" aria-hidden="true">
-            <rect x="86" y="5.6" width="11" height="3.2" rx="1.2"/>
-            <rect x="89.9" y="1.8" width="3.2" height="10.8" rx="1.2"/>
-          </g>
-        </svg>
+        <div class="logo-mark" aria-hidden="true"></div>
+        <div class="brand-name">Recast <span>Software</span></div>
       </div>
       <div class="header-actions">
         <button class="action-btn" id="resetAll">Reset</button>
@@ -336,7 +400,8 @@ td .sub{display:block;font-size:10px;color:var(--muted);margin-top:1px;font-weig
 <div class="nav-wrap">
   <div class="nav">
     <div class="tabs" role="tablist" aria-label="Model views">
-      <button class="tab active" data-view="operating" role="tab">Operating model</button>
+      <button class="tab active" data-view="exec" role="tab">Executive view</button>
+      <button class="tab" data-view="operating" role="tab">Operating model</button>
       <button class="tab" data-view="msp" role="tab">MSP economics</button>
       <button class="tab" data-view="si" role="tab">SI acceleration</button>
       <button class="tab" data-view="method" role="tab">Method &amp; guardrails</button>
@@ -524,6 +589,10 @@ td .sub{display:block;font-size:10px;color:var(--muted);margin-top:1px;font-weig
             <div class="input-wrap"><span class="prefix">$</span><input class="with-prefix" id="otherAnnual" type="number" min="0" step="1000" value="0"></div>
           </div>
           <div class="field">
+            <div class="label-row"><span class="label-main"><label for="catalogSize">Setup Store catalog size</label><span class="info-tip"><button type="button" class="info-button" aria-label="Catalog size">i</button><span class="tip-bubble" role="tooltip">Display value for the executive view only; it does not affect any calculation. Recast sources currently disagree — the Application Workspace for Intune page states 8,000+ curated Windows and macOS applications, the documentation site states more than 6,000 entries, and older pages state 5,000+. Verify the current figure before presenting.</span></span></span><span class="help">display only</span></div>
+            <div class="input-wrap"><input id="catalogSize" type="number" min="0" step="500" value="8000"></div>
+          </div>
+          <div class="field">
             <div class="label-row"><label>Data quality</label><span class="help">for executive use</span></div>
             <div class="data-quality">
               <button class="quality-btn active" data-quality="estimated">Estimated</button>
@@ -545,7 +614,134 @@ td .sub{display:block;font-size:10px;color:var(--muted);margin-top:1px;font-weig
 
     <div class="content">
 
-      <section class="view active" id="view-operating">
+      <section class="view active" id="view-exec">
+        <div class="section">
+          <div class="exec-head">
+            <div>
+              <h2>One application. One new version. Every customer.</h2>
+              <p>The same release event, run through both operating models at your entered scope. Nothing here is a stock animation — the stages, zone count, and hours are driven by the inputs in the sidebar.</p>
+            </div>
+            <div class="anim-controls">
+              <button class="anim-btn" id="animPause">Pause</button>
+              <button class="anim-btn primary" id="animReplay">Replay</button>
+            </div>
+          </div>
+
+          <div class="claim-strip">
+            <div class="claim">
+              <div class="step">1 · The asset</div>
+              <div class="n" id="claimCatalog">8,000+</div>
+              <div class="t">Applications in the Setup Store</div>
+              <div class="d">Sourced and maintained for you, with CVE context and release notes — not built from scratch</div>
+            </div>
+            <div class="claim">
+              <div class="step">2 · The multiplier</div>
+              <div class="n" id="claimReuse">3.6x</div>
+              <div class="t">Package reuse across your estate</div>
+              <div class="d">One package set serving every customer zone instead of one per tenant</div>
+            </div>
+            <div class="claim">
+              <div class="step">3 · The change</div>
+              <div class="n" id="claimBuilds">10 → 1</div>
+              <div class="t">Packaging passes per new version</div>
+              <div class="d">Validated once for the practice, then released everywhere</div>
+            </div>
+            <div class="claim">
+              <div class="step">4 · The result</div>
+              <div class="n" id="claimBenefit">$682K</div>
+              <div class="t">Modeled annual benefit</div>
+              <div class="d">Net of license, add-ons, and all retained partner work</div>
+            </div>
+          </div>
+
+          <div class="stage-wrap">
+            <article class="anim-side today">
+              <div class="side-head">
+                <div>
+                  <h3>Today</h3>
+                  <div class="sub">Repackaged tenant by tenant</div>
+                </div>
+                <div class="clockbox">
+                  <div class="c" id="todayClock">0.0 hrs</div>
+                  <div class="cl" id="todayCount">0 of 0 built</div>
+                </div>
+              </div>
+              <div class="pipeline" id="pipeToday">
+                <div class="stage" data-s="0">Find installer &amp; release notes<span class="s-sub">Locate media, version, dependencies, licensing</span></div>
+                <div class="stage" data-s="1">Package<span class="s-sub">Install, detection, launch, repair, uninstall logic</span></div>
+                <div class="stage" data-s="2">Test &amp; approve<span class="s-sub">Technical test, security review, customer approval</span></div>
+                <div class="stage" data-s="3">Publish to this tenant<span class="s-sub">Assignment and portal logic in that customer's console</span></div>
+                <div class="token" id="tokenToday">New version<small id="tokenTodaySub">Customer 1</small></div>
+              </div>
+              <div class="zones" id="zonesToday"></div>
+              <div class="flagrow"><span class="working" id="todayWorking">Still working…</span><span></span></div>
+            </article>
+
+            <article class="anim-side aw">
+              <div class="side-head">
+                <div>
+                  <h3>With Application Workspace</h3>
+                  <div class="sub">Validated once, released to every zone</div>
+                </div>
+                <div class="clockbox">
+                  <div class="c" id="awClock">0.0 hrs</div>
+                  <div class="cl" id="awCount">0 of 1 built</div>
+                </div>
+              </div>
+              <div class="pipeline" id="pipeAw">
+                <div class="stage prefilled" data-s="0">Setup Store supplies the package<span class="s-sub">Version, silent switches, CVE context, your config carried forward</span></div>
+                <div class="stage" data-s="1">Test &amp; approve once<span class="s-sub">Your acceptance criteria, for the whole practice</span></div>
+                <div class="stage" data-s="2">Release to every zone<span class="s-sub">Staged rings, entitlements already in place</span></div>
+                <div class="stage result" data-s="3" id="awResult">All zones current<span class="s-sub" id="awResultSub">One packaging pass served every customer</span></div>
+                <div class="token aw" id="tokenAw">New version<small id="tokenAwSub">sourced</small></div>
+              </div>
+              <div class="zones" id="zonesAw"></div>
+              <div class="flagrow"><span></span><span class="done-flag" id="awDone">Done</span></div>
+            </article>
+          </div>
+
+          <div class="verdict">
+            <div class="v-item">
+              <div class="l">Effort per version, all customers</div>
+              <div class="v" id="vEffort">-</div>
+              <div class="d" id="vEffortSub">-</div>
+            </div>
+            <div class="v-item">
+              <div class="l">Cost per version, all customers</div>
+              <div class="v" id="vCost">-</div>
+              <div class="d" id="vCostSub">-</div>
+            </div>
+            <div class="v-item">
+              <div class="l">Onboarding the next customer</div>
+              <div class="v" id="vOnboard">-</div>
+              <div class="d" id="vOnboardSub">-</div>
+            </div>
+            <div class="v-item">
+              <div class="l">Cost to serve, per customer</div>
+              <div class="v" id="vServe">-</div>
+              <div class="d" id="vServeSub">-</div>
+            </div>
+          </div>
+
+          <div class="stays">
+            <h4>What stays yours — and stays billable</h4>
+            <p>Application Workspace changes where the repeated work goes. It does not remove the work a customer is actually paying you to own, and the model above keeps every one of these funded.</p>
+            <div class="stays-tags">
+              <span class="stays-tag">Testing &amp; acceptance criteria</span>
+              <span class="stays-tag">Security &amp; risk approval</span>
+              <span class="stays-tag">Release authority &amp; rollback</span>
+              <span class="stays-tag">Custom &amp; internal applications</span>
+              <span class="stays-tag">Entitlement &amp; licensing policy</span>
+              <span class="stays-tag">Customer governance &amp; exceptions</span>
+              <span class="stays-tag">Service desk &amp; escalation</span>
+            </div>
+          </div>
+
+          <div class="insight" style="margin-top:15px" id="execNote">-</div>
+        </div>
+      </section>
+
+      <section class="view" id="view-operating">
         <div class="section">
           <div class="section-title">
             <div><h2>Executive result</h2><p>Steady-state economics are primary. Year one carries ramp and implementation separately.</p></div>
@@ -1020,7 +1216,7 @@ ECONOMICS
     buildHours:8, newAppRate:20, updatesPerYear:6, updateHours:2.5, customAnnualHours:10,
     requestRate:0.08, requestMinutes:15, catalogDeflection:85,
     issueRate:0.12, issueMinutes:25, issueReduction:45,
-    implementationCost:60000, rampMonths:3, otherAnnual:0,
+    implementationCost:60000, rampMonths:3, otherAnnual:0, catalogSize:8000,
     contractRevenue:500000, otherCogs:300000,
     servicePrice:7, serviceUsers:10000, serviceOverhead:60000, serviceMargin:45,
     projectApps:250, projectManagedShare:70, projectHoursPerApp:8, projectTeam:4,
@@ -1401,6 +1597,168 @@ ECONOMICS
     $("siInsight").innerHTML = "<b>Read this carefully:</b> the application workstream falls by <b>"+hrs(todayH-awH)+"</b>, from "+num(todayW,1)+" to "+num(awW,1)+" calendar weeks at the entered team size. Only <b>"+pct(capture)+"</b> of that is assumed to move the committed date, giving <b>"+num(dateMove,1)+" weeks</b> of acceleration. Modeled impact combines <b>"+money(capValue)+"</b> of team capacity and <b>"+money(delayValue)+"</b> of schedule value, less <b>"+money(cost)+"</b> of incremental cost. Application readiness must be demonstrably on the critical path — this cannot remove security, infrastructure, licensing, or business delays.";
   }
 
+
+  // ---------- Executive view animation ----------
+  const PITCH = 62, HOLD = 3.0, LEFT_DUR = 11.0;
+  const R_A = [0.70, 1.00], R_B = [2.60, 2.90], R_REL = 3.20, R_DONE = 3.55;
+  let animT = 0, animPaused = false, animLast = null, animCfg = null, animZones = -1;
+  const reduceMotion = typeof matchMedia === "function" &&
+        matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const smoothstep = u => u*u*(3-2*u);
+  const seg = (t,a,b) => t<=a ? 0 : (t>=b ? 1 : smoothstep((t-a)/(b-a)));
+  function stepEase(x){
+    const i = Math.floor(x), f = x - i;
+    return i + smoothstep(Math.min(1,Math.max(0,(f-0.32)/0.46)));
+  }
+
+  function animConfigure(m){
+    const C = Math.max(1, Math.round(m.C));
+    const shown = Math.min(C, 12);
+    const perZoneMin = m.Nupd > 0 ? (m.Hzone*60/m.Nupd) : 3;
+    animCfg = {
+      C, shown, extra: C - shown,
+      perTenantHrs: m.Hupd,
+      perZoneMin,
+      todayHrs: m.Hupd * C,
+      awHrs: m.Hval + (C*perZoneMin/60),
+      rate: m.R,
+      passDur: LEFT_DUR / shown
+    };
+    animCfg.total = LEFT_DUR + HOLD;
+
+    if(animZones !== shown){
+      animZones = shown;
+      ["zonesToday","zonesAw"].forEach(id => {
+        const box = $(id);
+        if(!box) return;
+        box.innerHTML = "";
+        for(let i=0;i<shown;i++){
+          const d = document.createElement("div");
+          d.className = "zone";
+          d.textContent = "Cust " + (i+1);
+          box.appendChild(d);
+        }
+        if(animCfg.extra > 0){
+          const more = document.createElement("div");
+          more.className = "zone-more";
+          more.textContent = "+" + animCfg.extra + " more";
+          box.appendChild(more);
+        }
+      });
+    }
+    return animCfg;
+  }
+
+  function setStages(pipeId, activeIdx){
+    const pipe = $(pipeId);
+    if(!pipe) return;
+    pipe.querySelectorAll(".stage").forEach(el => {
+      const i = Number(el.dataset.s);
+      el.style.top = (i*PITCH)+"px";
+      if(!el.classList.contains("result")) el.classList.toggle("on", i === activeIdx);
+    });
+  }
+
+  function animRender(t){
+    const c = animCfg;
+    if(!c) return;
+
+    // ---- today ----
+    const lp = Math.min(1, t/LEFT_DUR);
+    const passIdx = Math.min(c.shown-1, Math.floor(lp*c.shown));
+    const within = lp*c.shown - passIdx;
+    const sp = stepEase(seg(within,0.02,0.24)+seg(within,0.26,0.50)+seg(within,0.52,0.76));
+    const tokT = $("tokenToday");
+    if(tokT){
+      tokT.style.top = (sp*PITCH + 7)+"px";
+      tokT.classList.toggle("hide", lp >= 1);
+    }
+    setStages("pipeToday", Math.round(sp));
+    const subT = $("tokenTodaySub");
+    if(subT) subT.textContent = "Customer " + Math.min(c.C, passIdx+1);
+    setText("todayClock", (lp*c.todayHrs).toFixed(1)+" hrs");
+    setText("todayCount", Math.floor(lp*c.C)+" of "+c.C+" built");
+    const zt = $("zonesToday");
+    if(zt) [...zt.querySelectorAll(".zone")].forEach((z,i)=>{
+      z.classList.toggle("done", i < Math.floor(lp*c.shown));
+    });
+    const wk = $("todayWorking");
+    if(wk) wk.classList.toggle("show", t > R_DONE && lp < 1);
+
+    // ---- application workspace ----
+    const asp = stepEase(seg(t,R_A[0],R_A[1]) + seg(t,R_B[0],R_B[1]));
+    const tokA = $("tokenAw");
+    const awDoneNow = t >= R_DONE;
+    if(tokA){
+      tokA.style.top = (asp*PITCH + 7)+"px";
+      tokA.classList.toggle("hide", awDoneNow);
+    }
+    setStages("pipeAw", awDoneNow ? -1 : Math.round(asp));
+    const subA = $("tokenAwSub");
+    if(subA) subA.textContent = t < R_A[0] ? "sourced" : (t < R_B[0] ? "validating" : "releasing");
+
+    let awNow = 0;
+    if(t >= R_B[1]) awNow = animCfg.awHrs;
+    else if(t >= R_A[1]) awNow = animCfg.awHrs * ((t-R_A[1])/(R_B[1]-R_A[1])) * 0.72;
+    setText("awClock", awNow.toFixed(1)+" hrs");
+    setText("awCount", (t >= R_A[0] ? 1 : 0)+" of 1 built");
+
+    const za = $("zonesAw");
+    const fanned = t >= R_REL;
+    if(za) [...za.querySelectorAll(".zone")].forEach(z=>{
+      z.classList.toggle("done", fanned);
+      z.classList.toggle("pulse", fanned && t < R_REL+0.4);
+    });
+    const res = $("awResult");
+    if(res) res.classList.toggle("show", awDoneNow);
+    const flag = $("awDone");
+    if(flag) flag.classList.toggle("show", awDoneNow);
+    const rsub = $("awResultSub");
+    if(rsub) rsub.textContent = "One packaging pass served all "+c.C+(c.C===1?" customer":" customers");
+  }
+
+  function animFrame(ts){
+    if(typeof requestAnimationFrame === "function") requestAnimationFrame(animFrame);
+    const sec = $("view-exec");
+    if(!sec || !sec.classList || !animCfg){ animLast = ts; return; }
+    const visible = sec.classList.contains("active");
+    if(!visible){ animLast = ts; return; }
+    if(animLast === null) animLast = ts;
+    const dt = Math.min(0.05, (ts - animLast)/1000);
+    animLast = ts;
+    if(!animPaused) animT += dt;
+    if(animT > animCfg.total) animT = 0;
+    animRender(animT);
+  }
+
+  function renderExec(m){
+    const c = animConfigure(m);
+    setText("claimCatalog", num(Math.max(0,n("catalogSize")))+"+");
+    setText("claimReuse", m.reuseMult.toFixed(1)+"x");
+    setText("claimBuilds", c.C+" → 1");
+    setText("claimBenefit", money(m.netBenefit));
+
+    const tCost = c.todayHrs*m.R, aCost = c.awHrs*m.R;
+    setText("vEffort", c.todayHrs.toFixed(1)+" → "+c.awHrs.toFixed(1)+" hrs");
+    setText("vEffortSub", "one new version, pushed to all "+c.C+(c.C===1?" customer":" customers"));
+    setText("vCost", moneyFull(tCost)+" → "+moneyFull(aCost));
+    setText("vCostSub", "at "+money2(m.R)+"/hr loaded; "+num(m.Nupd)+" versions per app per year");
+    setText("vOnboard", hrs(m.nextCustomerToday)+" → "+hrs(m.nextCustomerHours));
+    setText("vOnboardSub", "packaging work to stand up one more customer");
+    setText("vServe", money(m.perCustToday)+" → "+money(m.perCustAw));
+    setText("vServeSub", "per customer per month, all application delivery");
+
+    const note = $("execNote");
+    if(note){
+      note.className = "insight";
+      note.innerHTML = "<b>How to run this slide:</b> the left side is the operating model most partners have today — the same new version located, packaged, tested, and published separately in each tenant, "+
+        c.todayHrs.toFixed(1)+" hours to reach "+c.C+(c.C===1?" customer":" customers")+". The right side sources the package from the Setup Store, validates it once against your acceptance criteria, and releases it to every zone, "+
+        c.awHrs.toFixed(1)+" hours for the same result. Application Workspace runs alongside Intune and Configuration Manager rather than replacing them — Intune keeps enrollment, policy, and compliance. "+
+        "<b>Expect the credibility question,</b> and answer it with the panel below: testing, approval, release authority, custom applications, and customer governance all stay with you. That retained work is what the managed service bills for.";
+    }
+  }
+
   function renderQuality(){
     const b = $("qualityBadge");
     b.className = "small-badge ";
@@ -1412,6 +1770,7 @@ ECONOMICS
   function update(){
     model = calculate();
     renderOperating(model);
+    renderExec(model);
     renderGuards(model);
     renderMsp(model);
     renderSi(model);
@@ -1496,8 +1855,26 @@ ECONOMICS
     document.title=($("clientName").value.trim()?$("clientName").value.trim()+" - ":"")+"Application Workspace Partner Economics";
   });
 
+  const pauseBtn = $("animPause"), replayBtn = $("animReplay");
+  if(pauseBtn) pauseBtn.addEventListener("click",()=>{
+    animPaused = !animPaused;
+    pauseBtn.textContent = animPaused ? "Play" : "Pause";
+  });
+  if(replayBtn) replayBtn.addEventListener("click",()=>{
+    animT = 0; animPaused = false;
+    if(pauseBtn) pauseBtn.textContent = "Pause";
+  });
+
   syncRanges();
   update();
+
+  if(reduceMotion){
+    animPaused = true;
+    if(pauseBtn) pauseBtn.textContent = "Play";
+    animT = LEFT_DUR + 0.5;
+    if(animCfg) animRender(animT);
+  }
+  if(typeof requestAnimationFrame === "function") requestAnimationFrame(animFrame);
 })();
 </script>
 </body>
