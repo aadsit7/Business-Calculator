@@ -1,340 +1,1498 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Application Workspace — MSP Value Calculator</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recast Application Workspace - Partner Economics Model</title>
 <style>
 :root{
- --blue:#0000CC;--cyan:#00BFFF;--ink:#1A1A2E;--gray:#4A4A5A;--muted:#AABBEE;
- --panel:#F0F0F6;--tint:#FAFAFE;--quote:#F6F8FF;--line:#DDDDEE;
- --green:#0F7A3F;--red:#CC2222;--amber:#CC8800;--white:#fff;--radius:8px;
+  --recast-blue:#0000CC;
+  --recast-cyan:#00BFFF;
+  --recast-decor:#2222DD;
+  --recast-dark:#1A1A2E;
+  --recast-gray:#4A4A5A;
+  --recast-gray-soft:#6E6E80;
+  --recast-muted-blue:#AABBEE;
+  --recast-light:#F0F0F6;
+  --recast-row:#FAFAFE;
+  --recast-quote:#F6F8FF;
+  --recast-line:#DDDDEE;
+  --recast-red:#CC2222;
+  --recast-green:#0F7A3F;
+  --recast-amber:#CC8800;
+
+  --navy:var(--recast-blue);
+  --blue:var(--recast-blue);
+  --cyan:var(--recast-cyan);
+  --green:var(--recast-green);
+  --green-bg:#ECF6F0;
+  --amber:var(--recast-amber);
+  --amber-bg:#FFF7E6;
+  --red:var(--recast-red);
+  --red-bg:#FDF1F1;
+  --ink:var(--recast-dark);
+  --text:var(--recast-gray);
+  --muted:var(--recast-gray-soft);
+  --line:var(--recast-line);
+  --soft:var(--recast-light);
+  --soft-blue:var(--recast-quote);
+  --shadow:0 10px 30px rgba(26,26,46,.08);
+  --radius:16px;
+  --font:Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:#fff;line-height:1.45}
-button,input{font:inherit}
-/* Header */
-.top{background:var(--blue);color:#fff;position:relative;overflow:hidden}
-.top .plus{position:absolute;color:#2222DD;font-weight:700;font-size:20px;user-select:none}
-.topin{max-width:1180px;margin:auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:relative;z-index:2}
-.brand{font-weight:800;font-size:19px;letter-spacing:-.01em}.brand span{font-weight:500;color:var(--cyan)}
-.title{text-align:right}.title b{display:block;font-size:13px}.title small{color:var(--muted);font-size:11.5px}
-.btn{border:0;border-radius:6px;padding:9px 15px;cursor:pointer;font-weight:600;font-size:13px}
-.btn.cta{background:var(--cyan);color:#04263a}
-/* Intro */
-.intro{background:var(--panel);border-bottom:1px solid var(--line)}
-.intro .in{max-width:1180px;margin:auto;padding:18px 24px}
-.intro h1{margin:0 0 6px;font-size:22px;letter-spacing:-.02em}
-.intro p{margin:0;color:var(--gray);max-width:860px;font-size:14px}
-/* Layout */
-main{max-width:1180px;margin:auto;padding:22px 24px 40px}
-.grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:24px;align-items:start}
-.side{position:sticky;top:16px}
-.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 1px 2px rgba(16,24,40,.04)}
-.side .card{padding:16px}
-.side h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin:0 0 4px}
-.side .hint{color:var(--gray);font-size:12px;margin:0 0 12px}
-.field{padding:9px 0;border-top:1px solid var(--line)}
-.field:first-of-type{border-top:0}
-.field label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
-.field .sub{display:block;font-weight:400;color:var(--gray);font-size:11.5px;margin-top:2px}
-.field input[type=number]{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px;text-align:right;background:#fff}
-.rangewrap{display:flex;align-items:center;gap:10px}
-.rangewrap input[type=range]{flex:1;accent-color:var(--cyan)}
-.rangewrap .rv{min-width:58px;text-align:right;font-weight:700;color:var(--blue);font-variant-numeric:tabular-nums}
-details.adv{margin-top:12px;border-top:1px solid var(--line);padding-top:6px}
-details.adv summary{cursor:pointer;font-size:12px;font-weight:700;color:var(--blue);padding:6px 0;list-style:none}
-details.adv summary::-webkit-details-marker{display:none}
-details.adv summary::before{content:"▸ ";color:var(--cyan)}
-details.adv[open] summary::before{content:"▾ "}
-.notice{font-size:11.5px;color:var(--gray);background:var(--quote);border-left:2.5px solid var(--cyan);border-radius:0 6px 6px 0;padding:9px 11px;margin-top:14px}
-/* Results */
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:8px}
-.kpi{padding:15px 16px;border-top:3px solid var(--cyan)}
-.kpi .n{font-size:24px;font-weight:800;letter-spacing:-.02em;color:var(--blue)}
-.kpi .n.green{color:var(--green)}
-.kpi .l{font-size:11.5px;color:var(--gray);margin-top:3px;line-height:1.3}
-.kpi .s{font-size:11px;color:var(--gray);margin-top:4px}
-.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:26px 0 12px}
-.sec-h h3{font-size:15px;margin:0}
-.sec-h .lead{font-size:12.5px;color:var(--gray);margin:0}
-.comp{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.comp .card{padding:16px;display:flex;flex-direction:column;gap:8px}
-.comp h4{margin:0;font-size:14.5px;display:flex;align-items:center;gap:8px}
-.dot{width:9px;height:9px;border-radius:2px;background:var(--cyan);flex:none}
-.chips{display:flex;gap:6px;flex-wrap:wrap}
-.chip{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.02em}
-.chip.fast{background:#e6f7ff;color:#026aa2}
-.chip.safe{background:#fdeaea;color:#a01818}
-.chip.cost{background:#e9f6ee;color:#0f7a3f}
-.chip.serv{background:#eef0ff;color:#2222aa}
-.comp p{margin:0;font-size:12.5px;color:var(--gray)}
-.metric{display:flex;align-items:baseline;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
-.metric .big{font-size:20px;font-weight:800;color:var(--blue)}
-.metric .big.green{color:var(--green)}
-.metric .u{font-size:12px;color:var(--gray)}
-.qual{font-size:12.5px;color:var(--ink);font-weight:600}
-details.method{margin-top:26px}
-details.method>summary{cursor:pointer;font-weight:700;font-size:13px;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
-.method-body{border:1px solid var(--line);border-top:0;border-radius:0 0 var(--radius) var(--radius);padding:14px 16px;font-size:12.5px;color:var(--gray)}
-.method-body a{color:var(--blue)}
-.method-body ul{margin:8px 0;padding-left:18px}
-.foot{max-width:1180px;margin:auto;padding:14px 24px;color:var(--gray);font-size:11.5px;border-top:1px solid var(--line)}
-@media(max-width:900px){.grid{grid-template-columns:1fr}.side{position:static}.kpis{grid-template-columns:1fr 1fr}.comp{grid-template-columns:1fr}.title{display:none}}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);color:var(--text);background:#F5F5FA;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{color:var(--blue)}
+
+.info-tip{position:relative;display:inline-flex;align-items:center;vertical-align:middle;margin-left:5px}
+.info-button{width:17px;height:17px;border-radius:50%;border:1px solid #C6C6DC;background:#fff;color:var(--blue);display:inline-grid;place-items:center;padding:0;font-size:10px;font-weight:850;line-height:1;cursor:help}
+.info-button:hover,.info-button:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,0,204,.14)}
+.tip-bubble{position:absolute;right:0;top:24px;z-index:120;width:min(300px,calc(100vw - 40px));padding:10px 11px;border-radius:10px;background:var(--navy);color:#fff;font-size:11px;line-height:1.45;font-weight:500;box-shadow:0 14px 34px rgba(26,26,46,.28);opacity:0;visibility:hidden;transform:translateY(-4px);transition:.16s ease;pointer-events:none}
+.tip-bubble:before{content:"";position:absolute;right:5px;top:-6px;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:6px solid var(--navy)}
+.info-tip:hover .tip-bubble,.info-tip:focus-within .tip-bubble,.info-tip.open .tip-bubble{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
+.label-main{display:inline-flex;align-items:center;min-width:0}
+
+.header{background:var(--recast-blue);color:#fff;border-bottom:4px solid var(--cyan)}
+.header-inner{max-width:1460px;margin:0 auto;padding:22px 28px 24px}
+.brand-row{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo-mark{width:34px;height:34px;border-radius:9px;background:var(--recast-cyan);position:relative;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.logo-mark:after{content:"";position:absolute;left:8px;top:8px;width:18px;height:18px;border:3px solid #fff;border-left-color:transparent;border-radius:50%}
+.brand-name{font-weight:800;letter-spacing:.01em;font-size:17px}
+.brand-name span{font-weight:500;color:var(--recast-cyan);margin-left:5px}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+.action-btn{border:1px solid rgba(255,255,255,.28);color:#fff;background:rgba(255,255,255,.08);border-radius:9px;padding:8px 12px;font-weight:700;font-size:12px}
+.action-btn:hover{background:rgba(255,255,255,.16)}
+.action-btn.primary{background:#fff;color:var(--recast-blue);border-color:#fff}
+.title-row{margin-top:20px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end}
+.title-row h1{margin:0 0 5px;font-size:29px;line-height:1.12;letter-spacing:-.025em}
+.title-row p{margin:0;color:var(--recast-muted-blue);max-width:840px;font-size:13.5px}
+.client-fields{display:grid;grid-template-columns:170px 170px;gap:9px}
+.header-field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--recast-muted-blue);margin-bottom:4px}
+.header-field input{width:100%;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;border-radius:8px;padding:8px 10px}
+.header-field input::placeholder{color:#99AADD}
+
+.nav-wrap{position:sticky;top:0;z-index:50;background:rgba(245,245,250,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{max-width:1460px;margin:0 auto;padding:10px 28px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.tabs{display:inline-flex;gap:3px;background:#E6E6F0;padding:4px;border-radius:11px;overflow-x:auto}
+.tab{border:none;background:transparent;color:var(--text);font-weight:750;font-size:12px;border-radius:8px;padding:8px 13px;white-space:nowrap}
+.tab.active{background:#fff;color:var(--blue);box-shadow:0 1px 4px rgba(26,26,46,.12)}
+.nav-summary{font-size:12px;color:var(--muted);text-align:right}
+.nav-summary b{color:var(--ink)}
+
+.main{max-width:1460px;margin:0 auto;padding:22px 28px 64px}
+.workspace{display:grid;grid-template-columns:352px minmax(0,1fr);gap:22px;align-items:start}
+.sidebar{position:sticky;top:72px;max-height:calc(100vh - 88px);overflow:auto;padding-right:3px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.input-panel{padding:16px}
+.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.panel-head h2{margin:0;color:var(--ink);font-size:16px;letter-spacing:-.01em}
+.panel-head p{margin:3px 0 0;color:var(--muted);font-size:11.5px}
+
+.presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:14px}
+.preset-btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:9px;padding:8px 6px;font-size:10.5px;font-weight:750;line-height:1.25;text-align:center}
+.preset-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.preset-btn small{display:block;font-weight:600;font-size:9px;opacity:.75;margin-top:2px}
+
+.input-section{border-top:1px solid var(--line);padding-top:13px;margin-top:13px}
+.input-section h3{margin:0 0 9px;color:var(--blue);font-size:10.5px;text-transform:uppercase;letter-spacing:.07em}
+.field{margin:0 0 10px}
+.field:last-child{margin-bottom:0}
+.label-row{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:4px}
+.field label{font-size:12.5px;color:var(--ink);font-weight:650}
+.help{font-size:10px;color:var(--muted);text-align:right;white-space:nowrap}
+.input-wrap{position:relative}
+.input-wrap input{width:100%;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:8px 10px;font-variant-numeric:tabular-nums}
+.input-wrap input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,0,204,.14)}
+.input-wrap .prefix,.input-wrap .suffix{position:absolute;top:50%;transform:translateY(-50%);color:var(--muted);font-size:12px;pointer-events:none}
+.input-wrap .prefix{left:10px}.input-wrap .suffix{right:10px}
+.input-wrap input.with-prefix{padding-left:24px}
+.input-wrap input.with-suffix{padding-right:38px}
+.range-pair{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:8px;align-items:center}
+.range-pair input[type="range"]{padding:0;border:none;box-shadow:none;accent-color:var(--blue)}
+.range-pair .small-input{padding:7px 8px;text-align:right}
+.field-note{margin-top:3px;color:var(--muted);font-size:10.5px;line-height:1.35}
+.derived-box{margin-top:13px;background:var(--soft);border-radius:10px;padding:11px}
+.derived-row{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;padding:3px 0}
+.derived-row span:last-child{color:var(--ink);font-weight:750;font-variant-numeric:tabular-nums}
+details.advanced{margin-top:12px;border-top:1px solid var(--line);padding-top:4px}
+details.advanced summary{list-style:none;color:var(--blue);font-weight:800;font-size:12px;padding:8px 0;cursor:pointer}
+details.advanced summary::-webkit-details-marker{display:none}
+details.advanced summary:before{content:"+ ";color:var(--recast-decor)}
+details.advanced[open] summary:before{content:"- "}
+
+.content{min-width:0}
+.view{display:none}.view.active{display:block}
+.section{margin-bottom:20px}
+.section-title{display:flex;align-items:end;justify-content:space-between;gap:14px;margin:0 0 10px}
+.section-title h2{margin:0;color:var(--ink);font-size:18px;letter-spacing:-.015em}
+.section-title p{margin:2px 0 0;color:var(--muted);font-size:11.5px}
+.small-badge{border-radius:999px;padding:5px 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-amber{background:var(--amber-bg);color:var(--amber)}
+.badge-blue{background:var(--soft-blue);color:var(--blue)}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 5px 18px rgba(26,26,46,.05)}
+.kpi .label{font-size:10.5px;color:var(--muted);font-weight:750;text-transform:uppercase;letter-spacing:.05em}
+.kpi .value{margin-top:4px;color:var(--ink);font-size:24px;font-weight:850;letter-spacing:-.025em;font-variant-numeric:tabular-nums}
+.kpi .sub{margin-top:4px;font-size:11px;color:var(--muted)}
+.kpi.good{border-top:3px solid var(--green)}
+.kpi.info{border-top:3px solid var(--blue)}
+.kpi.warn{border-top:3px solid var(--amber)}
+.kpi.bad{border-top:3px solid var(--red)}
+
+.reuse-card{background:var(--recast-quote);border:1px solid #CFE3FF;border-radius:15px;padding:16px 17px}
+.reuse-grid{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:center}
+.reuse-hero{border-right:1px solid #CFE3FF;padding-right:22px;text-align:center}
+.reuse-hero .n{font-size:44px;line-height:1;font-weight:900;color:var(--blue);letter-spacing:-.04em}
+.reuse-hero .l{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:5px}
+.reuse-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.reuse-step .k{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.reuse-step .v{font-size:18px;font-weight:850;color:var(--ink);margin-top:3px;font-variant-numeric:tabular-nums}
+.reuse-step .d{font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.35}
+
+.comparison{display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr);gap:12px;align-items:stretch}
+.state-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:var(--shadow)}
+.state-card.current{border-top:5px solid #8A8A9E}
+.state-card.aw{border-top:5px solid var(--recast-cyan)}
+.state-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}
+.state-head h3{margin:0;color:var(--ink);font-size:17px}
+.state-head p{margin:3px 0 0;color:var(--muted);font-size:11px}
+.state-total{text-align:right}
+.state-total .big{color:var(--ink);font-size:23px;font-weight:850;letter-spacing:-.02em}
+.state-total .small{font-size:10.5px;color:var(--muted)}
+.arrow{display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:26px;font-weight:900}
+.work-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.work-row:first-of-type{border-top:none}
+.work-label{color:var(--ink);font-size:12.5px;font-weight:700}
+.work-detail{display:block;color:var(--muted);font-size:10.5px;font-weight:500;margin-top:1px;line-height:1.35}
+.work-value{text-align:right;color:var(--ink);font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.work-value small{display:block;color:var(--muted);font-size:10px;font-weight:500}
+
+.bridge-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 5px 18px rgba(26,26,46,.04)}
+.bridge-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,.5fr);gap:22px;align-items:center}
+.bridge-list{margin:0;padding:0;list-style:none}
+.bridge-list li{display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px solid var(--line)}
+.bridge-list li:last-child{border-bottom:none}
+.bridge-list b{color:var(--ink)}
+.bridge-list .negative{color:var(--red);font-weight:850}
+.big-result{border-left:4px solid var(--green);padding-left:16px}
+.big-result .eyebrow{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800}
+.big-result .number{font-size:35px;line-height:1.05;color:var(--green);font-weight:900;letter-spacing:-.035em;margin-top:3px}
+.big-result .caption{font-size:11px;color:var(--muted);margin-top:5px}
+
+.table-card{background:#fff;border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:0 5px 18px rgba(26,26,46,.04)}
+.table-scroll{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:var(--navy);color:#fff;text-align:right;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;padding:9px 10px;white-space:nowrap}
+thead th:first-child{text-align:left}
+tbody td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+tbody td:first-child{text-align:left}
+tbody tr:last-child td{border-bottom:none}
+tbody tr.total td{font-weight:850;background:var(--soft)}
+td .sub{display:block;font-size:10px;color:var(--muted);margin-top:1px;font-weight:500}
+.pos{color:var(--green)!important;font-weight:800}
+.neg{color:var(--red)!important;font-weight:800}
+.neutral{color:var(--muted)!important}
+
+.insight{background:#fff;border:1px solid var(--line);border-left:4px solid var(--recast-cyan);border-radius:12px;padding:13px 14px;font-size:12.5px}
+.insight b{color:var(--ink)}
+.insight.warn{border-left-color:var(--amber);background:#FFFAF0}
+.insight.good{border-left-color:var(--green);background:#F4FAF6}
+.insight.red{border-left-color:var(--red);background:#FDF6F6}
+
+.guard-list{display:grid;gap:8px}
+.guard-item{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 13px;font-size:12px}
+.guard-item .dot{width:9px;height:9px;border-radius:50%;margin-top:5px}
+.guard-item.ok .dot{background:var(--green)}
+.guard-item.caution .dot{background:var(--amber)}
+.guard-item.stop .dot{background:var(--red)}
+.guard-item b{color:var(--ink)}
+.guard-item span{color:var(--text)}
+
+.two-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.motion-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:var(--shadow)}
+.motion-card h3{margin:0;color:var(--ink);font-size:17px}
+.motion-card .why{margin:4px 0 14px;color:var(--muted);font-size:11.5px}
+.motion-card .inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.mini-field label{display:block;color:var(--ink);font-size:11px;font-weight:700;margin-bottom:3px}
+.mini-field input{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 9px;color:var(--ink)}
+.motion-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.motion-result{background:var(--soft);border-radius:10px;padding:10px}
+.motion-result .l{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:800}
+.motion-result .v{font-size:19px;color:var(--ink);font-weight:850;margin-top:3px}
+.motion-result .s{font-size:10px;color:var(--muted);margin-top:2px}
+.motion-result.highlight{background:var(--green-bg)}
+.motion-result.highlight .v{color:var(--green)}
+
+.sku-scope{margin-top:12px;border-top:1px solid var(--line);padding-top:11px}
+.sku-scope .title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:7px}
+.sku-tags{display:flex;flex-wrap:wrap;gap:6px}
+.sku-tag{background:var(--soft-blue);color:var(--blue);border:1px solid #D4DCFA;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:750}
+.process-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.process-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+.process-card .num{width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--soft-blue);color:var(--blue);font-weight:900;font-size:11px;margin-bottom:8px}
+.process-card h4{margin:0;color:var(--ink);font-size:13px}
+.process-card p{margin:4px 0 0;color:var(--muted);font-size:11px}
+
+.guardrail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.guardrail{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+.guardrail h3{margin:0 0 8px;color:var(--ink);font-size:14px}
+.guardrail ul{margin:0;padding-left:17px;color:var(--text);font-size:11.5px}
+.guardrail li{margin:5px 0}
+.guardrail li::marker{color:var(--recast-cyan)}
+.formula{background:var(--recast-dark);color:#E4E8FF;border-radius:13px;padding:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.65;overflow:auto;white-space:pre}
+.sources{font-size:11.5px}
+.sources li{margin:7px 0}
+.data-quality{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.quality-btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:8px;padding:7px 5px;font-size:10.5px;font-weight:750}
+.quality-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+.toast{position:fixed;right:20px;bottom:20px;z-index:100;background:var(--navy);color:#fff;border-radius:10px;padding:10px 13px;font-size:12px;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s}
+.toast.show{opacity:1;transform:translateY(0)}
+
+@media(max-width:1150px){
+  .workspace{grid-template-columns:310px minmax(0,1fr)}
+  .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .comparison{grid-template-columns:1fr}
+  .arrow{transform:rotate(90deg);height:30px}
+  .bridge-grid,.reuse-grid{grid-template-columns:1fr}
+  .reuse-hero{border-right:none;border-bottom:1px solid #CFE3FF;padding:0 0 14px;margin-bottom:4px}
+  .reuse-steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:860px){
+  .header-inner,.main,.nav{padding-left:16px;padding-right:16px}
+  .title-row{grid-template-columns:1fr}
+  .workspace{grid-template-columns:1fr}
+  .sidebar{position:static;max-height:none}
+  .two-col,.guardrail-grid,.process-grid{grid-template-columns:1fr}
+  .nav-summary{display:none}
+}
+@media(max-width:560px){
+  .title-row h1{font-size:23px}
+  .client-fields{grid-template-columns:1fr}
+  .kpi-grid,.reuse-steps,.motion-card .inputs,.motion-results{grid-template-columns:1fr}
+  .presets{grid-template-columns:1fr}
+  .tabs{width:100%}.tab{flex:1}
+}
 @media print{
- .top{background:var(--blue)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
- .side,.btn,details.adv,.notice{display:none!important}
- .grid{grid-template-columns:1fr}.kpi,.comp .card{border:1px solid var(--line)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
- details.method[open] .method-body{display:block}
+  body{background:#fff;font-size:11px}
+  .header-actions,.nav-wrap,.sidebar,.toast{display:none!important}
+  .main{padding:16px 24px}
+  .workspace{display:block}
+  .view{display:none!important}
+  .view.active{display:block!important}
+  .panel,.kpi,.state-card,.table-card,.motion-card{box-shadow:none}
+  .section{break-inside:avoid}
+  .comparison{grid-template-columns:1fr 34px 1fr}
+  .arrow{transform:none}
+  .kpi-grid{grid-template-columns:repeat(4,1fr)}
+  a{color:inherit;text-decoration:none}
 }
 </style>
 </head>
 <body>
-<div class="top">
- <span class="plus" style="top:10px;left:41%">+</span><span class="plus" style="top:34px;left:52%">+</span><span class="plus" style="top:16px;right:24%">+</span>
- <div class="topin">
-  <div class="brand">Recast <span>Software</span></div>
-  <div style="display:flex;align-items:center;gap:16px">
-   <div class="title"><b>Application Workspace</b><small>MSP Value Calculator</small></div>
-   <button class="btn cta" id="printBtn" title="Print or save this value summary as a PDF">Save / print summary</button>
+<header class="header">
+  <div class="header-inner">
+    <div class="brand-row">
+      <div class="brand">
+        <div class="logo-mark" aria-hidden="true"></div>
+        <div class="brand-name">Recast <span>Software</span></div>
+      </div>
+      <div class="header-actions">
+        <button class="action-btn" id="resetAll">Reset</button>
+        <button class="action-btn primary" id="printView">Download PDF</button>
+      </div>
+    </div>
+    <div class="title-row">
+      <div>
+        <h1>Application Workspace partner economics</h1>
+        <p>Application work is counted the way it is actually performed today — once per application, per customer, per version. Application Workspace collapses that to distinct packages built once and released to every zone, with the Setup Store supplying prepared sources for managed applications.</p>
+      </div>
+      <div class="client-fields">
+        <div class="header-field">
+          <label for="clientName">Prepared for</label>
+          <input id="clientName" placeholder="Partner / organization">
+        </div>
+        <div class="header-field">
+          <label for="scenarioName">Scenario</label>
+          <input id="scenarioName" value="MSP - 10 customers">
+        </div>
+      </div>
+    </div>
   </div>
- </div>
+</header>
+
+<div class="nav-wrap">
+  <div class="nav">
+    <div class="tabs" role="tablist" aria-label="Model views">
+      <button class="tab active" data-view="operating" role="tab">Operating model</button>
+      <button class="tab" data-view="msp" role="tab">MSP economics</button>
+      <button class="tab" data-view="si" role="tab">SI acceleration</button>
+      <button class="tab" data-view="method" role="tab">Method &amp; guardrails</button>
+    </div>
+    <div class="nav-summary"><b id="navBenefit">$0</b> net annual benefit · <span id="navReuse">0x</span> package reuse</div>
+  </div>
 </div>
 
-<div class="intro"><div class="in">
- <h1>See what Application Workspace is worth to your business</h1>
- <p>Application complexity and constant change have become the bottleneck for MSPs — more apps, more tenants, more updates, with the same team. Enter a few numbers about how you operate today and see the value each Application Workspace capability returns: faster delivery, freed-up capacity, lower operating cost, and stronger security.</p>
-</div></div>
+<main class="main">
+  <div class="workspace">
+    <aside class="sidebar">
+      <div class="panel input-panel">
+        <div class="panel-head">
+          <div>
+            <h2>Model inputs</h2>
+            <p>Start from a preset, then replace with the account's measured data.</p>
+          </div>
+        </div>
 
-<main>
- <div class="grid">
-  <!-- INPUTS -->
-  <aside class="side">
-   <div class="card">
-    <h2>Your operating model</h2>
-    <p class="hint">Six quick inputs. Everything else uses Recast benchmarks you can adjust below.</p>
+        <div class="presets">
+          <button class="preset-btn active" data-preset="msp10">MSP<small>10 customers</small></button>
+          <button class="preset-btn" data-preset="msp25">MSP<small>25 customers</small></button>
+          <button class="preset-btn" data-preset="ent">Enterprise<small>single tenant</small></button>
+        </div>
 
-    <div class="field">
-     <label>Customers / tenants you support<span class="sub">Separate customers or zones you deliver apps to</span></label>
-     <input id="customers" type="number" min="1" value="10">
-    </div>
-    <div class="field">
-     <label>Endpoints under management<span class="sub">Devices receiving applications</span></label>
-     <input id="endpoints" type="number" min="1" value="5000">
-    </div>
-    <div class="field">
-     <label>App packages built or updated / month<span class="sub">New packages plus version updates, across all customers</span></label>
-     <input id="pkgMonth" type="number" min="0" value="80">
-    </div>
-    <div class="field">
-     <label>Hours to package &amp; maintain one app today<span class="sub">Source, script, test, scan, publish, update</span></label>
-     <div class="rangewrap"><input id="hoursPkg" type="range" min="0.5" max="12" step="0.5" value="4"><span class="rv" id="hoursPkg_v">4.0 h</span></div>
-    </div>
-    <div class="field">
-     <label>People on app packaging &amp; delivery<span class="sub">Full-time-equivalent staff</span></label>
-     <input id="staff" type="number" min="0" step="0.5" value="3">
-    </div>
-    <div class="field">
-     <label>Application support tickets / month<span class="sub">Install, update, access and app-failure requests</span></label>
-     <input id="ticketsMonth" type="number" min="0" value="250">
-    </div>
+        <div class="input-section" style="border-top:none;padding-top:0;margin-top:0">
+          <h3>1. Scope and commercial</h3>
+          <div class="field">
+            <div class="label-row"><span class="label-main"><label for="customers">Customers / zones</label><span class="info-tip"><button type="button" class="info-button" aria-label="Zones">i</button><span class="tip-bubble" role="tooltip">Zones give each customer separate scope inside one Application Workspace practice. Each zone requires licensing — confirm the structure in the quote. Zone count is what drives the reuse multiplier in this model.</span></span></span><span class="help">tenants</span></div>
+            <div class="input-wrap"><input id="customers" type="number" min="1" step="1" value="10"></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="users">Total managed users</label><span class="help">licensed scope</span></div>
+            <div class="input-wrap"><input id="users" type="number" min="0" step="500" value="10000"></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><span class="label-main"><label for="laborRate">Loaded labor cost</label><span class="info-tip"><button type="button" class="info-button" aria-label="Labor rate">i</button><span class="tip-bubble" role="tooltip">Rounded blended U.S. starting point from BLS pay for systems administrators and support specialists plus the private-industry benefit share. Replace with the partner's finance-approved delivery rate.</span></span></span><span class="help">salary + benefits</span></div>
+            <div class="input-wrap"><span class="prefix">$</span><input class="with-prefix with-suffix" id="laborRate" type="number" min="0" step="5" value="70"><span class="suffix">/hr</span></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="licenseRate">AW license rate</label><span class="help">contracted</span></div>
+            <div class="input-wrap"><span class="prefix">$</span><input class="with-prefix with-suffix" id="licenseRate" type="number" min="0" step=".25" value="1"><span class="suffix">/u/mo</span></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><span class="label-main"><label for="addOnRate">Add-on licensing</label><span class="info-tip"><button type="button" class="info-button" aria-label="Add-on licensing">i</button><span class="tip-bubble" role="tooltip">Release &amp; Patch Management is a separate add-on and is required for full Setup Store connector capability and release-stage functions. Access Manager is licensed separately. Do not model a high managed-package share without carrying this cost.</span></span></span><span class="help">R&amp;PM, Access Mgr</span></div>
+            <div class="input-wrap"><span class="prefix">$</span><input class="with-prefix with-suffix" id="addOnRate" type="number" min="0" step=".25" value="0.5"><span class="suffix">/u/mo</span></div>
+            <div class="field-note">Placeholder rates only. Replace both lines with the actual quote before any customer commitment.</div>
+          </div>
+        </div>
 
-    <details class="adv">
-     <summary>Fine-tune assumptions (Recast benchmarks)</summary>
-     <div class="field">
-      <label>Loaded labor cost / hour</label>
-      <input id="rate" type="number" min="0" value="70">
-     </div>
-     <div class="field">
-      <label>Packaging effort removed by automation<span class="sub">Setup Store + visual editor. Recast partners report up to ~90%</span></label>
-      <div class="rangewrap"><input id="pkgRed" type="range" min="0" max="90" step="5" value="70"><span class="rv" id="pkgRed_v">70%</span></div>
-     </div>
-     <div class="field">
-      <label>Packages that are the same app rebuilt per customer<span class="sub">Reuse collapses these to one definition</span></label>
-      <div class="rangewrap"><input id="reuseShare" type="range" min="0" max="80" step="5" value="40"><span class="rv" id="reuseShare_v">40%</span></div>
-     </div>
-     <div class="field">
-      <label>App tickets addressable by self-service / consistency</label>
-      <div class="rangewrap"><input id="tAddr" type="range" min="0" max="90" step="5" value="60"><span class="rv" id="tAddr_v">60%</span></div>
-     </div>
-     <div class="field">
-      <label>Of those, share deflected or auto-resolved</label>
-      <div class="rangewrap"><input id="tDeflect" type="range" min="0" max="80" step="5" value="30"><span class="rv" id="tDeflect_v">30%</span></div>
-     </div>
-     <div class="field">
-      <label>Minutes to handle one app ticket</label>
-      <input id="tHandle" type="number" min="1" value="25">
-     </div>
-     <div class="field">
-      <label>Time for an urgent update to reach all devices today<span class="sub">Intune sync / "pending" states, in hours</span></label>
-      <div class="rangewrap"><input id="updNow" type="range" min="1" max="48" step="1" value="8"><span class="rv" id="updNow_v">8 h</span></div>
-     </div>
-     <div class="field">
-      <label>Same update with Application Workspace (minutes)</label>
-      <input id="updAW" type="number" min="1" value="15">
-     </div>
-     <div class="field">
-      <label>Share of packages that are security / urgent updates</label>
-      <div class="rangewrap"><input id="urgentShare" type="range" min="0" max="80" step="5" value="25"><span class="rv" id="urgentShare_v">25%</span></div>
-     </div>
-    </details>
+        <div class="input-section">
+          <h3>2. Application estate (per customer)</h3>
+          <div class="field">
+            <div class="label-row"><span class="label-main"><label for="commodityApps">Third-party apps</label><span class="info-tip"><button type="button" class="info-button" aria-label="Third-party apps">i</button><span class="tip-bubble" role="tooltip">Commercial applications a customer runs that are candidates for a Setup Store source — browsers, productivity, collaboration, readers, runtimes, utilities. These are the apps that repeat across your customer base.</span></span></span><span class="help">per customer</span></div>
+            <div class="input-wrap"><input id="commodityApps" type="number" min="0" step="5" value="60"></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><span class="label-main"><label for="customApps">Custom / internal apps</label><span class="info-tip"><button type="button" class="info-button" aria-label="Custom apps">i</button><span class="tip-bubble" role="tooltip">Internal, legacy, unsupported, or heavily customized applications. These remain skilled partner-controlled packaging work and get no reuse benefit across customers.</span></span></span><span class="help">per customer</span></div>
+            <div class="input-wrap"><input id="customApps" type="number" min="0" step="5" value="15"></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><span class="label-main"><label for="overlap">App overlap across customers</label><span class="info-tip"><button type="button" class="info-button" aria-label="Overlap">i</button><span class="tip-bubble" role="tooltip">The share of third-party apps that are the same application across your customer base. This is the single most important input in the model: it converts repeated per-tenant packaging into one package released to many zones. Measure it from your actual package inventory.</span></span></span><span class="help">the key input</span></div>
+            <div class="range-pair">
+              <input id="overlapRange" type="range" min="0" max="100" step="5" value="80">
+              <div class="input-wrap"><input class="small-input with-suffix" id="overlap" type="number" min="0" max="100" step="5" value="80"><span class="suffix">%</span></div>
+            </div>
+          </div>
+        </div>
 
-    <div class="notice">Freed capacity is <b>potential</b> — it becomes value when reinvested in more customers, faster projects, or higher-value work. Figures use your inputs and Recast benchmarks; validate against your environment before committing.</div>
-   </div>
-  </aside>
+        <div class="input-section">
+          <h3>3. With Application Workspace</h3>
+          <div class="field">
+            <div class="label-row"><span class="label-main"><label for="managedCoverage">Managed-package coverage</label><span class="info-tip"><button type="button" class="info-button" aria-label="Managed coverage">i</button><span class="tip-bubble" role="tooltip">Share of third-party apps you can source as managed packages through the Setup Store connector. The base license carries a limited selection; full breadth requires Release &amp; Patch Management. Verify against the current connector list for this customer's actual apps.</span></span></span><span class="help">of third-party</span></div>
+            <div class="range-pair">
+              <input id="managedCoverageRange" type="range" min="0" max="100" step="5" value="85">
+              <div class="input-wrap"><input class="small-input with-suffix" id="managedCoverage" type="number" min="0" max="100" step="5" value="85"><span class="suffix">%</span></div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="label-row"><span class="label-main"><label for="validateHours">Test &amp; approve per version</label><span class="info-tip"><button type="button" class="info-button" aria-label="Validation">i</button><span class="tip-bubble" role="tooltip">The connector supplies the prepared source, but the partner still owns testing, approval, and rollout policy. This work is done once per version for the whole practice, then released to every zone. Never set it to zero.</span></span></span><span class="help">once, all zones</span></div>
+            <div class="input-wrap"><input class="with-suffix" id="validateHours" type="number" min="0" step=".25" value="1"><span class="suffix">hrs</span></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="certifyHours">Onboard a managed app</label><span class="help">once, all zones</span></div>
+            <div class="input-wrap"><input class="with-suffix" id="certifyHours" type="number" min="0" step=".25" value="1.5"><span class="suffix">hrs</span></div>
+            <div class="field-note">First-time setup of a Setup Store app: entitlement design, publishing mode, metadata, acceptance.</div>
+          </div>
+          <div class="field">
+            <div class="label-row"><span class="label-main"><label for="zoneOpsHours">Release &amp; entitle per zone</label><span class="info-tip"><button type="button" class="info-button" aria-label="Zone operations">i</button><span class="tip-bubble" role="tooltip">The residual per-customer work that survives: publishing an approved version into the zone, entitlement upkeep, staged release monitoring, and exception handling. This is the honest cost of "click and deploy" — small, but not zero.</span></span></span><span class="help">per app / year</span></div>
+            <div class="input-wrap"><input class="with-suffix" id="zoneOpsHours" type="number" min="0" step=".05" value="0.25"><span class="suffix">hrs</span></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="customReduction">Custom-app work reduction</label><span class="help">reusable actions</span></div>
+            <div class="range-pair">
+              <input id="customReductionRange" type="range" min="0" max="80" step="5" value="30">
+              <div class="input-wrap"><input class="small-input with-suffix" id="customReduction" type="number" min="0" max="80" step="5" value="30"><span class="suffix">%</span></div>
+            </div>
+            <div class="field-note">Custom apps stay skilled work. Keep this modest — the gain is reusable actions and staged release, not automated packaging.</div>
+          </div>
+          <div class="field">
+            <div class="label-row"><span class="label-main"><label for="realization">Realization factor</label><span class="info-tip"><button type="button" class="info-button" aria-label="Realization">i</button><span class="tip-bubble" role="tooltip">Risk-adjusts the modeled savings for adoption, exceptions, incomplete coverage, and process discipline. Higher than a generic efficiency model because the mechanism here is deterministic — the connector genuinely supplies the package — but never set it to 100%.</span></span></span><span class="help">adoption + exceptions</span></div>
+            <div class="range-pair">
+              <input id="realizationRange" type="range" min="40" max="100" step="5" value="90">
+              <div class="input-wrap"><input class="small-input with-suffix" id="realization" type="number" min="0" max="100" step="5" value="90"><span class="suffix">%</span></div>
+            </div>
+          </div>
+        </div>
 
-  <!-- RESULTS -->
-  <div>
-   <div class="kpis">
-    <div class="card kpi"><div class="n green" id="k_hours">—</div><div class="l">engineer hours returned / year</div><div class="s" id="k_fte">—</div></div>
-    <div class="card kpi"><div class="n" id="k_value">—</div><div class="l">annual labor value freed</div><div class="s">reinvestable capacity</div></div>
-    <div class="card kpi"><div class="n" id="k_sec">—</div><div class="l">urgent-update exposure window</div><div class="s" id="k_sec_sub">—</div></div>
-    <div class="card kpi"><div class="n" id="k_cust">—</div><div class="l">more customers your team could support</div><div class="s">without adding headcount</div></div>
-   </div>
+        <details class="advanced">
+          <summary>Work performed today</summary>
+          <div class="field">
+            <div class="label-row"><label for="buildHours">Package &amp; release an app</label><span class="help">per app, per tenant</span></div>
+            <div class="input-wrap"><input class="with-suffix" id="buildHours" type="number" min="0" step=".5" value="8"><span class="suffix">hrs</span></div>
+            <div class="field-note">A 2025 study put average Windows packaging cost at $646 per application; at $70/hr that is roughly 9.2 hours. Eight is deliberately conservative.</div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="newAppRate">Estate refreshed per year</label><span class="help">new or repackaged</span></div>
+            <div class="range-pair">
+              <input id="newAppRateRange" type="range" min="0" max="100" step="5" value="20">
+              <div class="input-wrap"><input class="small-input with-suffix" id="newAppRate" type="number" min="0" max="100" step="5" value="20"><span class="suffix">%</span></div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="updatesPerYear">Updates per app per year</label><span class="help">the treadmill</span></div>
+            <div class="input-wrap"><input id="updatesPerYear" type="number" min="0" step="1" value="6"></div>
+            <div class="field-note">Version cadence of common third-party apps. This, multiplied by tenants, is where most repeated cost lives.</div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="updateHours">Hours per update today</label><span class="help">per app, per tenant</span></div>
+            <div class="input-wrap"><input class="with-suffix" id="updateHours" type="number" min="0" step=".25" value="2.5"><span class="suffix">hrs</span></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="customAnnualHours">Custom app upkeep</label><span class="help">per app / year</span></div>
+            <div class="input-wrap"><input class="with-suffix" id="customAnnualHours" type="number" min="0" step="1" value="10"><span class="suffix">hrs</span></div>
+          </div>
+        </details>
 
-   <div class="sec-h">
-    <h3>Value from each Application Workspace capability</h3>
-    <p class="lead">Packaging + reuse + fewer tickets make up the capacity above; the rest are speed, security and service outcomes.</p>
-   </div>
+        <details class="advanced">
+          <summary>Application support load</summary>
+          <div class="field">
+            <div class="label-row"><label for="requestRate">App request tickets</label><span class="help">per user / month</span></div>
+            <div class="input-wrap"><input id="requestRate" type="number" min="0" step=".01" value="0.08"></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="requestMinutes">Handling time per request</label><span class="help">minutes</span></div>
+            <div class="input-wrap"><input class="with-suffix" id="requestMinutes" type="number" min="0" step="1" value="15"><span class="suffix">min</span></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><span class="label-main"><label for="catalogDeflection">Catalog deflection</label><span class="info-tip"><button type="button" class="info-button" aria-label="Deflection">i</button><span class="tip-bubble" role="tooltip">Governed self-service moves entitled application requests out of the ticket queue entirely. Approval workflows and licensing checks still consume some administrator time, which is why this is not 100%.</span></span></span><span class="help">of requests</span></div>
+            <div class="range-pair">
+              <input id="catalogDeflectionRange" type="range" min="0" max="100" step="5" value="85">
+              <div class="input-wrap"><input class="small-input with-suffix" id="catalogDeflection" type="number" min="0" max="100" step="5" value="85"><span class="suffix">%</span></div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="issueRate">App issue tickets</label><span class="help">per user / month</span></div>
+            <div class="input-wrap"><input id="issueRate" type="number" min="0" step=".01" value="0.12"></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="issueMinutes">Handling time per issue</label><span class="help">minutes</span></div>
+            <div class="input-wrap"><input class="with-suffix" id="issueMinutes" type="number" min="0" step="1" value="25"><span class="suffix">min</span></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="issueReduction">Issue reduction</label><span class="help">from consistency</span></div>
+            <div class="range-pair">
+              <input id="issueReductionRange" type="range" min="0" max="90" step="5" value="45">
+              <div class="input-wrap"><input class="small-input with-suffix" id="issueReduction" type="number" min="0" max="90" step="5" value="45"><span class="suffix">%</span></div>
+            </div>
+            <div class="field-note">Fewer versions and known install state reduce breakage. Applications still break; keep this well below the deflection rate.</div>
+          </div>
+        </details>
 
-   <div class="comp">
-    <div class="card">
-     <h4><span class="dot"></span>Automated application packaging</h4>
-     <div class="chips"><span class="chip fast">Faster</span><span class="chip cost">Lower cost</span></div>
-     <p>Stop manually finding installers, checking versions, researching silent switches, testing and scanning every app. Pull prepackaged, tested apps from the <b>Setup Store</b> — 5,000+ titles kept current daily, with your customizations carried across versions.</p>
-     <div class="metric"><span class="big green" id="c_pkg_hrs">—</span><span class="u">hrs/yr back · <span id="c_pkg_val">—</span></span></div>
+        <details class="advanced">
+          <summary>Year-one and data quality</summary>
+          <div class="field">
+            <div class="label-row"><label for="implementationCost">Implementation cost</label><span class="help">one-time</span></div>
+            <div class="input-wrap"><span class="prefix">$</span><input class="with-prefix" id="implementationCost" type="number" min="0" step="5000" value="60000"></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="rampMonths">Months to steady state</label><span class="help">0-12</span></div>
+            <div class="input-wrap"><input class="with-suffix" id="rampMonths" type="number" min="0" max="12" step="1" value="3"><span class="suffix">mo</span></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="otherAnnual">Other recurring cost</label><span class="help">annual</span></div>
+            <div class="input-wrap"><span class="prefix">$</span><input class="with-prefix" id="otherAnnual" type="number" min="0" step="1000" value="0"></div>
+          </div>
+          <div class="field">
+            <div class="label-row"><label>Data quality</label><span class="help">for executive use</span></div>
+            <div class="data-quality">
+              <button class="quality-btn active" data-quality="estimated">Estimated</button>
+              <button class="quality-btn" data-quality="mixed">Mixed</button>
+              <button class="quality-btn" data-quality="measured">Measured</button>
+            </div>
+          </div>
+        </details>
+
+        <div class="derived-box">
+          <div class="derived-row"><span>Package instances today</span><span id="dInstances">-</span></div>
+          <div class="derived-row"><span>Distinct packages with AW</span><span id="dDistinct">-</span></div>
+          <div class="derived-row"><span>Cost to serve / customer / mo</span><span id="dPerCustomer">-</span></div>
+          <div class="derived-row"><span>Delivery cost / user / mo</span><span id="dPerUser">-</span></div>
+          <div class="derived-row"><span>Breakeven license</span><span id="dBreakeven">-</span></div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content">
+
+      <section class="view active" id="view-operating">
+        <div class="section">
+          <div class="section-title">
+            <div><h2>Executive result</h2><p>Steady-state economics are primary. Year one carries ramp and implementation separately.</p></div>
+            <div id="qualityBadge" class="small-badge badge-amber">Estimated inputs</div>
+          </div>
+          <div class="kpi-grid">
+            <div class="kpi info">
+              <div class="label">Cost to deliver today</div>
+              <div class="value" id="kpiToday">$0</div>
+              <div class="sub" id="kpiTodaySub">Application delivery labor in scope</div>
+            </div>
+            <div class="kpi info">
+              <div class="label">With Application Workspace</div>
+              <div class="value" id="kpiAw">$0</div>
+              <div class="sub">Residual labor + license + add-ons</div>
+            </div>
+            <div class="kpi good" id="kpiBenefitCard">
+              <div class="label">Net annual benefit</div>
+              <div class="value" id="kpiBenefit">$0</div>
+              <div class="sub" id="kpiBenefitSub">Net of all recurring AW cost</div>
+            </div>
+            <div class="kpi warn" id="kpiYear1Card">
+              <div class="label">Year one, after implementation</div>
+              <div class="value" id="kpiYear1">$0</div>
+              <div class="sub" id="kpiYear1Sub">Includes ramp</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section reuse-card">
+          <div class="reuse-grid">
+            <div class="reuse-hero">
+              <div class="n" id="reuseMultiplier">0x</div>
+              <div class="l">Package reuse</div>
+            </div>
+            <div class="reuse-steps">
+              <div class="reuse-step">
+                <div class="k">Maintained today</div>
+                <div class="v" id="uInstances">0</div>
+                <div class="d">third-party package instances, one per app per tenant</div>
+              </div>
+              <div class="reuse-step">
+                <div class="k">Maintained with AW</div>
+                <div class="v" id="uDistinct">0</div>
+                <div class="d">distinct packages, released to every zone</div>
+              </div>
+              <div class="reuse-step">
+                <div class="k">Hours / app / tenant / yr</div>
+                <div class="v" id="uHoursToday">0</div>
+                <div class="d">build plus the update treadmill, today</div>
+              </div>
+              <div class="reuse-step">
+                <div class="k">Same measure with AW</div>
+                <div class="v" id="uHoursAw">0</div>
+                <div class="d">validation shared across zones, plus zone release</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <div><h2>Where the work goes</h2><p>Residual effort for testing, approval, entitlement, and exceptions stays in the model on every line.</p></div>
+          </div>
+          <div class="comparison">
+            <article class="state-card current">
+              <div class="state-head">
+                <div><h3>Today</h3><p>Rebuilt per tenant, per version</p></div>
+                <div class="state-total"><div class="big" id="todayTotal">$0</div><div class="small">per year</div></div>
+              </div>
+              <div class="work-row">
+                <div class="work-label">Third-party packaging<span class="work-detail" id="todayCommodityDetail">-</span></div>
+                <div class="work-value" id="todayCommodityCost">$0<small id="todayCommodityHrs">0 hrs</small></div>
+              </div>
+              <div class="work-row">
+                <div class="work-label">Custom &amp; internal apps<span class="work-detail" id="todayCustomDetail">-</span></div>
+                <div class="work-value" id="todayCustomCost">$0<small id="todayCustomHrs">0 hrs</small></div>
+              </div>
+              <div class="work-row">
+                <div class="work-label">Application support<span class="work-detail" id="todaySupportDetail">-</span></div>
+                <div class="work-value" id="todaySupportCost">$0<small id="todaySupportHrs">0 hrs</small></div>
+              </div>
+              <div class="work-row">
+                <div class="work-label">Platform<span class="work-detail">Existing tooling carries no new charge here</span></div>
+                <div class="work-value">$0<small>incremental</small></div>
+              </div>
+            </article>
+
+            <div class="arrow" aria-hidden="true">→</div>
+
+            <article class="state-card aw">
+              <div class="state-head">
+                <div><h3>With Application Workspace</h3><p>Built once, released to every zone</p></div>
+                <div class="state-total"><div class="big" id="awTotal">$0</div><div class="small">per year</div></div>
+              </div>
+              <div class="work-row">
+                <div class="work-label">Third-party packaging<span class="work-detail" id="awCommodityDetail">-</span></div>
+                <div class="work-value" id="awCommodityCost">$0<small id="awCommodityHrs">0 hrs</small></div>
+              </div>
+              <div class="work-row">
+                <div class="work-label">Custom &amp; internal apps<span class="work-detail">Still skilled packaging; reusable actions and staged release only</span></div>
+                <div class="work-value" id="awCustomCost">$0<small id="awCustomHrs">0 hrs</small></div>
+              </div>
+              <div class="work-row">
+                <div class="work-label">Application support<span class="work-detail">Catalog deflects requests; consistency reduces issues</span></div>
+                <div class="work-value" id="awSupportCost">$0<small id="awSupportHrs">0 hrs</small></div>
+              </div>
+              <div class="work-row">
+                <div class="work-label">AW recurring cost<span class="work-detail" id="awPlatformDetail">License plus add-ons</span></div>
+                <div class="work-value" id="awPlatformCost">$0<small>per year</small></div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="section bridge-card">
+          <div class="bridge-grid">
+            <ul class="bridge-list">
+              <li><span>Delivery labor released</span><b id="bridgeGross">$0</b></li>
+              <li><span>Less: AW license</span><span class="negative" id="bridgeLicense">($0)</span></li>
+              <li><span>Less: add-on licensing</span><span class="negative" id="bridgeAddOn">($0)</span></li>
+              <li><span>Less: other recurring cost</span><span class="negative" id="bridgeOther">($0)</span></li>
+              <li><span>Net annual benefit</span><b id="bridgeNet">$0</b></li>
+              <li><span>Capacity created</span><b id="bridgeCapacity">0 hrs</b></li>
+            </ul>
+            <div class="big-result">
+              <div class="eyebrow">Cost to deliver</div>
+              <div class="number" id="bridgeReduction">0%</div>
+              <div class="caption" id="bridgeCaption">lower at steady state</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <div><h2>Workstream detail</h2><p>Every figure below is annual and already risk-adjusted by the realization factor.</p></div>
+          </div>
+          <div class="table-card">
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Annual workstream</th>
+                    <th>Hours today</th>
+                    <th>Hours with AW</th>
+                    <th>Cost today</th>
+                    <th>Cost with AW</th>
+                    <th>Change</th>
+                  </tr>
+                </thead>
+                <tbody id="workstreamBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><div><h2>Model integrity checks</h2><p>These update live. Clear every caution before the model goes in front of a customer.</p></div></div>
+          <div class="guard-list" id="guardList"></div>
+        </div>
+
+        <div class="section">
+          <div id="operatingInsight" class="insight">-</div>
+        </div>
+      </section>
+
+      <section class="view" id="view-msp">
+        <div class="section">
+          <div class="section-title">
+            <div><h2>MSP commercial motions</h2><p>Margin recovery applies to business already signed. The service SKU is incremental scope. Keep the two cases separate.</p></div>
+          </div>
+          <div class="two-col">
+            <article class="motion-card">
+              <h3>1. Margin recovery</h3>
+              <p class="why">Same contracts, lower cost to deliver. Documented delivery savings flow into gross margin on business already signed — measured against a baseline.</p>
+              <div class="inputs">
+                <div class="mini-field">
+                  <label for="contractRevenue">Scoped recurring revenue / month</label>
+                  <input id="contractRevenue" type="number" min="0" step="10000" value="500000">
+                </div>
+                <div class="mini-field">
+                  <label for="otherCogs">Other delivery COGS / month</label>
+                  <input id="otherCogs" type="number" min="0" step="10000" value="300000">
+                </div>
+              </div>
+              <div class="motion-results">
+                <div class="motion-result">
+                  <div class="l">Gross margin today</div>
+                  <div class="v" id="mspCurrentMargin">-</div>
+                  <div class="s" id="mspCurrentGp">-</div>
+                </div>
+                <div class="motion-result">
+                  <div class="l">Gross margin with AW</div>
+                  <div class="v" id="mspAwMargin">-</div>
+                  <div class="s" id="mspAwGp">-</div>
+                </div>
+                <div class="motion-result highlight">
+                  <div class="l">Annual margin recovered</div>
+                  <div class="v" id="mspRecovered">$0</div>
+                  <div class="s">On signed business</div>
+                </div>
+                <div class="motion-result">
+                  <div class="l">Margin-point gain</div>
+                  <div class="v" id="mspPoints">-</div>
+                  <div class="s">On the scoped revenue</div>
+                </div>
+              </div>
+            </article>
+
+            <article class="motion-card">
+              <h3>2. Managed Application Delivery</h3>
+              <p class="why">A billable recurring SKU with partner-set scope and price. The model supplies the cost floor; inclusions depend on licensed capabilities.</p>
+              <div class="inputs" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+                <div class="mini-field">
+                  <label for="servicePrice">Price / user / month</label>
+                  <input id="servicePrice" type="number" min="0" step=".5" value="7">
+                </div>
+                <div class="mini-field">
+                  <label for="serviceUsers">Users sold</label>
+                  <input id="serviceUsers" type="number" min="0" step="500" value="10000">
+                </div>
+                <div class="mini-field">
+                  <label for="serviceOverhead">Service overhead / year</label>
+                  <input id="serviceOverhead" type="number" min="0" step="5000" value="60000">
+                </div>
+                <div class="mini-field">
+                  <label for="serviceMargin">Target gross margin (%)</label>
+                  <input id="serviceMargin" type="number" min="0" max="95" step="5" value="45">
+                </div>
+              </div>
+              <div class="motion-results">
+                <div class="motion-result">
+                  <div class="l">Annual recurring revenue</div>
+                  <div class="v" id="serviceArr">$0</div>
+                  <div class="s">Price x users x 12</div>
+                </div>
+                <div class="motion-result">
+                  <div class="l">Cost to deliver the SKU</div>
+                  <div class="v" id="serviceCost">$0</div>
+                  <div class="s">Scoped run cost + licensing + overhead</div>
+                </div>
+                <div class="motion-result highlight">
+                  <div class="l">Recurring gross profit</div>
+                  <div class="v" id="serviceGp">$0</div>
+                  <div class="s" id="serviceGm">-</div>
+                </div>
+                <div class="motion-result">
+                  <div class="l">Cost floor / suggested price</div>
+                  <div class="v" id="serviceFloor">$0</div>
+                  <div class="s" id="serviceSuggested">-</div>
+                </div>
+              </div>
+              <div class="field-note" style="margin-top:10px">Cost base covers packaging, release, entitlement administration, and Catalog request handling for the sold users, plus their AW licensing. Break/fix issue handling is assumed to remain in the base managed-services contract — add it here if the SKU absorbs it.</div>
+              <div class="sku-scope">
+                <div class="title">Suggested SKU scope</div>
+                <div class="sku-tags">
+                  <span class="sku-tag">Curated customer Catalog</span>
+                  <span class="sku-tag">Governed self-service</span>
+                  <span class="sku-tag">Supported third-party updates</span>
+                  <span class="sku-tag">Staged release rings</span>
+                  <span class="sku-tag">Entitlement administration</span>
+                  <span class="sku-tag">Audit evidence</span>
+                  <span class="sku-tag">Custom-package allowance</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><div><h2>Unit economics per customer</h2><p>The number an MSP actually manages to. Scale-out is where the model compounds.</p></div></div>
+          <div class="kpi-grid">
+            <div class="kpi info">
+              <div class="label">Cost to serve today</div>
+              <div class="value" id="uePerCustToday">$0</div>
+              <div class="sub">Per customer, per month</div>
+            </div>
+            <div class="kpi good">
+              <div class="label">Cost to serve with AW</div>
+              <div class="value" id="uePerCustAw">$0</div>
+              <div class="sub" id="uePerCustDelta">-</div>
+            </div>
+            <div class="kpi info">
+              <div class="label">Onboarding the next customer</div>
+              <div class="value" id="ueNextCust">0 hrs</div>
+              <div class="sub" id="ueNextCustSub">Marginal packaging work for a new zone</div>
+            </div>
+            <div class="kpi good">
+              <div class="label">Capacity created</div>
+              <div class="value" id="ueCapacity">0 hrs</div>
+              <div class="sub" id="ueCapacitySub">Reallocation or avoided hiring</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section"><div class="insight good" id="mspInsight">-</div></div>
+
+        <div class="section">
+          <div class="section-title"><div><h2>How to prove it</h2><p>Margin recovery must be measured against a baseline.</p></div></div>
+          <div class="process-grid">
+            <div class="process-card"><div class="num">1</div><h4>Baseline the cohort</h4><p>Package inventory, duplicate count across tenants, update hours, request-to-access time, and app ticket mix for a real customer group.</p></div>
+            <div class="process-card"><div class="num">2</div><h4>Prove the overlap</h4><p>Count how many of your packages are the same application rebuilt in another tenant. That count is the business case.</p></div>
+            <div class="process-card"><div class="num">3</div><h4>Instrument the service</h4><p>Track SKU attach, recurring revenue, Catalog adoption, SLA performance, version count, install and launch success, renewal, and expansion.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-si">
+        <div class="section">
+          <div class="section-title">
+            <div><h2>SI project acceleration</h2><p>Application readiness as a named workstream — then discounted to the share that actually sits on the critical path.</p></div>
+          </div>
+          <article class="motion-card">
+            <div class="inputs" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+              <div class="mini-field"><label for="projectApps">Applications in scope</label><input id="projectApps" type="number" min="0" step="10" value="250"></div>
+              <div class="mini-field"><label for="projectManagedShare">Setup Store eligible (%)</label><input id="projectManagedShare" type="number" min="0" max="100" step="5" value="70"></div>
+              <div class="mini-field"><label for="projectHoursPerApp">Readiness hours / app today</label><input id="projectHoursPerApp" type="number" min="0" step=".5" value="8"></div>
+              <div class="mini-field"><label for="projectTeam">Workstream team (FTE)</label><input id="projectTeam" type="number" min=".25" step=".25" value="4"></div>
+              <div class="mini-field"><label for="criticalCapture">Savings on critical path (%)</label><input id="criticalCapture" type="number" min="0" max="100" step="5" value="50"></div>
+              <div class="mini-field"><label for="weeklyDelayValue">Value of a week pulled in</label><input id="weeklyDelayValue" type="number" min="0" step="10000" value="50000"></div>
+              <div class="mini-field"><label for="siIncrementalCost">Incremental AW project cost</label><input id="siIncrementalCost" type="number" min="0" step="5000" value="50000"></div>
+            </div>
+            <div class="motion-results" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+              <div class="motion-result">
+                <div class="l">Workstream today</div>
+                <div class="v" id="siTodayHours">0 hrs</div>
+                <div class="s" id="siTodayWeeks">0 weeks</div>
+              </div>
+              <div class="motion-result">
+                <div class="l">Workstream with AW</div>
+                <div class="v" id="siAwHours">0 hrs</div>
+                <div class="s" id="siAwWeeks">0 weeks</div>
+              </div>
+              <div class="motion-result highlight">
+                <div class="l">Date pulled in</div>
+                <div class="v" id="siDateMove">0 weeks</div>
+                <div class="s">After critical-path discount</div>
+              </div>
+              <div class="motion-result">
+                <div class="l">Modeled project impact</div>
+                <div class="v" id="siImpact">$0</div>
+                <div class="s">Capacity + schedule value, less cost</div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="section"><div id="siInsight" class="insight warn">-</div></div>
+
+        <div class="section">
+          <div class="section-title"><div><h2>Where the model applies</h2><p>Use it when application readiness is a named workstream — not as a generic migration claim.</p></div></div>
+          <div class="process-grid">
+            <div class="process-card"><div class="num">1</div><h4>Intune modernization</h4><p>Packaging, test, assignment, and rollout work that must complete before migration waves can proceed.</p></div>
+            <div class="process-card"><div class="num">2</div><h4>Citrix to AVD / W365</h4><p>Separate infrastructure readiness from application readiness and identify which apps genuinely gate the wave.</p></div>
+            <div class="process-card"><div class="num">3</div><h4>Windows 11 and M&amp;A</h4><p>Rationalize, package, test, entitle, and stabilize applications across a newly combined estate.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-method">
+        <div class="section">
+          <div class="section-title"><div><h2>Why this model is built this way</h2><p>The structural correction versus a flat effort-reduction model.</p></div></div>
+          <div class="guardrail-grid">
+            <div class="guardrail">
+              <h3>What a flat model gets wrong</h3>
+              <ul>
+                <li>It counts application work as one queue, so the same application rebuilt in ten tenants looks like one package rather than ten.</li>
+                <li>It applies a percentage reduction to packaging effort, which cannot express the actual mechanism: the connector supplies a prepared source and the partner validates one version for the whole practice.</li>
+                <li>It hides the update treadmill, where most repeated cost lives — build cost is paid once per app, update cost is paid every version, every tenant.</li>
+                <li>It prices license across the full user base while measuring savings against a small flat workload, which understates the case at exactly the point a partner is deciding.</li>
+              </ul>
+            </div>
+            <div class="guardrail">
+              <h3>What this model does instead</h3>
+              <ul>
+                <li>Counts today's work as application x tenant x version, which is how it is actually performed.</li>
+                <li>Splits third-party from custom, because only third-party apps have a managed-package path and cross-customer reuse.</li>
+                <li>Pays validation once per version across all zones, and charges a separate per-zone release and entitlement cost so "click and deploy" is never modeled as free.</li>
+                <li>Keeps testing, approval, rollout policy, exceptions, and skilled custom packaging as permanent partner-owned work.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><div><h2>Core formulas</h2><p>Every figure traces to entered workload.</p></div></div>
+          <div class="formula" id="formulaBlock">Package instances today   = third-party apps per customer x customers
+Distinct packages with AW = apps per customer x [1 + (customers - 1) x (1 - overlap)]
+
+TODAY
+  third-party hours = instances x [(refresh rate x build hours) + (updates x update hours)]
+  custom hours      = custom apps x customers x annual upkeep hours
+  support hours     = (requests + issues) x volume x handling time
+
+WITH APPLICATION WORKSPACE
+  managed hours   = distinct x coverage x [(refresh rate x onboard hours) + (updates x validate hours)]
+  unmanaged hours = distinct x (1 - coverage) x [(refresh rate x build hours) + (updates x update hours)]
+  zone hours      = instances x release-and-entitle hours per zone
+  custom hours    = today custom hours x (1 - custom reduction)
+  support hours   = requests x (1 - deflection) + issues x (1 - issue reduction)
+
+RISK ADJUSTMENT (applied per workstream)
+  effective = today - (today - target) x realization factor
+
+ECONOMICS
+  AW cost        = effective hours x labor rate + license + add-ons + other
+  net benefit    = today labor - AW cost
+  breakeven      = (today labor - AW labor - other) / (users x 12)
+  next customer  = custom apps x upkeep + third-party apps x zone hours</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><div><h2>Product facts the model respects</h2><p>Taken from the partner guide and Recast documentation.</p></div></div>
+          <div class="guardrail-grid">
+            <div class="guardrail">
+              <h3>Positioning and scope</h3>
+              <ul>
+                <li>Application Workspace is the application control and access layer across existing endpoint, workspace, identity, and delivery platforms. It does not replace Intune, Configuration Manager, Citrix, AVD, Windows 365, or identity.</li>
+                <li>The Setup Store is a connector-based administrative source of prepared application resources. It is not the customer's Catalog.</li>
+                <li>A managed package is source-connected and can receive new versions through the connector. The partner still owns testing, approval, and rollout policy.</li>
+                <li>Custom and unmanaged packages remain partner-controlled for internal, legacy, unsupported, or heavily customized applications.</li>
+                <li>Catalog is the user-facing storefront for entitled apps. Workspace is the user's active shelf. Publishing modes are Hidden, Catalog, Workspace, and Forced.</li>
+                <li>Multiple zones support separate customers; each zone requires licensing.</li>
+              </ul>
+            </div>
+            <div class="guardrail">
+              <h3>Licensing and commercial truth</h3>
+              <ul>
+                <li>Release &amp; Patch Management is a separate add-on and is required for full Setup Store connector capability and release-stage functions. The base license carries a limited selection.</li>
+                <li>Access Manager is licensed separately.</li>
+                <li>Do not assume every connector, Setup Store workflow, access feature, patch workflow, or release-stage function is included. Confirm edition and current licensing.</li>
+                <li>Margin recovery must be measured against a baseline. Managed-service inclusions depend on licensed capabilities.</li>
+                <li>Project acceleration applies only where application readiness is on the critical path. It cannot remove unrelated security, infrastructure, licensing, or business delays.</li>
+                <li>Capacity is modeled as reallocation or avoided hiring, not as headcount removal.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><div><h2>Sources</h2><p>Benchmark anchors for the starting values and product framing.</p></div></div>
+          <ol class="sources">
+            <li>Recast Software — Application Workspace MSP &amp; SI Partner Guide, July 23 2026 (positioning, terminology, licensing guardrails, commercial motions)</li>
+            <li><a href="https://www.recastsoftware.com/application-workspace/" target="_blank" rel="noopener">Recast: Application Workspace product page</a></li>
+            <li><a href="https://docs.recastsoftware.com/help/application-workspace-overview-article" target="_blank" rel="noopener">Recast Docs: overview and add-on licenses</a></li>
+            <li><a href="https://docs.recastsoftware.com/help/application-workspace-connectors-setup-store" target="_blank" rel="noopener">Recast Docs: Setup Store connector and licensing</a></li>
+            <li><a href="https://docs.recastsoftware.com/help/lws-system-zones" target="_blank" rel="noopener">Recast Docs: client zones</a></li>
+            <li><a href="https://www.bls.gov/ooh/computer-and-information-technology/network-and-computer-systems-administrators.htm" target="_blank" rel="noopener">U.S. BLS: Network and Computer Systems Administrators pay</a></li>
+            <li><a href="https://www.bls.gov/ecec/" target="_blank" rel="noopener">U.S. BLS: Employer Costs for Employee Compensation</a></li>
+            <li><a href="https://blog.juriba.com/how-much-is-windows-application-packaging-costing-your-organization" target="_blank" rel="noopener">Juriba: Windows application packaging cost study</a></li>
+            <li><a href="https://www.metricnet.com/zerotouch/" target="_blank" rel="noopener">MetricNet: agent-assisted ticket benchmarks</a></li>
+          </ol>
+          <div class="insight warn" style="margin-top:14px"><b>Use note:</b> update cadence, overlap, coverage, and residual-hour values are planning assumptions, not vendor commitments. Replace them with the account's package inventory and ticket data before the model informs pricing or a contractual commitment.</div>
+        </div>
+      </section>
+
     </div>
-
-    <div class="card">
-     <h4><span class="dot"></span>Reuse across customers &amp; zones</h4>
-     <div class="chips"><span class="chip cost">Scale</span><span class="chip serv">Consistency</span></div>
-     <p>Build a package once and reuse it across every customer or zone with only small customer-specific configuration — instead of rebuilding the same application for every tenant. This is where MSP scale economics come from.</p>
-     <div class="metric"><span class="big green" id="c_reuse_hrs">—</span><span class="u">hrs/yr back · <span id="c_reuse_val">—</span></span></div>
-    </div>
-
-    <div class="card">
-     <h4><span class="dot"></span>Faster, safer security response</h4>
-     <div class="chips"><span class="chip safe">Safer</span><span class="chip fast">Faster</span></div>
-     <p>Make patched packages available almost immediately instead of waiting hours for Intune deployments to reach devices — shrinking the window customers stay exposed to known vulnerabilities. CVE context is surfaced right in the update workflow.</p>
-     <div class="metric"><span class="big" id="c_sec_win">—</span><span class="u" id="c_sec_u">exposure per urgent update</span></div>
-    </div>
-
-    <div class="card">
-     <h4><span class="dot"></span>Fewer tickets, better service</h4>
-     <div class="chips"><span class="chip serv">Better service</span><span class="chip cost">Lower cost</span></div>
-     <p>A user-facing catalog with self-service install and consistent, known-good packages means fewer install, access and app-failure tickets — and faster resolution on the ones that remain.</p>
-     <div class="metric"><span class="big green" id="c_tick_n">—</span><span class="u">tickets deflected / yr · <span id="c_tick_hrs">—</span> hrs</span></div>
-    </div>
-
-    <div class="card">
-     <h4><span class="dot"></span>Faster onboarding &amp; migration</h4>
-     <div class="chips"><span class="chip fast">Faster</span><span class="chip serv">Win faster</span></div>
-     <p>Stand up a customer's application catalog in days, not weeks, and cut device readiness from hours to minutes — so you onboard customers faster and compete on speed and service, not only price.</p>
-     <div class="metric"><span class="qual">~3 hrs → under 30 min device readiness · catalog live in days</span></div>
-    </div>
-
-    <div class="card">
-     <h4><span class="dot"></span>Consistency &amp; visibility</h4>
-     <div class="chips"><span class="chip serv">Control</span><span class="chip safe">Governance</span></div>
-     <p>Know exactly which packages and versions reached which devices and customers. Event-level telemetry (deployments, launches, install health, license usage) exports to your SIEM — fewer errors, less "unknown state," simpler support.</p>
-     <div class="metric"><span class="qual">One controlled, auditable source of truth across every tenant</span></div>
-    </div>
-
-    <div class="card">
-     <h4><span class="dot"></span>Advanced &amp; distributed delivery</h4>
-     <div class="chips"><span class="chip serv">Flexibility</span><span class="chip fast">Reach</span></div>
-     <p>Deliver or block apps by location, network, device context or security requirement, and redirect users to a cloud or remote version when local use isn't allowed. Satellite servers serve remote offices locally, without dragging large files across slow links.</p>
-     <div class="metric"><span class="qual">Right app, right context, right place — even on thin bandwidth</span></div>
-    </div>
-
-    <div class="card">
-     <h4><span class="dot"></span>Extends Intune — doesn't replace it</h4>
-     <div class="chips"><span class="chip serv">Complements</span><span class="chip cost">Protects spend</span></div>
-     <p>Keep Intune for device management and policy. Application Workspace fills its weak spot — advanced application packaging, delivery and lifecycle management — with triggers, sequencing and a catalog Intune alone can't provide.</p>
-     <div class="metric"><span class="qual">Adds the application layer on top of your existing stack</span></div>
-    </div>
-   </div>
-
-   <details class="method">
-    <summary>How these numbers are calculated</summary>
-    <div class="method-body">
-     <p><b>Capacity</b> = packaging automation + reuse + ticket deflection, all in engineer hours:</p>
-     <ul>
-      <li><b>Packaging:</b> unique packages/yr × hours each × effort removed by automation.</li>
-      <li><b>Reuse:</b> duplicate per-customer rebuilds/yr × hours each × the share reuse eliminates.</li>
-      <li><b>Tickets:</b> addressable app tickets/yr × deflection rate × minutes to handle each.</li>
-      <li><b>More customers</b> = freed hours ÷ your current app-delivery hours per customer.</li>
-     </ul>
-     <p><b>Security window</b> compares your current urgent-update propagation time with Application Workspace's near-immediate delivery. Onboarding, consistency, advanced delivery and Intune extension are shown as outcomes, not added to the dollar figure, to keep the capacity number conservative and defensible.</p>
-     <p>Benchmark defaults are grounded in Recast's published material — the Setup Store's daily-updated catalog with CVE context, ~90% reduction in app configuration/deployment/update effort, and agent-based installs completing in minutes versus Intune's hours-long pending states. Sources:
-      <a href="https://www.recastsoftware.com/application-workspace/for-intune/" target="_blank">Application Workspace for Intune</a>,
-      <a href="https://docs.recastsoftware.com/help/application-workspace-connectors-setup-store" target="_blank">Setup Store Connector</a>,
-      <a href="https://docs.recastsoftware.com/help/lws-howto-aw-microsoft-intune-windows" target="_blank">Deploy using Intune</a>.
-     </p>
-    </div>
-   </details>
   </div>
- </div>
 </main>
-<div class="foot">Recast Software · Application Workspace MSP Value Calculator · A planning estimate based on your inputs and Recast benchmarks, not a guarantee of results.</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-const $=id=>document.getElementById(id);
-const n=id=>{const v=Number(($(id)||{}).value);return isFinite(v)&&v>0?v:0;};
-const money=v=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(v||0);
-const num=(v,d=0)=>new Intl.NumberFormat('en-US',{maximumFractionDigits:d}).format(v||0);
+(() => {
+  "use strict";
 
-// keep slider value bubbles in sync
-const sliders={hoursPkg:v=>v.toFixed(1)+' h',pkgRed:v=>v+'%',reuseShare:v=>v+'%',tAddr:v=>v+'%',tDeflect:v=>v+'%',updNow:v=>v+' h',urgentShare:v=>v+'%'};
+  const DEFAULTS = {
+    customers:10, users:10000, laborRate:70, licenseRate:1, addOnRate:0.5,
+    commodityApps:60, customApps:15, overlap:80,
+    managedCoverage:85, validateHours:1, certifyHours:1.5, zoneOpsHours:0.25,
+    customReduction:30, realization:90,
+    buildHours:8, newAppRate:20, updatesPerYear:6, updateHours:2.5, customAnnualHours:10,
+    requestRate:0.08, requestMinutes:15, catalogDeflection:85,
+    issueRate:0.12, issueMinutes:25, issueReduction:45,
+    implementationCost:60000, rampMonths:3, otherAnnual:0,
+    contractRevenue:500000, otherCogs:300000,
+    servicePrice:7, serviceUsers:10000, serviceOverhead:60000, serviceMargin:45,
+    projectApps:250, projectManagedShare:70, projectHoursPerApp:8, projectTeam:4,
+    criticalCapture:50, weeklyDelayValue:50000, siIncrementalCost:50000
+  };
 
-function compute(){
- for(const id in sliders){const el=$(id),lab=$(id+'_v');if(el&&lab)lab.textContent=sliders[id](Number(el.value));}
+  const PRESETS = {
+    msp10:{ name:"MSP - 10 customers", v:{} },
+    msp25:{ name:"MSP - 25 customers", v:{
+      customers:25, users:18000, commodityApps:55, customApps:12, overlap:85,
+      serviceUsers:18000, contractRevenue:820000, otherCogs:500000, implementationCost:85000
+    }},
+    ent:{ name:"Enterprise - single tenant", v:{
+      customers:1, users:10000, commodityApps:180, customApps:60, overlap:0,
+      managedCoverage:75, contractRevenue:0, otherCogs:0, serviceUsers:0,
+      implementationCost:70000, projectApps:400
+    }}
+  };
 
- const customers=Math.max(1,n('customers')), endpoints=n('endpoints');
- const P=n('pkgMonth')*12, Hc=n('hoursPkg'), T=n('ticketsMonth')*12, rate=n('rate');
- const pkgRed=n('pkgRed')/100, reuseShare=n('reuseShare')/100, reuseElim=0.85;
- const tAddr=n('tAddr')/100, tDeflect=n('tDeflect')/100, tHandle=n('tHandle')/60;
- const updNow=n('updNow'), updAW=n('updAW')/60, urgentShare=n('urgentShare')/100;
+  const INPUT_IDS = Object.keys(DEFAULTS);
+  const RANGE_PAIRS = [
+    ["overlapRange","overlap"],["managedCoverageRange","managedCoverage"],
+    ["customReductionRange","customReduction"],["realizationRange","realization"],
+    ["newAppRateRange","newAppRate"],["catalogDeflectionRange","catalogDeflection"],
+    ["issueReductionRange","issueReduction"]
+  ];
+  const FTE_HOURS = 1920;
+  let dataQuality = "estimated";
+  let model = null;
 
- // Labor / capacity (no double counting: unique builds vs duplicate rebuilds vs tickets)
- const dupEvents=P*reuseShare, uniqueEvents=P-dupEvents;
- const savePackaging=uniqueEvents*Hc*pkgRed;
- const saveReuse=dupEvents*Hc*reuseElim;
- const addressable=T*tAddr, deflected=addressable*tDeflect, saveTickets=deflected*tHandle;
+  const $ = id => document.getElementById(id);
+  const clamp = (v,a,b) => Math.min(b,Math.max(a,v));
+  const n = id => { const el=$(id); if(!el) return 0; const v=parseFloat(el.value); return Number.isFinite(v)?v:0; };
+  const money = v => {
+    const s = v<0?"-":"", a=Math.abs(v);
+    if(a>=1000000) return s+"$"+(a/1000000).toFixed(a>=10000000?1:2).replace(/\.0+$/,"")+"M";
+    if(a>=1000) return s+"$"+Math.round(a/1000).toLocaleString("en-US")+"K";
+    return s+"$"+Math.round(a).toLocaleString("en-US");
+  };
+  const moneyFull = v => (v<0?"-$":"$")+Math.round(Math.abs(v)).toLocaleString("en-US");
+  const money2 = v => (v<0?"-$":"$")+Math.abs(v).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const hrs = v => Math.round(v).toLocaleString("en-US")+" hrs";
+  const pct = v => (v*100).toFixed(1).replace(/\.0$/,"")+"%";
+  const num = (v,d) => Number(v).toLocaleString("en-US",{maximumFractionDigits:d===undefined?0:d});
+  const div = (a,b) => b?a/b:0;
 
- const totalHours=savePackaging+saveReuse+saveTickets;
- const value=totalHours*rate, fte=totalHours/1880;
- // Anchor "more customers" to the team the partner actually told us about.
- const staff=n('staff'), teamHours=staff*1880;
- const extraCustomers=teamHours>0?customers*totalHours/teamHours:0;
- const teamFreedPct=teamHours>0?totalHours/teamHours*100:0;
+  function calculate(){
+    const C = Math.max(1,n("customers"));
+    const U = Math.max(0,n("users"));
+    const R = Math.max(0,n("laborRate"));
+    const lic = Math.max(0,n("licenseRate"));
+    const addOn = Math.max(0,n("addOnRate"));
+    const other = Math.max(0,n("otherAnnual"));
 
- // Security window
- const winReduction=updNow>0?(1-updAW/updNow)*100:0;
- const urgentUpdates=P*urgentShare;
+    const Ac = Math.max(0,n("commodityApps"));
+    const Ax = Math.max(0,n("customApps"));
+    const reuse = clamp(n("overlap")/100,0,1);
 
- // Headline
- $('k_hours').textContent=num(totalHours);
- $('k_fte').textContent='≈ '+num(fte,1)+' FTE'+(teamHours>0?' · '+num(teamFreedPct,0)+'% of your team':'');
- $('k_value').textContent=money(value);
- $('k_sec').textContent=num(updNow,0)+' h → '+num(updAW*60,0)+' min';
- $('k_sec_sub').textContent=num(winReduction,0)+'% less time exposed';
- $('k_cust').textContent=teamHours>0?'+'+num(extraCustomers,1):'—';
+    const Hbuild = Math.max(0,n("buildHours"));
+    const refresh = clamp(n("newAppRate")/100,0,1);
+    const Nupd = Math.max(0,n("updatesPerYear"));
+    const Hupd = Math.max(0,n("updateHours"));
+    const Hcustom = Math.max(0,n("customAnnualHours"));
 
- // Component cards
- $('c_pkg_hrs').textContent=num(savePackaging);
- $('c_pkg_val').textContent=money(savePackaging*rate);
- $('c_reuse_hrs').textContent=num(saveReuse);
- $('c_reuse_val').textContent=money(saveReuse*rate);
- $('c_sec_win').textContent=num(updNow,0)+' h → '+num(updAW*60,0)+' min';
- $('c_sec_u').textContent=num(winReduction,0)+'% smaller window · '+num(urgentUpdates)+' urgent updates/yr land in minutes, not hours';
- $('c_tick_n').textContent=num(deflected);
- $('c_tick_hrs').textContent=num(saveTickets);
-}
+    const cover = clamp(n("managedCoverage")/100,0,1);
+    const Hval = Math.max(0,n("validateHours"));
+    const Hcert = Math.max(0,n("certifyHours"));
+    const Hzone = Math.max(0,n("zoneOpsHours"));
+    const customRed = clamp(n("customReduction")/100,0,1);
+    const real = clamp(n("realization")/100,0,1);
 
-document.addEventListener('input',compute);
-$('printBtn').onclick=()=>window.print();
-compute();
+    const reqRate = Math.max(0,n("requestRate"));
+    const reqMin = Math.max(0,n("requestMinutes"));
+    const deflect = clamp(n("catalogDeflection")/100,0,1);
+    const issRate = Math.max(0,n("issueRate"));
+    const issMin = Math.max(0,n("issueMinutes"));
+    const issRed = clamp(n("issueReduction")/100,0,1);
+
+    const implementation = Math.max(0,n("implementationCost"));
+    const ramp = clamp(n("rampMonths"),0,12);
+
+    // --- estate ---
+    const instances = Ac * C;
+    const distinct = Ac * (1 + (C-1)*(1-reuse));
+    const reuseMult = div(instances, distinct);
+
+    // --- today ---
+    const perInstanceHrs = refresh*Hbuild + Nupd*Hupd;
+    const todayCommodity = instances * perInstanceHrs;
+    const todayCustom = Ax * C * Hcustom;
+    const todayRequest = reqRate * U * 12 * reqMin/60;
+    const todayIssue = issRate * U * 12 * issMin/60;
+    const todaySupport = todayRequest + todayIssue;
+    const todayHours = todayCommodity + todayCustom + todaySupport;
+
+    // --- AW target ---
+    const managedApps = distinct * cover;
+    const unmanagedApps = distinct * (1-cover);
+    const awManaged = managedApps * (refresh*Hcert + Nupd*Hval);
+    const awUnmanaged = unmanagedApps * perInstanceHrs;
+    const awZone = instances * Hzone;
+    const awCommodityTarget = awManaged + awUnmanaged + awZone;
+    const awCustomTarget = todayCustom * (1-customRed);
+    const awRequestTarget = todayRequest * (1-deflect);
+    const awIssueTarget = todayIssue * (1-issRed);
+    const awSupportTarget = awRequestTarget + awIssueTarget;
+
+    // --- risk adjust per workstream ---
+    const eff = (cur,tgt) => cur - (cur-tgt)*real;
+    const awCommodity = eff(todayCommodity, awCommodityTarget);
+    const awCustom = eff(todayCustom, awCustomTarget);
+    const awRequest = eff(todayRequest, awRequestTarget);
+    const awIssue = eff(todayIssue, awIssueTarget);
+    const awSupport = awRequest + awIssue;
+    const awHours = awCommodity + awCustom + awSupport;
+
+    // --- economics ---
+    const todayLabor = todayHours * R;
+    const awLabor = awHours * R;
+    const annualLicense = U * lic * 12;
+    const annualAddOn = U * addOn * 12;
+    const recurring = annualLicense + annualAddOn + other;
+    const awCost = awLabor + recurring;
+    const grossLabor = todayLabor - awLabor;
+    const netBenefit = todayLabor - awCost;
+    const reduction = div(netBenefit, todayLabor);
+    const capacityHours = todayHours - awHours;
+    const capacityFte = capacityHours / FTE_HOURS;
+    const breakeven = U ? Math.max(0,(grossLabor - other)/(U*12)) : 0;
+
+    // per-unit
+    const perCustToday = div(todayLabor, C)/12;
+    const perCustAw = div(awCost, C)/12;
+    const perUserToday = div(todayLabor, U)/12;
+    const perUserAw = div(awCost, U)/12;
+    const hoursPerAppToday = div(todayCommodity, instances);
+    const hoursPerAppAw = div(awCommodity, instances);
+    const nextCustomerHours = Ax*Hcustom + Ac*Hzone + Ac*(1-reuse)*perInstanceHrs;
+    const nextCustomerToday = Ax*Hcustom + Ac*perInstanceHrs;
+    // Managed Application Delivery SKU covers packaging, release, entitlement and
+    // catalog request handling. Break/fix issue tickets stay in the base contract.
+    const skuHours = awCommodity + awCustom + awRequest;
+
+    // year one
+    let cumulative = -implementation, payback = null;
+    for(let m=1;m<=60;m++){
+      const adopt = ramp<=0 ? 1 : (m<=ramp ? (m-0.5)/ramp : 1);
+      cumulative += grossLabor/12*adopt - recurring/12;
+      if(cumulative>=0 && payback===null){ payback=m; break; }
+    }
+    const rampFactor = 1 - ramp/24;
+    const year1Benefit = grossLabor*rampFactor - recurring - implementation;
+
+    return {C,U,R,lic,addOn,other,Ac,Ax,reuse,cover,real,Hzone,Hval,Hcert,Hbuild,Hupd,Nupd,refresh,Hcustom,
+      customRed,deflect,issRed,instances,distinct,reuseMult,managedApps,unmanagedApps,perInstanceHrs,
+      todayCommodity,todayCustom,todayRequest,todayIssue,todaySupport,todayHours,
+      awManaged,awUnmanaged,awZone,awCommodity,awCustom,awRequest,awIssue,awSupport,awHours,
+      skuHours,nextCustomerToday,
+      todayLabor,awLabor,annualLicense,annualAddOn,recurring,awCost,grossLabor,netBenefit,reduction,
+      capacityHours,capacityFte,breakeven,perCustToday,perCustAw,perUserToday,perUserAw,
+      hoursPerAppToday,hoursPerAppAw,nextCustomerHours,year1Benefit,payback,implementation,ramp};
+  }
+
+  function setText(id,v){ const el=$(id); if(el) el.textContent=v; }
+
+  function renderOperating(m){
+    setText("navBenefit", money(m.netBenefit));
+    setText("navReuse", m.reuseMult.toFixed(1)+"x");
+
+    setText("kpiToday", money(m.todayLabor));
+    setText("kpiTodaySub", num(m.todayHours)+" hours across "+num(m.C)+(m.C===1?" tenant":" tenants"));
+    setText("kpiAw", money(m.awCost));
+    setText("kpiBenefit", money(m.netBenefit));
+    setText("kpiBenefitSub", m.reduction>=0 ? pct(m.reduction)+" lower cost to deliver" : "Cost increases "+pct(Math.abs(m.reduction)));
+    setText("kpiYear1", money(m.year1Benefit));
+    setText("kpiYear1Sub", m.payback ? "Payback in month "+m.payback : "No payback within 60 months");
+    $("kpiBenefitCard").className = "kpi "+(m.netBenefit>=0?"good":"bad");
+    $("kpiYear1Card").className = "kpi "+(m.year1Benefit>=0?"good":"warn");
+
+    setText("reuseMultiplier", m.reuseMult.toFixed(1)+"x");
+    setText("uInstances", num(m.instances));
+    setText("uDistinct", num(m.distinct));
+    setText("uHoursToday", m.hoursPerAppToday.toFixed(1));
+    setText("uHoursAw", m.hoursPerAppAw.toFixed(1));
+
+    setText("todayTotal", money(m.todayLabor));
+    setText("awTotal", money(m.awCost));
+
+    setText("todayCommodityDetail", num(m.instances)+" instances x "+m.perInstanceHrs.toFixed(1)+" hrs/yr, rebuilt in every tenant");
+    setText("todayCommodityCost", money(m.todayCommodity*m.R));
+    setText("todayCommodityHrs", hrs(m.todayCommodity));
+    setText("todayCustomDetail", num(m.Ax*m.C)+" custom apps x "+num(m.Hcustom,1)+" hrs/yr");
+    setText("todayCustomCost", money(m.todayCustom*m.R));
+    setText("todayCustomHrs", hrs(m.todayCustom));
+    setText("todaySupportDetail", num(m.todayRequest/ (m.todayRequest+m.todayIssue||1)*100,0)+"% request / "+num(m.todayIssue/(m.todayRequest+m.todayIssue||1)*100,0)+"% issue split");
+    setText("todaySupportCost", money(m.todaySupport*m.R));
+    setText("todaySupportHrs", hrs(m.todaySupport));
+
+    setText("awCommodityDetail", num(m.managedApps)+" managed + "+num(m.unmanagedApps)+" partner-built, plus "+hrs(m.awZone)+" zone release");
+    setText("awCommodityCost", money(m.awCommodity*m.R));
+    setText("awCommodityHrs", hrs(m.awCommodity));
+    setText("awCustomCost", money(m.awCustom*m.R));
+    setText("awCustomHrs", hrs(m.awCustom));
+    setText("awSupportCost", money(m.awSupport*m.R));
+    setText("awSupportHrs", hrs(m.awSupport));
+    setText("awPlatformCost", money(m.recurring));
+    setText("awPlatformDetail", money(m.annualLicense)+" license + "+money(m.annualAddOn)+" add-ons"+(m.other?" + "+money(m.other)+" other":""));
+
+    setText("bridgeGross", money(m.grossLabor));
+    setText("bridgeLicense", "("+money(m.annualLicense)+")");
+    setText("bridgeAddOn", "("+money(m.annualAddOn)+")");
+    setText("bridgeOther", "("+money(m.other)+")");
+    setText("bridgeNet", money(m.netBenefit));
+    $("bridgeNet").style.color = m.netBenefit>=0 ? "var(--green)" : "var(--red)";
+    setText("bridgeCapacity", hrs(m.capacityHours)+" ("+m.capacityFte.toFixed(1)+" FTE-equivalent)");
+    setText("bridgeReduction", pct(Math.abs(m.reduction)));
+    $("bridgeReduction").style.color = m.reduction>=0 ? "var(--green)" : "var(--red)";
+    setText("bridgeCaption", m.reduction>=0 ? "lower cost to deliver at steady state" : "higher cost to deliver at steady state");
+
+    const rows = [
+      ["Third-party packaging","Built once, released to every zone",m.todayCommodity,m.awCommodity],
+      ["Custom &amp; internal apps","Skilled packaging retained",m.todayCustom,m.awCustom],
+      ["Application support","Catalog deflection and fewer versions",m.todaySupport,m.awSupport]
+    ];
+    const body = $("workstreamBody");
+    body.innerHTML = "";
+    rows.forEach(r => {
+      const ch = (r[2]-r[3])*m.R;
+      const tr = document.createElement("tr");
+      tr.innerHTML = '<td>'+r[0]+'<span class="sub">'+r[1]+'</span></td><td>'+hrs(r[2])+'</td><td>'+hrs(r[3])+
+        '</td><td>'+moneyFull(r[2]*m.R)+'</td><td>'+moneyFull(r[3]*m.R)+'</td><td class="'+(ch>=0?"pos":"neg")+'">'+moneyFull(ch)+'</td>';
+      body.appendChild(tr);
+    });
+    const rec = document.createElement("tr");
+    rec.innerHTML = '<td>AW recurring cost<span class="sub">License, add-ons, other</span></td><td class="neutral">-</td><td class="neutral">-</td><td>$0</td><td>'+
+      moneyFull(m.recurring)+'</td><td class="neg">'+moneyFull(-m.recurring)+'</td>';
+    body.appendChild(rec);
+    const tot = document.createElement("tr");
+    tot.className = "total";
+    tot.innerHTML = '<td>Total</td><td>'+hrs(m.todayHours)+'</td><td>'+hrs(m.awHours)+'</td><td>'+moneyFull(m.todayLabor)+
+      '</td><td>'+moneyFull(m.awCost)+'</td><td class="'+(m.netBenefit>=0?"pos":"neg")+'">'+moneyFull(m.netBenefit)+'</td>';
+    body.appendChild(tot);
+
+    setText("dInstances", num(m.instances));
+    setText("dDistinct", num(m.distinct));
+    setText("dPerCustomer", money(m.perCustToday)+" → "+money(m.perCustAw));
+    setText("dPerUser", money2(m.perUserToday)+" → "+money2(m.perUserAw));
+    setText("dBreakeven", money2(m.breakeven)+"/u/mo");
+
+    const ins = $("operatingInsight");
+    if(m.netBenefit > 0){
+      ins.className = "insight good";
+      ins.innerHTML = "<b>What the model says:</b> the estate carries <b>"+num(m.instances)+"</b> third-party package instances today because the same applications are rebuilt in every tenant. Application Workspace reduces that to <b>"+num(m.distinct)+"</b> distinct packages released across zones — a <b>"+m.reuseMult.toFixed(1)+"x</b> reuse multiplier. Net of license, add-ons, and retained residual work, the model shows <b>"+money(m.netBenefit)+"</b> per year and <b>"+hrs(m.capacityHours)+"</b> of created capacity. Breakeven license is <b>"+money2(m.breakeven)+"</b> per user per month against a modeled rate of <b>"+money2(m.lic+m.addOn)+"</b>.";
+    } else {
+      ins.className = "insight red";
+      ins.innerHTML = "<b>This configuration does not clear on labor alone.</b> Recurring cost exceeds the modeled labor reduction by <b>"+money(Math.abs(m.netBenefit))+"</b> per year. Check overlap, managed coverage, and update cadence against measured data before concluding the case is weak — and confirm whether the decision rests on project acceleration, risk reduction, or a new billable service rather than cost removal.";
+    }
+  }
+
+  function renderGuards(m){
+    const g = [];
+    const push = (level,title,text) => g.push({level,title,text});
+
+    if(m.cover > 0.4 && m.addOn <= 0)
+      push("stop","Add-on cost is missing","Managed coverage above 40% assumes broad Setup Store connector use. Release &amp; Patch Management is a separate add-on required for full connector capability and release stages. Carry its cost or lower coverage.");
+    else if(m.cover > 0.4)
+      push("ok","Add-on licensing carried","Release &amp; Patch Management is priced in the model. Confirm the actual SKU and entitlement before any commitment.");
+
+    if(m.Hval <= 0 || m.Hcert <= 0)
+      push("stop","Validation set to zero","A managed package still requires partner testing, approval, and rollout policy. Zero-hour validation is not a supportable assumption.");
+    else
+      push("ok","Partner validation retained",num(m.Hval,2)+" hrs per version and "+num(m.Hcert,2)+" hrs to onboard, paid once for the practice and reused across zones.");
+
+    if(m.Hzone <= 0)
+      push("caution","Zone release modeled as free","Publishing, entitlement upkeep, and staged release monitoring in each zone consume real time. Keep a per-zone figure even when small.");
+    else
+      push("ok","Per-zone release cost carried",hrs(m.awZone)+" per year for publishing, entitlement upkeep, and release monitoring across "+num(m.C)+(m.C===1?" zone":" zones")+".");
+
+    if(m.reuse >= 0.98 && m.C > 1)
+      push("caution","Overlap set near 100%","Perfect application overlap across customers is rare. Verify against the actual package inventory before presenting this figure.");
+    if(m.real >= 1)
+      push("caution","Realization at 100%","No allowance is left for adoption, exceptions, or incomplete coverage. Reduce it before external use.");
+    if(m.customRed > 0.6)
+      push("caution","Custom reduction is aggressive","Internal, legacy, and heavily customized applications retain skilled packaging work. The gain is reusable actions and staged release, not automated packaging.");
+    if(m.deflect > 0.95)
+      push("caution","Catalog deflection near total","Approvals, licensing checks, and exception requests still reach administrators. Leave headroom.");
+    if(m.C === 1 && m.reuse > 0)
+      push("caution","Overlap has no effect at one tenant","With a single zone there is no cross-customer reuse. Value comes from managed packages and Catalog deflection instead.");
+
+    push("ok","Capacity framed correctly","Released hours are modeled as reallocation or avoided hiring, not headcount removal.");
+
+    $("guardList").innerHTML = g.map(x =>
+      '<div class="guard-item '+x.level+'"><div class="dot"></div><div><b>'+x.title+'.</b> <span>'+x.text+'</span></div></div>'
+    ).join("");
+  }
+
+  function renderMsp(m){
+    const rev = Math.max(0,n("contractRevenue"))*12;
+    const cogs = Math.max(0,n("otherCogs"))*12;
+    const gpToday = rev - cogs - m.todayLabor;
+    const gpAw = rev - cogs - m.awCost;
+    const gmToday = div(gpToday,rev), gmAw = div(gpAw,rev);
+    setText("mspCurrentMargin", rev?pct(gmToday):"-");
+    setText("mspAwMargin", rev?pct(gmAw):"-");
+    setText("mspCurrentGp", rev?money(gpToday)+" gross profit":"Enter scoped revenue");
+    setText("mspAwGp", rev?money(gpAw)+" gross profit":"Enter scoped revenue");
+    setText("mspRecovered", money(m.netBenefit));
+    setText("mspPoints", rev?((gmAw-gmToday)*100).toFixed(1)+" pts":"-");
+
+    const price = Math.max(0,n("servicePrice"));
+    const su = Math.max(0,n("serviceUsers"));
+    const oh = Math.max(0,n("serviceOverhead"));
+    const targetGm = clamp(n("serviceMargin")/100,0,0.95);
+    const arr = price*su*12;
+    const alloc = m.U ? clamp(su/m.U,0,1.5) : 0;
+    // Scoped to the SKU: packaging, release, entitlement, Catalog request handling,
+    // plus AW licensing for the sold users. Break/fix stays in the base contract.
+    const cost = (m.skuHours*m.R + m.annualLicense + m.annualAddOn)*alloc + oh;
+    const gp = arr - cost;
+    const floor = su ? cost/(su*12) : 0;
+    const suggested = floor/(1-targetGm);
+    const skuOn = su > 0 && price > 0;
+    setText("serviceArr", su?money(arr):"-");
+    setText("serviceCost", su?money(cost):"-");
+    setText("serviceGp", skuOn?money(gp):"-");
+    setText("serviceGm", skuOn?pct(div(gp,arr))+" recurring gross margin":"Enter users and price");
+    setText("serviceFloor", su?money2(floor):"-");
+    setText("serviceSuggested", su?money2(suggested)+" at "+pct(targetGm)+" target":"Not modeled");
+    $("serviceGp").style.color = !skuOn ? "" : (gp>=0 ? "var(--green)" : "var(--red)");
+
+    setText("uePerCustToday", money(m.perCustToday));
+    setText("uePerCustAw", money(m.perCustAw));
+    setText("uePerCustDelta", money(m.perCustToday-m.perCustAw)+" lower per customer per month");
+    setText("ueNextCust", hrs(m.nextCustomerHours));
+    setText("ueNextCustSub", "was "+hrs(m.nextCustomerToday)+" per new customer before reuse");
+    setText("ueCapacity", hrs(m.capacityHours));
+    setText("ueCapacitySub", m.capacityFte.toFixed(1)+" FTE-equivalent, reallocated or avoided hiring");
+
+    let t = "<b>Margin recovery:</b> on the entered scope the model shows <b>"+money(m.netBenefit)+"</b> of annual delivery-cost headroom on business already signed, moving cost to serve from <b>"+money(m.perCustToday)+"</b> to <b>"+money(m.perCustAw)+"</b> per customer per month. ";
+    if(skuOn){
+      t += "<b>New service line:</b> at "+money2(price)+" per user per month for "+num(su)+" users the SKU returns <b>"+money(arr)+"</b> ARR against a cost floor of <b>"+money2(floor)+"</b>, giving <b>"+pct(div(gp,arr))+"</b> recurring gross margin";
+      t += (gp<0 ? ". The entered price sits below the floor — raise it to at least "+money2(suggested)+" to hit the target margin. " : ". ");
+    }
+    t += "<b>Scale-out:</b> onboarding the next customer costs roughly <b>"+hrs(m.nextCustomerHours)+"</b> against <b>"+hrs(m.nextCustomerToday)+"</b> today, because the shared package set is already built and only zone release, entitlement, and that customer's own custom apps remain. Keep the two motions separate unless the SKU is genuinely incremental to the contract.";
+    $("mspInsight").innerHTML = t;
+  }
+
+  function renderSi(m){
+    const P = Math.max(0,n("projectApps"));
+    const share = clamp(n("projectManagedShare")/100,0,1);
+    const H = Math.max(0,n("projectHoursPerApp"));
+    const team = Math.max(0.25,n("projectTeam"));
+    const capture = clamp(n("criticalCapture")/100,0,1);
+    const weekVal = Math.max(0,n("weeklyDelayValue"));
+    const cost = Math.max(0,n("siIncrementalCost"));
+
+    const todayH = P*H;
+    const managedH = P*share*(m.Hcert + m.Hzone);
+    const customH = P*(1-share)*H*(1-m.customRed);
+    const targetH = managedH + customH;
+    const awH = todayH - (todayH-targetH)*m.real;
+    const todayW = div(todayH, team*40);
+    const awW = div(awH, team*40);
+    const saved = todayW - awW;
+    const dateMove = saved*capture;
+    const capValue = (todayH-awH)*m.R;
+    const delayValue = dateMove*weekVal;
+    const impact = capValue + delayValue - cost;
+
+    setText("siTodayHours", hrs(todayH));
+    setText("siTodayWeeks", num(todayW,1)+" weeks at "+num(team,2)+" FTE");
+    setText("siAwHours", hrs(awH));
+    setText("siAwWeeks", num(awW,1)+" weeks at "+num(team,2)+" FTE");
+    setText("siDateMove", num(dateMove,1)+" weeks");
+    setText("siImpact", money(impact));
+    $("siImpact").style.color = impact>=0 ? "var(--green)" : "var(--red)";
+
+    $("siInsight").innerHTML = "<b>Read this carefully:</b> the application workstream falls by <b>"+hrs(todayH-awH)+"</b>, from "+num(todayW,1)+" to "+num(awW,1)+" calendar weeks at the entered team size. Only <b>"+pct(capture)+"</b> of that is assumed to move the committed date, giving <b>"+num(dateMove,1)+" weeks</b> of acceleration. Modeled impact combines <b>"+money(capValue)+"</b> of team capacity and <b>"+money(delayValue)+"</b> of schedule value, less <b>"+money(cost)+"</b> of incremental cost. Application readiness must be demonstrably on the critical path — this cannot remove security, infrastructure, licensing, or business delays.";
+  }
+
+  function renderQuality(){
+    const b = $("qualityBadge");
+    b.className = "small-badge ";
+    if(dataQuality==="measured"){ b.classList.add("badge-green"); b.textContent="Measured inputs"; }
+    else if(dataQuality==="mixed"){ b.classList.add("badge-blue"); b.textContent="Mixed inputs"; }
+    else { b.classList.add("badge-amber"); b.textContent="Estimated inputs"; }
+  }
+
+  function update(){
+    model = calculate();
+    renderOperating(model);
+    renderGuards(model);
+    renderMsp(model);
+    renderSi(model);
+    renderQuality();
+  }
+
+  function syncRanges(){
+    RANGE_PAIRS.forEach(([r,f]) => { const a=$(r), b=$(f); if(a&&b) a.value=b.value; });
+  }
+
+  function applyValues(vals){
+    INPUT_IDS.forEach(id => { if($(id) && vals[id]!==undefined) $(id).value = vals[id]; });
+    syncRanges();
+    update();
+  }
+
+  // wiring
+  INPUT_IDS.forEach(id => { const el=$(id); if(el) el.addEventListener("input",update); });
+  RANGE_PAIRS.forEach(([r,f]) => {
+    const a=$(r), b=$(f);
+    if(!a||!b) return;
+    a.addEventListener("input",()=>{ b.value=a.value; update(); });
+    b.addEventListener("input",()=>{ a.value=b.value; update(); });
+  });
+
+  document.querySelectorAll(".preset-btn").forEach(btn => {
+    btn.addEventListener("click",()=>{
+      const p = PRESETS[btn.dataset.preset];
+      if(!p) return;
+      document.querySelectorAll(".preset-btn").forEach(x=>x.classList.toggle("active",x===btn));
+      applyValues(Object.assign({},DEFAULTS,p.v));
+      $("scenarioName").value = p.name;
+    });
+  });
+
+  document.querySelectorAll(".quality-btn").forEach(btn => {
+    btn.addEventListener("click",()=>{
+      dataQuality = btn.dataset.quality;
+      document.querySelectorAll(".quality-btn").forEach(x=>x.classList.toggle("active",x===btn));
+      renderQuality();
+    });
+  });
+
+  document.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener("click",()=>{
+      document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===btn));
+      document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id==="view-"+btn.dataset.view));
+      window.scrollTo({top:0,behavior:"smooth"});
+    });
+  });
+
+  document.querySelectorAll(".info-button").forEach(btn => {
+    btn.addEventListener("click",e=>{
+      e.stopPropagation();
+      const tip = btn.closest(".info-tip");
+      document.querySelectorAll(".info-tip.open").forEach(x=>{ if(x!==tip) x.classList.remove("open"); });
+      tip.classList.toggle("open");
+    });
+  });
+  document.addEventListener("click",()=>document.querySelectorAll(".info-tip.open").forEach(x=>x.classList.remove("open")));
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape") document.querySelectorAll(".info-tip.open").forEach(x=>x.classList.remove("open")); });
+
+  function toast(msg){
+    const t=$("toast"); t.textContent=msg; t.classList.add("show");
+    clearTimeout(t._timer); t._timer=setTimeout(()=>t.classList.remove("show"),2200);
+  }
+
+  $("printView").addEventListener("click",()=>window.print());
+
+  $("resetAll").addEventListener("click",()=>{
+    document.querySelectorAll(".preset-btn").forEach((x,i)=>x.classList.toggle("active",i===0));
+    applyValues(DEFAULTS);
+    $("clientName").value="";
+    $("scenarioName").value=PRESETS.msp10.name;
+    dataQuality="estimated";
+    document.querySelectorAll(".quality-btn").forEach(x=>x.classList.toggle("active",x.dataset.quality==="estimated"));
+    renderQuality();
+    toast("Defaults restored");
+  });
+
+  $("clientName").addEventListener("input",()=>{
+    document.title=($("clientName").value.trim()?$("clientName").value.trim()+" - ":"")+"Application Workspace Partner Economics";
+  });
+
+  syncRanges();
+  update();
+})();
 </script>
 </body>
 </html>
