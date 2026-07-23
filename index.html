@@ -1552,7 +1552,7 @@ ECONOMICS
   // ---------- Executive view animation ----------
   const PITCH = 62, HOLD = 3.0, LEFT_DUR = 11.0;
   const R_A = [0.70, 1.00], R_B = [2.60, 2.90], R_REL = 3.20, R_DONE = 3.55;
-  let animT = 0, animPaused = false, animLast = null, animCfg = null, animZones = -1;
+  let animT = 0, animPaused = false, animLast = null, animCfg = null, animZones = -1, animDone = false;
   const reduceMotion = typeof matchMedia === "function" &&
         matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -1679,7 +1679,12 @@ ECONOMICS
     const dt = Math.min(0.05, (ts - animLast)/1000);
     animLast = ts;
     if(!animPaused) animT += dt;
-    if(animT > animCfg.total) animT = 0;
+    if(!animDone && animT >= animCfg.total){
+      animT = animCfg.total;
+      animPaused = true;
+      animDone = true;
+      if(pauseBtn) pauseBtn.textContent = "Play";
+    }
     animRender(animT);
   }
 
@@ -1791,11 +1796,12 @@ ECONOMICS
 
   const pauseBtn = $("animPause"), replayBtn = $("animReplay");
   if(pauseBtn) pauseBtn.addEventListener("click",()=>{
-    animPaused = !animPaused;
+    if(animDone){ animT = 0; animDone = false; animPaused = false; }
+    else animPaused = !animPaused;
     pauseBtn.textContent = animPaused ? "Play" : "Pause";
   });
   if(replayBtn) replayBtn.addEventListener("click",()=>{
-    animT = 0; animPaused = false;
+    animT = 0; animPaused = false; animDone = false;
     if(pauseBtn) pauseBtn.textContent = "Pause";
   });
 
