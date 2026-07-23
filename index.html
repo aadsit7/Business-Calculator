@@ -92,10 +92,6 @@ a{color:var(--blue)}
 .panel-head h2{margin:0;color:var(--ink);font-size:16px;letter-spacing:-.01em}
 .panel-head p{margin:3px 0 0;color:var(--muted);font-size:11.5px}
 
-.presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:14px}
-.preset-btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:9px;padding:8px 6px;font-size:10.5px;font-weight:750;line-height:1.25;text-align:center}
-.preset-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-.preset-btn small{display:block;font-weight:600;font-size:9px;opacity:.75;margin-top:2px}
 
 .input-section{border-top:1px solid var(--line);padding-top:13px;margin-top:13px}
 .input-section h3{margin:0 0 9px;color:var(--blue);font-size:10.5px;text-transform:uppercase;letter-spacing:.07em}
@@ -346,7 +342,6 @@ td .sub{display:block;font-size:10px;color:var(--muted);margin-top:1px;font-weig
   .title-row h1{font-size:23px}
   .client-fields{grid-template-columns:1fr}
   .kpi-grid,.reuse-steps,.motion-card .inputs,.motion-results{grid-template-columns:1fr}
-  .presets{grid-template-columns:1fr}
   .tabs{width:100%}.tab{flex:1}
 }
 @media print{
@@ -419,12 +414,6 @@ td .sub{display:block;font-size:10px;color:var(--muted);margin-top:1px;font-weig
             <h2>Model inputs</h2>
             <p>Start from a preset, then replace with the account's measured data.</p>
           </div>
-        </div>
-
-        <div class="presets">
-          <button class="preset-btn active" data-preset="msp10">MSP<small>10 customers</small></button>
-          <button class="preset-btn" data-preset="msp25">MSP<small>25 customers</small></button>
-          <button class="preset-btn" data-preset="ent">Enterprise<small>single tenant</small></button>
         </div>
 
         <div class="input-section" style="border-top:none;padding-top:0;margin-top:0">
@@ -1223,19 +1212,6 @@ ECONOMICS
     criticalCapture:50, weeklyDelayValue:50000, siIncrementalCost:50000
   };
 
-  const PRESETS = {
-    msp10:{ name:"MSP - 10 customers", v:{} },
-    msp25:{ name:"MSP - 25 customers", v:{
-      customers:25, users:18000, commodityApps:55, customApps:12, overlap:85,
-      serviceUsers:18000, contractRevenue:820000, otherCogs:500000, implementationCost:85000
-    }},
-    ent:{ name:"Enterprise - single tenant", v:{
-      customers:1, users:10000, commodityApps:180, customApps:60, overlap:0,
-      managedCoverage:75, contractRevenue:0, otherCogs:0, serviceUsers:0,
-      implementationCost:70000, projectApps:400
-    }}
-  };
-
   const INPUT_IDS = Object.keys(DEFAULTS);
   const RANGE_PAIRS = [
     ["overlapRange","overlap"],["managedCoverageRange","managedCoverage"],
@@ -1796,16 +1772,6 @@ ECONOMICS
     b.addEventListener("input",()=>{ a.value=b.value; update(); });
   });
 
-  document.querySelectorAll(".preset-btn").forEach(btn => {
-    btn.addEventListener("click",()=>{
-      const p = PRESETS[btn.dataset.preset];
-      if(!p) return;
-      document.querySelectorAll(".preset-btn").forEach(x=>x.classList.toggle("active",x===btn));
-      applyValues(Object.assign({},DEFAULTS,p.v));
-      $("scenarioName").value = p.name;
-    });
-  });
-
   document.querySelectorAll(".quality-btn").forEach(btn => {
     btn.addEventListener("click",()=>{
       dataQuality = btn.dataset.quality;
@@ -1841,10 +1807,9 @@ ECONOMICS
   $("printView").addEventListener("click",()=>window.print());
 
   $("resetAll").addEventListener("click",()=>{
-    document.querySelectorAll(".preset-btn").forEach((x,i)=>x.classList.toggle("active",i===0));
     applyValues(DEFAULTS);
     $("clientName").value="";
-    $("scenarioName").value=PRESETS.msp10.name;
+    $("scenarioName").value="MSP - 10 customers";
     dataQuality="estimated";
     document.querySelectorAll(".quality-btn").forEach(x=>x.classList.toggle("active",x.dataset.quality==="estimated"));
     renderQuality();
